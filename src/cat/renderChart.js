@@ -17,9 +17,6 @@ export function renderChart(cat){
       console.log("nosub")
       var myChart = window[rendererObj.main]('.cat-chart',chartSettings);
     }
-    console.log(data)
-    console.log(cat)
-    console.log(myChart)
     myChart.init(data)
   });
 }

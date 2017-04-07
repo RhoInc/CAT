@@ -20,22 +20,6 @@ var cat = function () {
     cat.dataWrap = cat.wrap.append("div").attr("class", "cat-data");
   }
 
-  function loadRenderer(src, callback, cat) {
-    var s, r, t;
-    r = false;
-    s = document.createElement('script');
-    s.type = 'text/javascript';
-    s.src = src;
-    s.onload = s.onreadystatechange = function () {
-      if (!r && (!this.readyState || this.readyState == 'complete')) {
-        r = true;
-        callback(cat);
-      }
-    };
-    t = document.getElementsByTagName('script')[0];
-    t.parentNode.insertBefore(s, t);
-  }
-
   function renderChart(cat) {
     var rendererObj = cat.controls.rendererSelect.selectAll("option:checked").data()[0];
     cat.chartWrap.selectAll("*").remove();
@@ -55,11 +39,35 @@ var cat = function () {
         console.log("nosub");
         var myChart = window[rendererObj.main]('.cat-chart', chartSettings);
       }
-      console.log(data);
-      console.log(cat);
-      console.log(myChart);
       myChart.init(data);
     });
+  }
+
+  function loadRenderer(cat) {
+    var rendererObj = cat.controls.rendererSelect.selectAll("option:checked").data()[0];
+    var version = cat.controls.versionSelect.node().value;
+    var rendererPath = cat.config.rootURL + "/" + rendererObj.name + "/" + version + "/build/" + rendererObj.main + ".js";
+
+    if (rendererObj.css) {
+      var link = document.createElement("link");
+      link.href = cat.config.rootURL + "/" + rendererObj.name + "/" + version + "/" + rendererObj.css;
+      link.type = "text/css";
+      link.rel = "stylesheet";
+      document.getElementsByTagName("head")[0].appendChild(link);
+    }
+
+    var scriptReady = false;
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = rendererPath;
+    script.onload = script.onreadystatechange = function () {
+      if (!scriptReady && (!this.readyState || this.readyState == 'complete')) {
+        scriptReady = true;
+        renderChart(cat);
+      }
+    };
+    var tag = document.getElementsByTagName('script')[0];
+    tag.parentNode.insertBefore(script, tag);
   }
 
   function init$1(cat) {
@@ -97,16 +105,7 @@ var cat = function () {
     cat.controls.settingsInput = settingsWrap.append("textarea").attr("rows", 10).attr("cols", 50).text("{}");
 
     cat.controls.submitButton.on("click", function () {
-      var rendererObj = cat.controls.rendererSelect.selectAll("option:checked").data()[0];
-      var version = cat.controls.versionSelect.node().value;
-      var rendererPath = cat.config.rootURL + "/" + rendererObj.name + "/" + version + "/build/" + rendererObj.main + ".js";
-
-      console.clear();
-      console.log('Renderer: ' + rendererObj.name);
-      console.log('  Version: ' + version);
-      console.log('  URL: ' + rendererPath);
-
-      loadRenderer(rendererPath, renderChart, cat);
+      loadRenderer(cat);
     });
   }
 
@@ -116,7 +115,7 @@ var cat = function () {
 
   const defaultSettings = {
     rootURL: "https://cdn.rawgit.com/RhoInc",
-    renderers: [{ name: "web-codebook", main: "webcodebook", sub: "createChart", css: "" }, { name: "webcharts", main: "webcharts", sub: "createChart", css: "" }, { name: "aeexplorer", main: "aeTable", sub: "createChart", css: "" }, { name: "aetimelines", main: "aeTimelines", sub: null, css: "" }, { name: "safety-histogram", main: "safetyHistogram", sub: null, css: "" }, { name: "safety-outlier-explorer", main: "safetyOutlierExplorer", sub: null, css: "" }, { name: "safety-results-over-time", main: "safetyResultsOverTime", sub: null, css: "" }, { name: "safety-shift-plot", main: "safetyShiftPlot", sub: null, css: "" }],
+    renderers: [{ name: "web-codebook", main: "webcodebook", sub: "createChart", css: "css/webcodebook.css" }, { name: "webcharts", main: "webcharts", sub: "createChart", css: "css/webcharts.css" }, { name: "aeexplorer", main: "aeTable", sub: "createChart", css: "css/aeTable.css" }, { name: "aetimelines", main: "aeTimelines", sub: null, css: null }, { name: "safety-histogram", main: "safetyHistogram", sub: null, css: null }, { name: "safety-outlier-explorer", main: "safetyOutlierExplorer", sub: null, css: null }, { name: "safety-results-over-time", main: "safetyResultsOverTime", sub: null, css: null }, { name: "safety-shift-plot", main: "safetyShiftPlot", sub: null, css: null }],
     dataURL: "https://rhoinc.github.io/viz-library/examples/0000-sample-data/",
     dataFiles: ["safetyData-queries/ADAE.csv", "safetyData-queries/ADBDS.csv", "safetyData/ADAE.csv", "safetyData/ADBDS.csv", "safetyData/AE.csv", "safetyData/DM.csv", "safetyData/LB.csv"]
   };

@@ -1,5 +1,4 @@
 import { loadRenderer } from '../loadRenderer'
-import { renderChart } from '../renderChart'
 
 export function init(cat){
   var settings = cat.config
@@ -44,16 +43,6 @@ export function init(cat){
   .text("{}")
 
   cat.controls.submitButton.on("click",function(){
-    var rendererObj = cat.controls.rendererSelect.selectAll("option:checked").data()[0];
-    var version = cat.controls.versionSelect.node().value;
-    var rendererPath = cat.config.rootURL+"/"+rendererObj.name+"/"+version+"/build/"+rendererObj.main+".js";
-
-    console.clear();
-    console.log('Renderer: ' + rendererObj.name);
-    console.log('  Version: ' + version);
-    console.log('  URL: ' + rendererPath);
-
-    loadRenderer(rendererPath, renderChart, cat)
-
+    loadRenderer(cat)
   })
 }
