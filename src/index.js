@@ -1,5 +1,5 @@
-import { createCat } from './createCat';
+import { createCat } from "./createCat";
 
 export default {
-  createCat:createCat
+  createCat: createCat
 };

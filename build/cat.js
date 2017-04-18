@@ -1,10 +1,9 @@
-var cat = function () {
+var cat = (function () {
   'use strict';
 
   function init() {
-
     //layout the cat
-    this.wrap = d3.select(this.element).append("div").attr('class', 'cat-wrap');
+    this.wrap = d3.select(this.element).append("div").attr("class", "cat-wrap");
     this.layout(this);
 
     //initialize the settings
@@ -28,16 +27,18 @@ var cat = function () {
     var dataFile = cat.controls.dataFileSelect.node().value;
     var dataFilePath = cat.config.dataURL + dataFile;
     var chartSettings = JSON.parse(cat.controls.settingsInput.node().value);
-    console.log('  Settings: ' + cat.controls.settingsInput.node().value.replace(/\t/g, ' ').replace(/\n| +(?= )/g, ''));
-    console.log('  Data: ' + dataFile);
+    console.log("  Settings: " + cat.controls.settingsInput.node().value.replace(/\t/g, " ").replace(/\n| +(?= )/g, ""));
+    console.log("  Data: " + dataFile);
     d3.csv(dataFilePath, function (data) {
       console.log(rendererObj);
+      var mainFunction = cat.controls.mainFunction.node().value;
       if (rendererObj.sub) {
         console.log("sub");
-        var myChart = window[rendererObj.main][rendererObj.sub]('.cat-chart', chartSettings);
+        var subFunction = cat.controls.subFunction.node().value;
+        var myChart = window[mainFunction][subFunction](".cat-chart", chartSettings);
       } else {
         console.log("nosub");
-        var myChart = window[rendererObj.main]('.cat-chart', chartSettings);
+        var myChart = window[mainFunction](".cat-chart", chartSettings);
       }
       myChart.init(data);
     });
@@ -57,21 +58,22 @@ var cat = function () {
     }
 
     var scriptReady = false;
-    var script = document.createElement('script');
-    script.type = 'text/javascript';
+    var script = document.createElement("script");
+    script.type = "text/javascript";
     script.src = rendererPath;
     script.onload = script.onreadystatechange = function () {
-      if (!scriptReady && (!this.readyState || this.readyState == 'complete')) {
+      if (!scriptReady && (!this.readyState || this.readyState == "complete")) {
         scriptReady = true;
         renderChart(cat);
       }
     };
-    var tag = document.getElementsByTagName('script')[0];
+    var tag = document.getElementsByTagName("script")[0];
     tag.parentNode.insertBefore(script, tag);
   }
 
   function init$1(cat) {
     var settings = cat.config;
+    var current = settings.renderers[0];
 
     //submit
     cat.controls.submitButton = cat.controls.wrap.append("button").attr("class", "submit").text("Render Chart");
@@ -84,10 +86,24 @@ var cat = function () {
       return d.name;
     });
 
+    cat.controls.rendererSelect.on("change", function (d) {
+      var current = d3.select(this).select("option:checked").data()[0];
+      cat.controls.mainFunction.node().value = current.main;
+      cat.controls.subFunction.node().value = current.sub;
+    });
+
     //Choose a version
     rendererWrap.append("span").text("  Version:");
     cat.controls.versionSelect = rendererWrap.append("input");
     cat.controls.versionSelect.node().value = "master";
+
+    //specify the code to create the chart
+    rendererWrap.append("span").text(" Init:");
+    cat.controls.mainFunction = rendererWrap.append("input");
+    cat.controls.mainFunction.node().value = current.main;
+    rendererWrap.append("span").text(".");
+    cat.controls.subFunction = rendererWrap.append("input");
+    cat.controls.subFunction.node().value = current.sub;
 
     //Choose a data file
     var datafileWrap = cat.controls.wrap.append("div").attr("class", "control-wrap");
@@ -109,13 +125,38 @@ var cat = function () {
     });
   }
 
-  const controls = {
+  var controls = {
     init: init$1
   };
 
-  const defaultSettings = {
+  var defaultSettings = {
     rootURL: "https://cdn.rawgit.com/RhoInc",
-    renderers: [{ name: "web-codebook", main: "webcodebook", sub: "createChart", css: "css/webcodebook.css" }, { name: "webcharts", main: "webcharts", sub: "createChart", css: "css/webcharts.css" }, { name: "aeexplorer", main: "aeTable", sub: "createChart", css: "css/aeTable.css" }, { name: "aetimelines", main: "aeTimelines", sub: null, css: null }, { name: "safety-histogram", main: "safetyHistogram", sub: null, css: null }, { name: "safety-outlier-explorer", main: "safetyOutlierExplorer", sub: null, css: null }, { name: "safety-results-over-time", main: "safetyResultsOverTime", sub: null, css: null }, { name: "safety-shift-plot", main: "safetyShiftPlot", sub: null, css: null }],
+    renderers: [{
+      name: "web-codebook",
+      main: "webcodebook",
+      sub: "createCodebook",
+      css: "css/webcodebook.css"
+    }, {
+      name: "webcharts",
+      main: "webcharts",
+      sub: "createChart",
+      css: "css/webcharts.css"
+    }, {
+      name: "aeexplorer",
+      main: "aeTable",
+      sub: "createChart",
+      css: "css/aeTable.css"
+    }, { name: "aetimelines", main: "aeTimelines", sub: null, css: null }, { name: "safety-histogram", main: "safetyHistogram", sub: null, css: null }, {
+      name: "safety-outlier-explorer",
+      main: "safetyOutlierExplorer",
+      sub: null,
+      css: null
+    }, {
+      name: "safety-results-over-time",
+      main: "safetyResultsOverTime",
+      sub: null,
+      css: null
+    }, { name: "safety-shift-plot", main: "safetyShiftPlot", sub: null, css: null }],
     dataURL: "https://rhoinc.github.io/viz-library/examples/0000-sample-data/",
     dataFiles: ["safetyData-queries/ADAE.csv", "safetyData-queries/ADBDS.csv", "safetyData/ADAE.csv", "safetyData/ADBDS.csv", "safetyData/AE.csv", "safetyData/DM.csv", "safetyData/LB.csv"]
   };
@@ -124,8 +165,12 @@ var cat = function () {
     cat.config = defaultSettings; // just ignore the user settings for the moment. Will set up merge later.
   }
 
-  function createCat(element = 'body', config) {
-    let cat = { element: element,
+  function createCat() {
+    var element = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "body";
+    var config = arguments[1];
+
+    var cat = {
+      element: element,
       config: config,
       init: init,
       layout: layout,
@@ -141,5 +186,5 @@ var cat = function () {
   };
 
   return index;
-}();
 
+}());

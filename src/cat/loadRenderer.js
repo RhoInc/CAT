@@ -1,30 +1,45 @@
-import { renderChart } from './renderChart'
+import { renderChart } from "./renderChart";
 
 export function loadRenderer(cat) {
-  var rendererObj = cat.controls.rendererSelect.selectAll("option:checked").data()[0];
+  var rendererObj = cat.controls.rendererSelect
+    .selectAll("option:checked")
+    .data()[0];
   var version = cat.controls.versionSelect.node().value;
-  var rendererPath = cat.config.rootURL+"/"+rendererObj.name+"/"+version+"/build/"+rendererObj.main+".js";
+  var rendererPath =
+    cat.config.rootURL +
+    "/" +
+    rendererObj.name +
+    "/" +
+    version +
+    "/build/" +
+    rendererObj.main +
+    ".js";
 
-
-  if(rendererObj.css){
-    var link = document.createElement( "link" );
-    link.href = cat.config.rootURL+"/"+rendererObj.name+"/"+version+"/"+rendererObj.css;
+  if (rendererObj.css) {
+    var link = document.createElement("link");
+    link.href =
+      cat.config.rootURL +
+      "/" +
+      rendererObj.name +
+      "/" +
+      version +
+      "/" +
+      rendererObj.css;
     link.type = "text/css";
     link.rel = "stylesheet";
-    document.getElementsByTagName( "head" )[0].appendChild( link );
+    document.getElementsByTagName("head")[0].appendChild(link);
   }
 
   var scriptReady = false;
-  var script = document.createElement('script');
-  script.type = 'text/javascript';
+  var script = document.createElement("script");
+  script.type = "text/javascript";
   script.src = rendererPath;
   script.onload = script.onreadystatechange = function() {
-    if ( !scriptReady && (!this.readyState || this.readyState == 'complete') )
-    {
+    if (!scriptReady && (!this.readyState || this.readyState == "complete")) {
       scriptReady = true;
       renderChart(cat);
     }
   };
-  var tag = document.getElementsByTagName('script')[0];
+  var tag = document.getElementsByTagName("script")[0];
   tag.parentNode.insertBefore(script, tag);
 }
