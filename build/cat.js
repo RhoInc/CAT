@@ -157,7 +157,7 @@ var cat = (function () {
       sub: null,
       css: null
     }, { name: "safety-shift-plot", main: "safetyShiftPlot", sub: null, css: null }],
-    dataURL: "https://rhoinc.github.io/viz-library/examples/0000-sample-data/",
+    dataURL: "https://rhoinc.github.io/viz-library/data/",
     dataFiles: ["safetyData-queries/ADAE.csv", "safetyData-queries/ADBDS.csv", "safetyData/ADAE.csv", "safetyData/ADBDS.csv", "safetyData/AE.csv", "safetyData/DM.csv", "safetyData/LB.csv"]
   };
 
