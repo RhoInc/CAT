@@ -4,7 +4,7 @@ const defaultSettings = {
     {
       name: "web-codebook",
       main: "webcodebook",
-      sub: "createCodebook",
+      sub: "createChart",
       css: "css/webcodebook.css"
     },
     {

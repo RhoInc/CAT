@@ -134,7 +134,7 @@ var cat = (function () {
     renderers: [{
       name: "web-codebook",
       main: "webcodebook",
-      sub: "createCodebook",
+      sub: "createChart",
       css: "css/webcodebook.css"
     }, {
       name: "webcharts",
