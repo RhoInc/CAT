@@ -33,7 +33,13 @@ const defaultSettings = {
       sub: null,
       css: null
     },
-    { name: "safety-shift-plot", main: "safetyShiftPlot", sub: null, css: null }
+    {
+      name: "safety-shift-plot",
+      main: "safetyShiftPlot",
+      sub: null,
+      css: null
+    },
+    { name: "query-overview", main: "queryOverview", sub: null, css: null }
   ],
   dataURL: "https://rhoinc.github.io/viz-library/data/",
   dataFiles: [
@@ -43,7 +49,8 @@ const defaultSettings = {
     "safetyData/ADBDS.csv",
     "safetyData/AE.csv",
     "safetyData/DM.csv",
-    "safetyData/LB.csv"
+    "safetyData/LB.csv",
+    "queries/queries.csv"
   ]
 };
 
