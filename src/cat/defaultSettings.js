@@ -55,7 +55,7 @@ const defaultSettings = {
     "climate_data.csv",
     "discrete_score.csv",
     "elements.csv",
-    "chickWeight.csv"
+    "ChickWeight.csv"
   ]
 };
 
