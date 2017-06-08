@@ -50,7 +50,12 @@ const defaultSettings = {
     "safetyData/AE.csv",
     "safetyData/DM.csv",
     "safetyData/LB.csv",
-    "queries/queries.csv"
+    "queries/queries.csv",
+    "cars.csv",
+    "climate_data.csv",
+    "discrete_score.csv",
+    "elements.csv",
+    "chickWeight.csv"
   ]
 };
 

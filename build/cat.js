@@ -163,7 +163,7 @@ var cat = (function () {
       css: null
     }, { name: "query-overview", main: "queryOverview", sub: null, css: null }],
     dataURL: "https://rhoinc.github.io/viz-library/data/",
-    dataFiles: ["safetyData-queries/ADAE.csv", "safetyData-queries/ADBDS.csv", "safetyData/ADAE.csv", "safetyData/ADBDS.csv", "safetyData/AE.csv", "safetyData/DM.csv", "safetyData/LB.csv", "queries/queries.csv"]
+    dataFiles: ["safetyData-queries/ADAE.csv", "safetyData-queries/ADBDS.csv", "safetyData/ADAE.csv", "safetyData/ADBDS.csv", "safetyData/AE.csv", "safetyData/DM.csv", "safetyData/LB.csv", "queries/queries.csv", "cars.csv", "climate_data.csv", "discrete_score.csv", "elements.csv", "chickWeight.csv"]
   };
 
   function setDefaults(cat) {
