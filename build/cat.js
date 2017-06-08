@@ -137,8 +137,8 @@ var cat = (function () {
       sub: "createChart",
       css: "css/webcodebook.css"
     }, {
-      name: "webcharts",
-      main: "webcharts",
+      name: "webCharts",
+      main: "webCharts",
       sub: "createChart",
       css: "css/webcharts.css"
     }, {
