@@ -71,12 +71,43 @@ var cat = (function () {
     tag.parentNode.insertBefore(script, tag);
   }
 
+  function loadLibrary(cat) {
+    var version = cat.controls.libraryVersion.node().value;
+    var rendererPath = cat.config.rootURL + "/" + "webcharts" + //hardcode to webcharts for now - could generalize later
+    "/" + version + "/build/" + "webcharts" + ".js";
+
+    var link = document.createElement("link");
+    link.href = cat.config.rootURL + "/" + "webcharts" + "/" + version + "/" + "css" + "/" + "webcharts.css";
+    link.type = "text/css";
+    link.rel = "stylesheet";
+    document.getElementsByTagName("head")[0].appendChild(link);
+
+    var scriptReady = false;
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = rendererPath;
+    script.onload = script.onreadystatechange = function () {
+      if (!scriptReady && (!this.readyState || this.readyState == "complete")) {
+        scriptReady = true;
+        loadRenderer(cat);
+      }
+    };
+    var tag = document.getElementsByTagName("script")[0];
+    tag.parentNode.insertBefore(script, tag);
+  }
+
   function init$1(cat) {
     var settings = cat.config;
     var current = settings.renderers[0];
 
     //submit
     cat.controls.submitButton = cat.controls.wrap.append("button").attr("class", "submit").text("Render Chart");
+
+    //Webcharts versionSelect
+    var libraryVersionWrap = cat.controls.wrap.append("div").attr("class", "webcharts-wrap");
+    libraryVersionWrap.append("span").text("Webcharts Version:");
+    cat.controls.libraryVersion = libraryVersionWrap.append("input");
+    cat.controls.libraryVersion.node().value = "master";
 
     //Choose a renderer
     var rendererWrap = cat.controls.wrap.append("div").attr("class", "control-wrap");
@@ -121,7 +152,7 @@ var cat = (function () {
     cat.controls.settingsInput = settingsWrap.append("textarea").attr("rows", 10).attr("cols", 50).text("{}");
 
     cat.controls.submitButton.on("click", function () {
-      loadRenderer(cat);
+      loadLibrary(cat);
     });
   }
 

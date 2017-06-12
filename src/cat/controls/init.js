@@ -1,4 +1,4 @@
-import { loadRenderer } from "../loadRenderer";
+import { loadLibrary } from "../loadLibrary";
 
 export function init(cat) {
   var settings = cat.config;
@@ -9,6 +9,14 @@ export function init(cat) {
     .append("button")
     .attr("class", "submit")
     .text("Render Chart");
+
+  //Webcharts versionSelect
+  var libraryVersionWrap = cat.controls.wrap
+    .append("div")
+    .attr("class", "webcharts-wrap");
+  libraryVersionWrap.append("span").text("Webcharts Version:");
+  cat.controls.libraryVersion = libraryVersionWrap.append("input");
+  cat.controls.libraryVersion.node().value = "master";
 
   //Choose a renderer
   var rendererWrap = cat.controls.wrap
@@ -73,6 +81,6 @@ export function init(cat) {
     .text("{}");
 
   cat.controls.submitButton.on("click", function() {
-    loadRenderer(cat);
+    loadLibrary(cat);
   });
 }
