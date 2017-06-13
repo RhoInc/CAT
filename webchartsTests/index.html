@@ -142,17 +142,18 @@ function drawCharts(path, root){
 function initTestSuite(version){
   var root = "https://rawgit.com/RhoInc/Webcharts/"+version+"/test";
 
-  function drawAll(d,root){
+  function drawAll(d){
     var label = this.value
     var filename = d3.select(this).datum().filter(function(d){return d.label == label})[0].filename
-    var path = root + "/samples/chart-config/"+filename
+    var path = d.root + "/samples/chart-config/"+filename
     d3.select(".charts").selectAll("*").remove()
-    drawCharts(root + "/samples/chart-config/"+filename, root)
+    drawCharts(root + "/samples/chart-config/"+filename, d.root)
   }
 
   d3.json(root + "/samples/chart-config/testSettingList.json",function(error,allSettings){
     console.log(error||allSettings)
     if(!error){
+      allSettings.root = root;
       var settingsSelect = d3.select(".controls").append("select").datum(allSettings)
       var options = settingsSelect
       .selectAll("option")
@@ -161,9 +162,7 @@ function initTestSuite(version){
       .append("option")
       .text(function(d){return d.label})
 
-      settingsSelect.on("change",function(d){
-        drawAll(d,root)
-      })
+      settingsSelect.on("change",drawAll)
 
       //initialize the first set of tests on load
       drawCharts(root + "/samples/chart-config/"+allSettings[0].filename, root)
