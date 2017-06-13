@@ -3,7 +3,7 @@ body{
   margin:1em;
 }
 
-div.testWrap{
+div.testWrap, #big-one{
   border:2px solid black;
   background:white;
   padding:1em;
@@ -57,4 +57,8 @@ span.error{
   border:2px solid red;
   border-radius: 5px;
 
+}
+
+div#big-one{
+  width:1100px;
 }

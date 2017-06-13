@@ -18,25 +18,34 @@
   <div class="versionSelect"></div>
   <div class="controls"></div>
   <div class="charts"></div>
+  <div id="big-one" class="hidden"></div>
 </body>
 
 <script>
+
+function renderLarge(d){
+  d.settings.max_width=1000
+  d.wrap = "#big-one"
+  d3.select(".charts").classed("hidden",true)
+  d3.select("#big-one").classed("hidden",false).datum(d).each(renderTest)
+}
 
 function renderTest(d) {
   //console.log("rendering test"+d.index+" - "+d.label)
 
   //draw title
-  d3.select(this).append('h2').text(function(d) {
+  d3.select(d.wrap).append('h2').text(function(d) {
     return d.label;
   });
 
   //make a wrapper for the chart
-  var chartWrap = d3.select(this).append('div').attr('class', 'chart');
+  var chartWrap = d3.select(d.wrap).append('div').attr('class', 'chart');
 
   //show notes (if any)
-  var notes = d3.select(this)
+  var notes = d3.select(d.wrap)
     .append('div')
     .attr("class","notes")
+
     notes.append("div").html("<strong>File: </strong> ")
     .append("a")
     .attr("href",function(d){return d.root + "/samples/data/"+d.filename})
@@ -53,10 +62,22 @@ function renderTest(d) {
     .append("li")
     .text(function(d){return d})
 
+    notes.append("button")
+    .text(d.wrap=="#big-one" ? "Show All Tests" : "Show Large Version" )
+    .attr("href","#big-one")
+    .on("click",function(d){
+      console.log(d)
+      if(d.wrap=="#big-one" ){
+        d3.select("#big-one").classed("hidden",true).selectAll("*").remove()
+        d3.select(".charts").classed("hidden",false)
+      } else {
+        renderLarge(d)
+      }
+    })
 
   //show settings
   var settingsWrap = d3
-    .select(this)
+    .select(d.wrap)
     .append('div')
     .attr("class",'code test' + d.index)
 
@@ -70,7 +91,7 @@ function renderTest(d) {
     code.classed("hidden",!status)
     d3.select(this).text(status?"- Settings":"+ Settings")
   })
-
+  console.log(d)
   var code = settingsWrap
     .append("pre")
     .attr("class","hidden")
@@ -80,7 +101,7 @@ function renderTest(d) {
 
     hljs.highlightBlock(code.node());
 
-    var thisChart = webCharts.createChart('div.test' + d.index + ' .chart', d.settings);
+    var thisChart = webCharts.createChart(d.wrap+" .chart", d.settings);
     //console.log(thisChart)
     thisChart.init(d.raw);
 }
@@ -92,6 +113,7 @@ function drawCharts(path, root){
     testConfig.forEach(function(d,i){
       d.index = i+1
       d.root = root
+      d.wrap = 'div.test' + d.index
     })
 
     var chartDivs = d3
@@ -105,7 +127,6 @@ function drawCharts(path, root){
       })
 
       chartDivs.append("span").text(function(d){return "Test #"+d.index})
-
 
     //get all test data sets (once each)
     var dataPaths = d3
@@ -143,6 +164,9 @@ function initTestSuite(version){
   var root = "https://rawgit.com/RhoInc/Webcharts/"+version+"/test";
 
   function drawAll(d){
+    d3.select(".charts").classed("hidden",false)
+    d3.select("#big-one").classed("hidden",true).selectAll("*").remove()
+
     var label = this.value
     var filename = d3.select(this).datum().filter(function(d){return d.label == label})[0].filename
     var path = d.root + "/samples/chart-config/"+filename
