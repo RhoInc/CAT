@@ -3,27 +3,25 @@ import { loadLibrary } from "../loadLibrary";
 export function init(cat) {
   var settings = cat.config;
   var current = settings.renderers[0];
+  var controlWrap = cat.controls.wrap;
 
   //submit
-  cat.controls.submitButton = cat.controls.wrap
+  var submitSection = controlWrap
+    .append("div")
+    .attr("class", "control-section");
+  cat.controls.submitButton = submitSection
     .append("button")
     .attr("class", "submit")
-    .text("Render Chart");
-
-  //Webcharts versionSelect
-  var libraryVersionWrap = cat.controls.wrap
-    .append("div")
-    .attr("class", "webcharts-wrap");
-  libraryVersionWrap.append("span").text("Webcharts Version:");
-  cat.controls.libraryVersion = libraryVersionWrap.append("input");
-  cat.controls.libraryVersion.node().value = "master";
-
+    .text("Render Chart")
+    .on("click", function() {
+      loadLibrary(cat);
+    });
   //Choose a renderer
-  var rendererWrap = cat.controls.wrap
+  var rendererSection = controlWrap
     .append("div")
-    .attr("class", "control-wrap");
-  rendererWrap.append("span").text("Renderer:");
-  cat.controls.rendererSelect = rendererWrap.append("select");
+    .attr("class", "control-section");
+  rendererSection.append("span").text("Renderer:");
+  cat.controls.rendererSelect = rendererSection.append("select");
   cat.controls.rendererSelect
     .selectAll("option")
     .data(settings.renderers)
@@ -40,25 +38,34 @@ export function init(cat) {
   });
 
   //Choose a version
-  rendererWrap.append("span").text("  Version:");
-  cat.controls.versionSelect = rendererWrap.append("input");
+  var versionSection = controlWrap
+    .append("div")
+    .attr("class", "control-section");
+  versionSection.append("span").text("  Version:");
+  cat.controls.versionSelect = versionSection.append("input");
   cat.controls.versionSelect.node().value = "master";
 
   //specify the code to create the chart
-  rendererWrap.append("span").text(" Init:");
-  cat.controls.mainFunction = rendererWrap.append("input");
+  var initSection = controlWrap.append("div").attr("class", "control-section");
+  initSection.append("span").text(" Init:");
+  cat.controls.mainFunction = initSection.append("input");
   cat.controls.mainFunction.node().value = current.main;
-  rendererWrap.append("span").text(".");
-  cat.controls.subFunction = rendererWrap.append("input");
+  initSection.append("span").text(".");
+  cat.controls.subFunction = initSection.append("input");
   cat.controls.subFunction.node().value = current.sub;
 
-  //Choose a data file
-  var datafileWrap = cat.controls.wrap
+  //Webcharts versionSelect
+  var versionSection = controlWrap
     .append("div")
-    .attr("class", "control-wrap");
+    .attr("class", "control-section");
+  versionSection.append("span").text("Webcharts Version:");
+  cat.controls.libraryVersion = versionSection.append("input");
+  cat.controls.libraryVersion.node().value = "master";
 
-  datafileWrap.append("span").text("Data:");
-  cat.controls.dataFileSelect = datafileWrap.append("select");
+  //Choose a data file
+  var dataSection = controlWrap.append("div").attr("class", "control-section");
+  dataSection.append("span").text("Data:");
+  cat.controls.dataFileSelect = dataSection.append("select");
   cat.controls.dataFileSelect
     .selectAll("option")
     .data(settings.dataFiles)
@@ -69,18 +76,14 @@ export function init(cat) {
     });
 
   //Edit the settings
-  var settingsWrap = cat.controls.wrap
+  var settingsSection = controlWrap
     .append("div")
-    .attr("class", "control-wrap");
-  settingsWrap.append("span").text("Settings:");
-  settingsWrap.append("br");
-  cat.controls.settingsInput = settingsWrap
+    .attr("class", "control-section");
+  settingsSection.append("span").text("Settings:");
+  settingsSection.append("br");
+  cat.controls.settingsInput = settingsSection
     .append("textarea")
     .attr("rows", 10)
-    .attr("cols", 50)
+    .style("width", "90%")
     .text("{}");
-
-  cat.controls.submitButton.on("click", function() {
-    loadLibrary(cat);
-  });
 }

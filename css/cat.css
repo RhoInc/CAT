@@ -1,15 +1,37 @@
+
+/* Layout */
+.cat-wrap .section{
+  vertical-align: top;
+  display:inline-block;
+  padding:1%;
+}
+
+.cat-wrap .cat-controls{
+  width:18%;
+}
+
+.cat-wrap .cat-chart{
+  width:78%;
+}
+
+/* Controls Formatting */
 .cat-wrap .cat-controls{
   background:#ccc;
   margin: .5em;
   padding:.5em;
 }
 
+.cat-wrap .cat-controls div{
+  margin-bottom:.5em;
+}
+
+
 .cat-wrap .cat-controls button.submit{
-  cursor:pointer;
-  margin-right:1em;
-  margin-top:1em;
-  float:right;
-  vertical-align:bottom;
+  cursor: pointer;
+  margin: auto;
+  margin-bottom:1em;
+  display:block;
+  width: 50%;
   color:black;
   border:none;
   border-radius:3px;
