@@ -101,6 +101,15 @@ var cat = (function () {
     var current = settings.renderers[0];
     var controlWrap = cat.controls.wrap;
 
+    // minimize controls
+    var minimize = controlWrap.append("div").attr("class", "minimize").text("<<").style("float", "left").on("click", function () {
+      cat.controls.wrap.classed("hidden", true);
+      cat.wrap.insert("div", ":first-child").attr("class", "maximize").text(">>").on("click", function () {
+        cat.controls.wrap.classed("hidden", false);
+        d3.select(this).remove();
+      });
+    });
+
     //submit
     var submitSection = controlWrap.append("div").attr("class", "control-section");
     cat.controls.submitButton = submitSection.append("button").attr("class", "submit").text("Render Chart").on("click", function () {

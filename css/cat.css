@@ -1,3 +1,8 @@
+/* general */
+.hidden{
+  display:none
+}
+
 
 /* Layout */
 .cat-wrap .section{
@@ -20,6 +25,10 @@
   margin: .5em;
   padding:.5em;
   border:1px solid #999;
+}
+
+.cat-wrap .cat-controls.hidden{
+  display:none;
 }
 
 .cat-wrap .cat-controls div{

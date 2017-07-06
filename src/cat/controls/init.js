@@ -8,11 +8,20 @@ export function init(cat) {
   // minimize controls
   var minimize = controlWrap
     .append("div")
-    .attr("class","minimize")
+    .attr("class", "minimize")
     .text("<<")
-    .on("click",function(){
-      cat.controls.wrap.classed("hidden",true)
-    })
+    .style("float", "left")
+    .on("click", function() {
+      cat.controls.wrap.classed("hidden", true);
+      cat.wrap
+        .insert("div", ":first-child")
+        .attr("class", "maximize")
+        .text(">>")
+        .on("click", function() {
+          cat.controls.wrap.classed("hidden", false);
+          d3.select(this).remove();
+        });
+    });
 
   //submit
   var submitSection = controlWrap
