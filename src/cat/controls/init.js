@@ -5,6 +5,15 @@ export function init(cat) {
   var current = settings.renderers[0];
   var controlWrap = cat.controls.wrap;
 
+  // minimize controls
+  var minimize = controlWrap
+    .append("div")
+    .attr("class","minimize")
+    .text("<<")
+    .on("click",function(){
+      cat.controls.wrap.classed("hidden",true)
+    })
+
   //submit
   var submitSection = controlWrap
     .append("div")
