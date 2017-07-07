@@ -58,7 +58,6 @@ export function init(cat) {
 
     cat.controls.settingsType
       .filter(function(d) {
-        console.log(this.value);
         return this.value == "form";
       })
       .property("disabled", cat.current.schema ? false : "disabled");
@@ -127,14 +126,13 @@ export function init(cat) {
   cat.controls.settingsType = settingsSection.selectAll('input[type="radio"]');
 
   cat.controls.settingsType.on("change", function(d) {
-    console.log(this.value);
     if (this.value == "text") {
       cat.controls.settingsInput.classed("hidden", false);
       cat.controls.settingsForm.classed("hidden", true);
     } else if (this.value == "form") {
       cat.controls.settingsInput.classed("hidden", true);
       cat.controls.settingsForm.classed("hidden", false);
-      cat.makeSettingsForm(cat);
+      cat.settings.makeForm(cat);
     }
   });
 

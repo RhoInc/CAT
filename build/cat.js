@@ -25,23 +25,16 @@
   function renderChart(cat) {
     var rendererObj = cat.controls.rendererSelect.selectAll("option:checked").data()[0];
     cat.chartWrap.selectAll("*").remove();
-
+    cat.settings.sync(cat);
+    console.log(cat.current);
     //render the new chart with the current settings
     var dataFile = cat.controls.dataFileSelect.node().value;
     var dataFilePath = cat.config.dataURL + dataFile;
-    var chartSettings = JSON.parse(cat.controls.settingsInput.node().value);
-    console.log("  Settings: " + cat.controls.settingsInput.node().value.replace(/\t/g, " ").replace(/\n| +(?= )/g, ""));
-    console.log("  Data: " + dataFile);
     d3.csv(dataFilePath, function (data) {
-      console.log(rendererObj);
-      var mainFunction = cat.controls.mainFunction.node().value;
-      if (rendererObj.sub) {
-        console.log("sub");
-        var subFunction = cat.controls.subFunction.node().value;
-        var myChart = window[mainFunction][subFunction](".cat-chart", chartSettings);
+      if (cat.current.sub) {
+        var myChart = window[cat.current.main][cat.current.sub](".cat-chart", cat.current.config);
       } else {
-        console.log("nosub");
-        var myChart = window[mainFunction](".cat-chart", chartSettings);
+        var myChart = window[cat.current.main](".cat-chart", cat.current.config);
       }
       myChart.init(data);
     });
@@ -134,7 +127,6 @@
       cat.controls.schema.node().value = cat.current.schema;
 
       cat.controls.settingsType.filter(function (d) {
-        console.log(this.value);
         return this.value == "form";
       }).property("disabled", cat.current.schema ? false : "disabled");
     });
@@ -182,14 +174,13 @@
     cat.controls.settingsType = settingsSection.selectAll('input[type="radio"]');
 
     cat.controls.settingsType.on("change", function (d) {
-      console.log(this.value);
       if (this.value == "text") {
         cat.controls.settingsInput.classed("hidden", false);
         cat.controls.settingsForm.classed("hidden", true);
       } else if (this.value == "form") {
         cat.controls.settingsInput.classed("hidden", true);
         cat.controls.settingsForm.classed("hidden", false);
-        cat.makeSettingsForm(cat);
+        cat.settings.makeForm(cat);
       }
     });
 
@@ -280,32 +271,55 @@
     cat.config = defaultSettings; // just ignore the user settings for the moment. Will set up merge later.
   }
 
-  function makeSettingsForm(cat) {
-    console.log("settings form is coming atcha");
-
+  function makeForm(cat) {
     var version = cat.controls.versionSelect.node().value;
     var schemaPath = cat.config.rootURL + "/" + cat.current.name + "/" + version + "/" + cat.current.schema;
 
     var testPath = "../aeexplorer/settings-schema.json";
-    console.log(schemaPath);
     //d3.json(schemaPath, function(error, schemaObj) {
     d3.json(testPath, function (error, schemaObj) {
-      console.log(schemaObj);
       $(".settingsForm form").jsonForm({
         schema: schemaObj,
         onSubmit: function onSubmit(errors, values) {
-          console.log("clicked");
           if (errors) {
-            console.log("Boo :(");
-            console.log(errors);
+            //console.log(errors);
           } else {
-            console.log("yay :)");
             console.log(values);
+            cat.current.config = values;
+            loadLibrary(cat);
           }
         }
       });
+      d3.selectAll("i.icon-plus-sign").append("span").text("+");
+      d3.selectAll("i.icon-minus-sign").append("span").text("-");
+      console.log($(".settingsForm form").val());
     });
   }
+
+  function reset(cat) {
+    //reset the current settings object to the default
+    //select the text settings view
+    //delete the form view
+  }
+
+  function sync(cat) {
+    var settingType = cat.controls.settingsType.filter(function (d) {
+      return d3.select(this).property("checked");
+    }).node().value;
+
+    console.log(settingType);
+
+    if (settingType == "text") {
+      console.log("text-y");
+      cat.current.config = JSON.parse(cat.controls.settingsInput.node().value);
+    }
+  }
+
+  var settings = {
+    makeForm: makeForm,
+    reset: reset,
+    sync: sync
+  };
 
   function createCat() {
     var element = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "body";
@@ -318,7 +332,7 @@
       layout: layout,
       controls: controls,
       setDefaults: setDefaults,
-      makeSettingsForm: makeSettingsForm
+      settings: settings
     };
 
     return cat;

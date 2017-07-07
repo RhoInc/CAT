@@ -3,32 +3,19 @@ export function renderChart(cat) {
     .selectAll("option:checked")
     .data()[0];
   cat.chartWrap.selectAll("*").remove();
-
+  cat.settings.sync(cat);
+  console.log(cat.current);
   //render the new chart with the current settings
   var dataFile = cat.controls.dataFileSelect.node().value;
   var dataFilePath = cat.config.dataURL + dataFile;
-  var chartSettings = JSON.parse(cat.controls.settingsInput.node().value);
-  console.log(
-    "  Settings: " +
-      cat.controls.settingsInput
-        .node()
-        .value.replace(/\t/g, " ")
-        .replace(/\n| +(?= )/g, "")
-  );
-  console.log("  Data: " + dataFile);
   d3.csv(dataFilePath, function(data) {
-    console.log(rendererObj);
-    var mainFunction = cat.controls.mainFunction.node().value;
-    if (rendererObj.sub) {
-      console.log("sub");
-      var subFunction = cat.controls.subFunction.node().value;
-      var myChart = window[mainFunction][subFunction](
+    if (cat.current.sub) {
+      var myChart = window[cat.current.main][cat.current.sub](
         ".cat-chart",
-        chartSettings
+        cat.current.config
       );
     } else {
-      console.log("nosub");
-      var myChart = window[mainFunction](".cat-chart", chartSettings);
+      var myChart = window[cat.current.main](".cat-chart", cat.current.config);
     }
     myChart.init(data);
   });
