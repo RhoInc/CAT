@@ -21,10 +21,11 @@
 
 /* Controls Formatting */
 .cat-wrap .cat-controls{
-  background:#ccc;
+  background:#fed976;
   margin: .5em;
   padding:.5em;
   border:1px solid #999;
+  border-radius:1em;
 }
 
 .cat-wrap .cat-controls.hidden{
@@ -54,4 +55,11 @@
 .cat-wrap .cat-controls button.submit:hover{
   background-color:#7BAFD4;
   color:white;
+}
+
+/* json-schema form formatting */
+.help-inline{
+  font-size:0.7em;
+  color:#666;
+  display:block;
 }

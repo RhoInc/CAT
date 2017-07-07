@@ -285,8 +285,11 @@
 
     var version = cat.controls.versionSelect.node().value;
     var schemaPath = cat.config.rootURL + "/" + cat.current.name + "/" + version + "/" + cat.current.schema;
+
+    var testPath = "../aeexplorer/settings-schema.json";
     console.log(schemaPath);
-    d3.json(schemaPath, function (error, schemaObj) {
+    //d3.json(schemaPath, function(error, schemaObj) {
+    d3.json(testPath, function (error, schemaObj) {
       console.log(schemaObj);
       $(".settingsForm form").jsonForm({
         schema: schemaObj,
