@@ -4,16 +4,13 @@ module.exports = {
   moduleName: 'cat',
   entry: './src/index.js',
   dest: './build/cat.js',
-  format: 'iife',
+  format: 'umd',
   globals: {
     d3: 'd3',
-    webcharts: 'webCharts'
+    webcharts: 'webCharts',
+    jquery:'jquery'
   },
-  external: (function() {
-    var dependencies = require('./package.json').dependencies;
-
-    return Object.keys(dependencies);
-  }()),
+  external: ['jquery','d3'],
   plugins: [
     babel(
       {
