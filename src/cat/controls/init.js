@@ -13,7 +13,7 @@ export function init(cat) {
   initDataSelect(cat);
   initChartConfig(cat);
 
-  // minimize controls
+  // minimize controls - for later?
   /*
   cat.controls.minimize = controlWrap
     .append("div")

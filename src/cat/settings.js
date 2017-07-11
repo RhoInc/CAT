@@ -2,14 +2,12 @@
   Define controls object.
 \------------------------------------------------------------------------------------------------*/
 
-import { makeForm } from "./settings/makeForm";
-import { reset } from "./settings/reset";
+import { set } from "./settings/set";
 import { sync } from "./settings/sync";
 import { setStatus } from "./settings/setStatus";
 
 export const settings = {
-  makeForm: makeForm,
-  reset: reset,
+  set: set,
   sync: sync,
   setStatus: setStatus
 };

@@ -1,16 +1,16 @@
-export function sync(cat) {
-  var settingType = cat.controls.settingsType
-    .filter(function(d) {
-      return d3.select(this).property("checked");
-    })
-    .node().value;
+import { makeForm } from "./makeForm";
 
+export function sync(cat) {
   // set current config
-  if (settingType == "text") {
+  if (cat.current.settingsView == "text") {
     cat.current.config = JSON.parse(cat.controls.settingsInput.node().value);
-    cat.settings.makeForm(cat, cat.current.config);
-  } else if (settingType == "form") {
-    //this submits the form (thus saving the most recent object)
+    if (cat.current.hasValidSchema) {
+      makeForm(cat, cat.current.config);
+    }
+  } else if (cat.current.settingsView == "form") {
+    //this submits the form which:
+    //- saves the current object
+    //- updates the hidden text view
     $(".settingsForm form").trigger("submit");
   }
 }

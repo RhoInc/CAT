@@ -16,14 +16,13 @@ export function initRendererSelect(cat) {
 
   cat.controls.rendererSelect.on("change", function(d) {
     cat.current = d3.select(this).select("option:checked").data()[0];
+
+    //update the chart type configuration to the defaults for the selected renderer
     cat.controls.mainFunction.node().value = cat.current.main;
     cat.controls.subFunction.node().value = cat.current.sub;
     cat.controls.schema.node().value = cat.current.schema;
 
-    cat.controls.settingsType
-      .filter(function(d) {
-        return this.value == "form";
-      })
-      .property("disabled", cat.current.schema ? false : "disabled");
+    //Re-initialize the chart config section
+    cat.settings.set(cat);
   });
 }

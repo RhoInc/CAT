@@ -10,6 +10,7 @@ export function initSubmit(cat) {
     .attr("class", "submit")
     .text("Render Chart")
     .on("click", function() {
+      cat.settings.sync(cat);
       loadLibrary(cat);
     });
 }

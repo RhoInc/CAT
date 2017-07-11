@@ -33,13 +33,14 @@
 
     cat.controls.rendererSelect.on("change", function (d) {
       cat.current = d3.select(this).select("option:checked").data()[0];
+
+      //update the chart type configuration to the defaults for the selected renderer
       cat.controls.mainFunction.node().value = cat.current.main;
       cat.controls.subFunction.node().value = cat.current.sub;
       cat.controls.schema.node().value = cat.current.schema;
 
-      cat.controls.settingsType.filter(function (d) {
-        return this.value == "form";
-      }).property("disabled", cat.current.schema ? false : "disabled");
+      //Re-initialize the chart config section
+      cat.settings.set(cat);
     });
   }
 
@@ -89,45 +90,55 @@
 
   function initChartConfig(cat) {
     var settingsSection = cat.controls.wrap.append("div").attr("class", "control-section");
-    settingsSection.append("h3").text("4. Customize the Chart");
+    var settingsHeading = settingsSection.append("h3").html("4. Customize the Chart ");
+    cat.controls.settingsRefresh = settingsHeading.append("span").html("&#x21bb;").on("click", function () {
+      cat.settings.set(cat);
+    });
 
     settingsSection.append("span").text("Settings: ");
 
+    //////////////////////////////////////
+    //initialize the config status icon
+    //////////////////////////////////////
     cat.controls.settingsStatus = settingsSection.append("div").style("font-size", "1.5em").style("float", "right").style("cursor", "pointer");
-
-    cat.settings.setStatus(cat, "no schema");
-
     settingsSection.append("br");
 
-    settingsSection.append("input").attr("class", "radio").property("type", "radio").property("name", "settingsType").property("value", "text").property("checked", !cat.current.schema);
+    //////////////////////////////////////////////////////////////////////
+    //radio buttons to toggle between "text" and "form" based settings
+    /////////////////////////////////////////////////////////////////////
+    cat.controls.settingsTypeText = settingsSection.append("input").attr("class", "radio").property("type", "radio").property("name", "settingsType").property("value", "text");
     settingsSection.append("span").text("text");
-
-    settingsSection.append("input").attr("class", "radio").property("type", "radio").property("name", "settingsType").property("value", "form").property("checked", cat.current.schema).property("disabled", !cat.current.schema);
+    cat.controls.settingsTypeForm = settingsSection.append("input").attr("class", "radio").property("type", "radio").property("name", "settingsType").property("value", "form");
     settingsSection.append("span").text("form");
-
     cat.controls.settingsType = settingsSection.selectAll('input[type="radio"]');
 
     cat.controls.settingsType.on("change", function (d) {
-      cat.settings.sync(cat);
-      if (this.value == "text") {
+      cat.settings.sync(cat); //first sync the current settings to both views
+
+      //then update to the new view, and update controls.
+      cat.current.settingsView = this.value; //
+      if (cat.current.settingsView == "text") {
         cat.controls.settingsInput.classed("hidden", false);
         cat.controls.settingsForm.classed("hidden", true);
-      } else if (this.value == "form") {
+      } else if (cat.current.settingsView == "form") {
         cat.controls.settingsInput.classed("hidden", true);
         cat.controls.settingsForm.classed("hidden", false);
       }
     });
-
     settingsSection.append("br");
 
-    cat.controls.settingsInput = settingsSection.append("textarea").attr("rows", 10).style("width", "90%").text("{}").classed("hidden", cat.current.schema);
+    //////////////////////////////////////////////////////////////////////
+    //text input section
+    /////////////////////////////////////////////////////////////////////
+    cat.controls.settingsInput = settingsSection.append("textarea").attr("rows", 10).style("width", "90%").text("{}");
 
-    cat.controls.settingsForm = settingsSection.append("div").attr("class", "settingsForm").append("form").classed("hidden", !cat.current.schema);
+    //////////////////////////////////////////////////////////////////////
+    //wrapper for the form
+    /////////////////////////////////////////////////////////////////////
+    cat.controls.settingsForm = settingsSection.append("div").attr("class", "settingsForm").append("form");
 
-    if (cat.current.schema) {
-      cat.settings.setStatus(cat, "unknown");
-      cat.settings.makeForm(cat, null);
-    }
+    //set the text/form settings for the first renderer
+    cat.settings.set(cat);
   }
 
   function renderChart(cat) {
@@ -204,6 +215,7 @@
     var submitSection = cat.controls.wrap.append("div").attr("class", "control-section");
 
     cat.controls.submitButton = submitSection.append("button").attr("class", "submit").text("Render Chart").on("click", function () {
+      cat.settings.sync(cat);
       loadLibrary(cat);
     });
   }
@@ -217,7 +229,7 @@
     initDataSelect(cat);
     initChartConfig(cat);
 
-    // minimize controls
+    // minimize controls - for later?
     /*
     cat.controls.minimize = controlWrap
       .append("div")
@@ -308,8 +320,6 @@
   }
 
   function makeForm(cat, obj) {
-    var version = cat.controls.versionSelect.node().value;
-
     var formLayout = [{
       type: "actions",
       items: [{
@@ -318,55 +328,28 @@
       }]
     }, "*"];
 
-    var schemaPath = cat.config.rootURL + "/" + cat.current.name + "/" + version + "/" + cat.current.schema;
-
-    var testPath = "../aeexplorer/settings-schema.json";
-    //d3.json(schemaPath, function(error, schemaObj) {
     d3.select(".settingsForm form").selectAll("*").remove();
-    d3.json(testPath, function (error, schemaObj) {
-      var myForm = $(".settingsForm form").jsonForm({
-        schema: schemaObj,
-        value: obj,
-        form: formLayout,
-        onSubmit: function onSubmit(errors, values) {
-          if (errors) {
-            cat.settings.setStatus(cat, "invalid");
-            cat.controls.settingsInput.node().value = JSON.stringify(cat.current.config);
-          } else {
-            cat.settings.setStatus(cat, "valid");
-            cat.current.config = values;
-            cat.controls.settingsInput.node().value = JSON.stringify(cat.current.config);
-          }
+    var myForm = $(".settingsForm form").jsonForm({
+      schema: cat.current.schemaObj,
+      value: obj,
+      form: formLayout,
+      onSubmit: function onSubmit(errors, values) {
+        if (errors) {
+          cat.settings.setStatus(cat, "invalid");
+          cat.current.config = values;
+          cat.controls.settingsInput.node().value = JSON.stringify(cat.current.config);
+        } else {
+          cat.settings.setStatus(cat, "valid");
+          cat.current.config = values;
+          cat.controls.settingsInput.node().value = JSON.stringify(cat.current.config);
         }
-      });
-      //format the form a little bit so that we can dodge bootstrap
-      d3.select(".settingsForm form .form-actions input").text("Validate Settings").property("value", "Validate Settings");
-      d3.selectAll("i.icon-plus-sign").append("span").text("+");
-      d3.selectAll("i.icon-minus-sign").append("span").text("-");
-
-      console.log(myForm);
+      }
     });
-  }
-
-  function reset(cat) {
-    //reset the current settings object to the default
-    //select the text settings view
-    //delete the form view
-  }
-
-  function sync(cat) {
-    var settingType = cat.controls.settingsType.filter(function (d) {
-      return d3.select(this).property("checked");
-    }).node().value;
-
-    // set current config
-    if (settingType == "text") {
-      cat.current.config = JSON.parse(cat.controls.settingsInput.node().value);
-      cat.settings.makeForm(cat, cat.current.config);
-    } else if (settingType == "form") {
-      //this submits the form (thus saving the most recent object)
-      $(".settingsForm form").trigger("submit");
-    }
+    //handle submission with the "render chart" button
+    d3.select(".settingsForm form .form-actions input").remove();
+    //format the form a little bit so that we can dodge bootstrap
+    d3.selectAll("i.icon-plus-sign").text("+");
+    d3.selectAll("i.icon-minus-sign").text("-");
   }
 
   function setStatus(cat, statusVal) {
@@ -399,9 +382,70 @@
     cat.controls.settingsStatus.html(myStatus.symbol).style("color", myStatus.color).attr("title", myStatus.details);
   }
 
+  function validateSchema(cat) {
+    //  var Ajv = require('ajv');
+    //  var ajv = new Ajv(); // options can be passed, e.g. {allErrors: true}
+    //  var validate = ajv.compile(cat.);
+    //  console.log(validate)
+    return true;
+  }
+
+  function set(cat) {
+    // load the schema (if any) and see if it is validate
+    var version = cat.controls.versionSelect.node().value;
+    var schemaPath = cat.config.rootURL + "/" + cat.current.name + "/" + version + "/" + cat.current.schema;
+    var testPath = "../aeexplorer/settings-schema.json";
+    d3.json(schemaPath, function (error, schemaObj) {
+      //d3.json(testPath, function(error, schemaObj) {
+      if (error) {
+        console.log("No schema loaded.");
+        cat.current.hasValidSchema = false;
+        cat.current.settingsView = "text";
+        cat.current.schemaObj = null;
+        cat.settings.setStatus(cat, "no schema");
+      } else {
+        // attempt to validate the schema
+        console.log("Schema found ...");
+        cat.current.hasValidSchema = validateSchema(schemaObj);
+        cat.current.settingsView = cat.current.hasValidSchema ? "form" : "text";
+        cat.current.schemaObj = cat.current.hasValidSchema ? schemaObj : null;
+        cat.settings.setStatus(cat, cat.current.hasValidSchema ? "unknown" : "no schema");
+      }
+      console.log(cat.current);
+      //set the radio buttons
+      cat.controls.settingsTypeText.property("checked", cat.current.settingsView == "text");
+
+      cat.controls.settingsTypeForm.property("checked", cat.current.settingsView == "form").property("disabled", !cat.current.hasValidSchema);
+
+      // Show/Hide sections
+      console.log(cat.current.settingsView);
+      cat.controls.settingsInput.classed("hidden", cat.current.settingsView != "text");
+      cat.controls.settingsForm.classed("hidden", cat.current.settingsView != "form");
+
+      if (cat.current.hasValidSchema) {
+        console.log("... and it is valid. Making a nice form.");
+        makeForm(cat);
+      }
+    });
+  }
+
+  function sync(cat) {
+    // set current config
+    if (cat.current.settingsView == "text") {
+      cat.current.config = JSON.parse(cat.controls.settingsInput.node().value);
+      if (cat.current.hasValidSchema) {
+        makeForm(cat, cat.current.config);
+      }
+    } else if (cat.current.settingsView == "form") {
+      //this submits the form which:
+      //- saves the current object
+      //- updates the hidden text view
+      $(".settingsForm form").trigger("submit");
+    }
+  }
+
   var settings = {
-    makeForm: makeForm,
-    reset: reset,
+    set: set,
     sync: sync,
     setStatus: setStatus
   };
