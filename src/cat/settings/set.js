@@ -21,6 +21,8 @@ export function set(cat) {
       cat.current.hasValidSchema = false;
       cat.current.settingsView = "text";
       cat.current.schemaObj = null;
+      cat.controls.settingsInput.value = "{}";
+      cat.current.config = {};
       //cat.settings.setStatus(cat, "no schema");
     } else {
       // attempt to validate the schema
