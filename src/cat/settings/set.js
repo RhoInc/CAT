@@ -21,17 +21,17 @@ export function set(cat) {
       cat.current.hasValidSchema = false;
       cat.current.settingsView = "text";
       cat.current.schemaObj = null;
-      cat.settings.setStatus(cat, "no schema");
+      //cat.settings.setStatus(cat, "no schema");
     } else {
       // attempt to validate the schema
       console.log("Schema found ...");
       cat.current.hasValidSchema = validateSchema(schemaObj);
       cat.current.settingsView = cat.current.hasValidSchema ? "form" : "text";
       cat.current.schemaObj = cat.current.hasValidSchema ? schemaObj : null;
-      cat.settings.setStatus(
-        cat,
-        cat.current.hasValidSchema ? "unknown" : "no schema"
-      );
+      //  cat.settings.setStatus(
+      //    cat,
+      //    cat.current.hasValidSchema ? "unknown" : "no schema"
+      //  );
     }
     console.log(cat.current);
     //set the radio buttons

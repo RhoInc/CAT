@@ -1,5 +1,4 @@
 import { initRendererSelect } from "./initRendererSelect";
-import { initRendererConfig } from "./initRendererConfig";
 import { initDataSelect } from "./initDataSelect";
 import { initChartConfig } from "./initChartConfig";
 import { initSubmit } from "./initSubmit";
@@ -9,7 +8,6 @@ export function init(cat) {
   cat.controls.wrap.append("h2").text("Charting Application Tester 😼");
   initSubmit(cat);
   initRendererSelect(cat);
-  initRendererConfig(cat);
   initDataSelect(cat);
   initChartConfig(cat);
 

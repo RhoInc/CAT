@@ -21,13 +21,13 @@ export function makeForm(cat, obj) {
     form: formLayout,
     onSubmit: function(errors, values) {
       if (errors) {
-        cat.settings.setStatus(cat, "invalid");
+        //cat.settings.setStatus(cat, "invalid");
         cat.current.config = values;
         cat.controls.settingsInput.node().value = JSON.stringify(
           cat.current.config
         );
       } else {
-        cat.settings.setStatus(cat, "valid");
+        //cat.settings.setStatus(cat, "valid");
         cat.current.config = values;
         cat.controls.settingsInput.node().value = JSON.stringify(
           cat.current.config

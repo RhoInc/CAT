@@ -4,16 +4,11 @@ export function initChartConfig(cat) {
     .attr("class", "control-section");
   var settingsHeading = settingsSection
     .append("h3")
-    .html("4. Customize the Chart ");
-  cat.controls.settingsRefresh = settingsHeading
-    .append("span")
-    .html("&#x21bb;")
-    .on("click", function() {
-      cat.settings.set(cat);
-    });
+    .html("3. Customize the Chart ");
 
   settingsSection.append("span").text("Settings: ");
 
+  /*
   //////////////////////////////////////
   //initialize the config status icon
   //////////////////////////////////////
@@ -23,6 +18,7 @@ export function initChartConfig(cat) {
     .style("float", "right")
     .style("cursor", "pointer");
   settingsSection.append("br");
+*/
 
   //////////////////////////////////////////////////////////////////////
   //radio buttons to toggle between "text" and "form" based settings

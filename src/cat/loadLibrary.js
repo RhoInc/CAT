@@ -1,3 +1,4 @@
+import { scriptLoader } from "../util/scriptLoader";
 import { loadRenderer } from "./loadRenderer";
 
 export function loadLibrary(cat) {
@@ -27,6 +28,32 @@ export function loadLibrary(cat) {
   link.rel = "stylesheet";
   document.getElementsByTagName("head")[0].appendChild(link);
 
+  var loader = new scriptLoader();
+  loader.require(rendererPath, {
+    async: true,
+    success: function() {
+      cat.statusDiv
+        .append("div")
+        .html(
+          "The " +
+            version +
+            " branch of <i>Webcharts</i> loaded as expected. Loading the renderer ..."
+        );
+      loadRenderer(cat);
+    },
+    failure: function() {
+      cat.statusDiv
+        .append("div")
+        .html(
+          "The " +
+            version +
+            " branch of Webcharts did NOT load. Aborting chart renderering. Are you sure the specified version exists?"
+        )
+        .classed("error", true);
+    }
+  });
+
+  /*
   var scriptReady = false;
   var script = document.createElement("script");
   script.type = "text/javascript";
@@ -39,4 +66,5 @@ export function loadLibrary(cat) {
   };
   var tag = document.getElementsByTagName("script")[0];
   tag.parentNode.insertBefore(script, tag);
+*/
 }

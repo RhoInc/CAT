@@ -25,62 +25,65 @@
   function initRendererSelect(cat) {
     var rendererSection = cat.controls.wrap.append("div").attr("class", "control-section section1");
 
-    rendererSection.append("h3").text("1. Choose a Chart Type");
+    rendererSection.append("h3").text("1. Choose a Charting Library");
+    rendererSection.append("span").text("Library: ");
+
     cat.controls.rendererSelect = rendererSection.append("select");
     cat.controls.rendererSelect.selectAll("option").data(cat.config.renderers).enter().append("option").text(function (d) {
       return d.name;
     });
+    var rendererSection = cat.controls.wrap.append("div").attr("class", "control-section section2");
 
     cat.controls.rendererSelect.on("change", function (d) {
       cat.current = d3.select(this).select("option:checked").data()[0];
 
       //update the chart type configuration to the defaults for the selected renderer
       cat.controls.mainFunction.node().value = cat.current.main;
+      cat.controls.versionSelect.node().value = "master";
       cat.controls.subFunction.node().value = cat.current.sub;
       cat.controls.schema.node().value = cat.current.schema;
 
       //Re-initialize the chart config section
       cat.settings.set(cat);
     });
-  }
 
-  function initRendererConfig(cat) {
-    var versionSection = cat.controls.wrap.append("div").attr("class", "control-section section2");
-
-    versionSection.append("h3").text("2. Configure the Chart Type");
-    versionSection.append("span").text("Version: ");
-    cat.controls.versionSelect = versionSection.append("input");
+    rendererSection.append("span").text("Version: ");
+    cat.controls.versionSelect = rendererSection.append("input");
     cat.controls.versionSelect.node().value = "master";
-    versionSection.append("br");
+    cat.controls.versionSelect.on("change", function () {
+      //checkVersion()
+      cat.settings.set(cat);
+    });
+    rendererSection.append("br");
 
-    versionSection.append("a").text("More Options").style("text-decoration", "underline").style("color", "blue").style("cursor", "pointer").on("click", function () {
+    rendererSection.append("a").text("More Options").style("text-decoration", "underline").style("color", "blue").style("cursor", "pointer").on("click", function () {
       d3.select(this).remove();
-      versionSection.selectAll("*").classed("hidden", false);
+      rendererSection.selectAll("*").classed("hidden", false);
     });
 
     //specify the code to create the chart
-    versionSection.append("span").text(" Init: ").classed("hidden", true);
-    cat.controls.mainFunction = versionSection.append("input").classed("hidden", true);
+    rendererSection.append("span").text(" Init: ").classed("hidden", true);
+    cat.controls.mainFunction = rendererSection.append("input").classed("hidden", true);
     cat.controls.mainFunction.node().value = cat.current.main;
-    versionSection.append("span").text(".").classed("hidden", true);
-    cat.controls.subFunction = versionSection.append("input").classed("hidden", true);
+    rendererSection.append("span").text(".").classed("hidden", true);
+    cat.controls.subFunction = rendererSection.append("input").classed("hidden", true);
     cat.controls.subFunction.node().value = cat.current.sub;
-    versionSection.append("br").classed("hidden", true);
+    rendererSection.append("br").classed("hidden", true);
     //Webcharts versionSelect
-    versionSection.append("span").text("Webcharts Version: ").classed("hidden", true);
-    cat.controls.libraryVersion = versionSection.append("input").classed("hidden", true);
+    rendererSection.append("span").text("Webcharts Version: ").classed("hidden", true);
+    cat.controls.libraryVersion = rendererSection.append("input").classed("hidden", true);
     cat.controls.libraryVersion.node().value = "master";
-    versionSection.append("br").classed("hidden", true);
+    rendererSection.append("br").classed("hidden", true);
 
-    versionSection.append("span").text("Schema: ").classed("hidden", true);
-    cat.controls.schema = versionSection.append("input").classed("hidden", true);
+    rendererSection.append("span").text("Schema: ").classed("hidden", true);
+    cat.controls.schema = rendererSection.append("input").classed("hidden", true);
     cat.controls.schema.node().value = cat.current.schema;
-    versionSection.append("br").classed("hidden", true);
+    rendererSection.append("br").classed("hidden", true);
   }
 
   function initDataSelect(cat) {
     var dataSection = cat.controls.wrap.append("div").attr("class", "control-section");
-    dataSection.append("h3").text("3. Choose a data Set");
+    dataSection.append("h3").text("2. Choose a data Set");
 
     cat.controls.dataFileSelect = dataSection.append("select");
     cat.controls.dataFileSelect.selectAll("option").data(cat.config.dataFiles).enter().append("option").text(function (d) {
@@ -90,18 +93,21 @@
 
   function initChartConfig(cat) {
     var settingsSection = cat.controls.wrap.append("div").attr("class", "control-section");
-    var settingsHeading = settingsSection.append("h3").html("4. Customize the Chart ");
-    cat.controls.settingsRefresh = settingsHeading.append("span").html("&#x21bb;").on("click", function () {
-      cat.settings.set(cat);
-    });
+    var settingsHeading = settingsSection.append("h3").html("3. Customize the Chart ");
 
     settingsSection.append("span").text("Settings: ");
 
+    /*
     //////////////////////////////////////
     //initialize the config status icon
     //////////////////////////////////////
-    cat.controls.settingsStatus = settingsSection.append("div").style("font-size", "1.5em").style("float", "right").style("cursor", "pointer");
+    cat.controls.settingsStatus = settingsSection
+      .append("div")
+      .style("font-size", "1.5em")
+      .style("float", "right")
+      .style("cursor", "pointer");
     settingsSection.append("br");
+    */
 
     //////////////////////////////////////////////////////////////////////
     //radio buttons to toggle between "text" and "form" based settings
@@ -141,21 +147,256 @@
     cat.settings.set(cat);
   }
 
+  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+    return typeof obj;
+  } : function (obj) {
+    return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+  };
+
+  var asyncGenerator = function () {
+    function AwaitValue(value) {
+      this.value = value;
+    }
+
+    function AsyncGenerator(gen) {
+      var front, back;
+
+      function send(key, arg) {
+        return new Promise(function (resolve, reject) {
+          var request = {
+            key: key,
+            arg: arg,
+            resolve: resolve,
+            reject: reject,
+            next: null
+          };
+
+          if (back) {
+            back = back.next = request;
+          } else {
+            front = back = request;
+            resume(key, arg);
+          }
+        });
+      }
+
+      function resume(key, arg) {
+        try {
+          var result = gen[key](arg);
+          var value = result.value;
+
+          if (value instanceof AwaitValue) {
+            Promise.resolve(value.value).then(function (arg) {
+              resume("next", arg);
+            }, function (arg) {
+              resume("throw", arg);
+            });
+          } else {
+            settle(result.done ? "return" : "normal", result.value);
+          }
+        } catch (err) {
+          settle("throw", err);
+        }
+      }
+
+      function settle(type, value) {
+        switch (type) {
+          case "return":
+            front.resolve({
+              value: value,
+              done: true
+            });
+            break;
+
+          case "throw":
+            front.reject(value);
+            break;
+
+          default:
+            front.resolve({
+              value: value,
+              done: false
+            });
+            break;
+        }
+
+        front = front.next;
+
+        if (front) {
+          resume(front.key, front.arg);
+        } else {
+          back = null;
+        }
+      }
+
+      this._invoke = send;
+
+      if (typeof gen.return !== "function") {
+        this.return = undefined;
+      }
+    }
+
+    if (typeof Symbol === "function" && Symbol.asyncIterator) {
+      AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
+        return this;
+      };
+    }
+
+    AsyncGenerator.prototype.next = function (arg) {
+      return this._invoke("next", arg);
+    };
+
+    AsyncGenerator.prototype.throw = function (arg) {
+      return this._invoke("throw", arg);
+    };
+
+    AsyncGenerator.prototype.return = function (arg) {
+      return this._invoke("return", arg);
+    };
+
+    return {
+      wrap: function (fn) {
+        return function () {
+          return new AsyncGenerator(fn.apply(this, arguments));
+        };
+      },
+      await: function (value) {
+        return new AwaitValue(value);
+      }
+    };
+  }();
+
+  // Nice script loader from here: https://stackoverflow.com/questions/538745/how-to-tell-if-a-script-tag-failed-to-load
+
+  function scriptLoader() {}
+
+  scriptLoader.prototype = {
+    timer: function timer(times, // number of times to try
+    delay, // delay per try
+    delayMore, // extra delay per try (additional to delay)
+    test, // called each try, timer stops if this returns true
+    failure, // called on failure
+    result // used internally, shouldn't be passed
+    ) {
+      var me = this;
+      if (times == -1 || times > 0) {
+        setTimeout(function () {
+          result = test() ? 1 : 0;
+          me.timer(result ? 0 : times > 0 ? --times : times, delay + (delayMore ? delayMore : 0), delayMore, test, failure, result);
+        }, result || delay < 0 ? 0.1 : delay);
+      } else if (typeof failure == "function") {
+        setTimeout(failure, 1);
+      }
+    },
+
+    addEvent: function addEvent(el, eventName, eventFunc) {
+      if ((typeof el === "undefined" ? "undefined" : _typeof(el)) != "object") {
+        return false;
+      }
+
+      if (el.addEventListener) {
+        el.addEventListener(eventName, eventFunc, false);
+        return true;
+      }
+
+      if (el.attachEvent) {
+        el.attachEvent("on" + eventName, eventFunc);
+        return true;
+      }
+
+      return false;
+    },
+
+    // add script to dom
+    require: function require(url, args) {
+      var me = this;
+      args = args || {};
+
+      var scriptTag = document.createElement("script");
+      var headTag = document.getElementsByTagName("head")[0];
+      if (!headTag) {
+        return false;
+      }
+
+      setTimeout(function () {
+        var f = typeof args.success == "function" ? args.success : function () {};
+        args.failure = typeof args.failure == "function" ? args.failure : function () {};
+        var fail = function fail() {
+          if (!scriptTag.__es) {
+            scriptTag.__es = true;
+            scriptTag.id = "failed";
+            args.failure(scriptTag);
+          }
+        };
+        scriptTag.onload = function () {
+          scriptTag.id = "loaded";
+          f(scriptTag);
+        };
+        scriptTag.type = "text/javascript";
+        scriptTag.async = typeof args.async == "boolean" ? args.async : false;
+        scriptTag.charset = "utf-8";
+        me.__es = false;
+        me.addEvent(scriptTag, "error", fail); // when supported
+        // when error event is not supported fall back to timer
+        me.timer(15, 1000, 0, function () {
+          return scriptTag.id == "loaded";
+        }, function () {
+          if (scriptTag.id != "loaded") {
+            fail();
+          }
+        });
+        scriptTag.src = url;
+        setTimeout(function () {
+          try {
+            headTag.appendChild(scriptTag);
+          } catch (e) {
+            fail();
+          }
+        }, 1);
+      }, typeof args.delay == "number" ? args.delay : 1);
+      return true;
+    }
+  };
+
   function renderChart(cat) {
     var rendererObj = cat.controls.rendererSelect.selectAll("option:checked").data()[0];
-    cat.chartWrap.selectAll("*").remove();
     cat.settings.sync(cat);
     console.log(cat.current);
     //render the new chart with the current settings
     var dataFile = cat.controls.dataFileSelect.node().value;
     var dataFilePath = cat.config.dataURL + dataFile;
-    d3.csv(dataFilePath, function (data) {
-      if (cat.current.sub) {
-        var myChart = window[cat.current.main][cat.current.sub](".cat-chart", cat.current.config);
+    var version = cat.controls.versionSelect.node().value;
+    d3.csv(dataFilePath, function (error, data) {
+      if (error) {
+        cat.statusDiv.html("Failed to load data from <i>" + dataFilePath + "</i>. Aborting chart renderering. ").classed("error", true);
       } else {
-        var myChart = window[cat.current.main](".cat-chart", cat.current.config);
+        cat.statusDiv.append("div").html("Loaded data from <i>" + dataFilePath + "</i>. Initializing the chart ...  ");
+
+        if (cat.current.sub) {
+          var myChart = window[cat.current.main][cat.current.sub](".cat-chart", cat.current.config);
+          cat.statusDiv.append("div").html("Rendered the chart by calling <i>" + cat.current.main + "." + cat.current.sub + "()</i> with the following settings:<br><small><i>" + JSON.stringify(cat.current.config) + "</small></i><br>Initializing the chart with the loaded data next ...").classed("info", true);
+        } else {
+          var myChart = window[cat.current.main](".cat-chart .chart", cat.current.config);
+
+          cat.statusDiv.append("div").html("Creating the chart by calling <i>" + cat.current.main + "()</i> with the following settings:<br><small><i>" + JSON.stringify(cat.current.config) + "</small></i><br> Initializing the chart with the loaded data next ...").classed("info", true);
+        }
+        try {
+          myChart.init(data);
+        } catch (err) {
+          cat.statusDiv.append("div").html("There might've been some problems initializing the chart. Errors include:<br><small><i>" + err + "</i></small>").classed("error", true);
+        } finally {
+          cat.statusDiv.selectAll("div:not(.error)").classed("hidden", true);
+          cat.statusDiv.append("div").html("All Done. Your <i>" + cat.current.name + "</i> should be below. <span class='details'>Show full log</span>").classed("info", true);
+
+          cat.statusDiv.select("span.details").style("cursor", "pointer").style("text-decoration", "underline").style("float", "right").on("click", function () {
+            console.log("clicked");
+            d3.select(this).remove();
+            cat.statusDiv.selectAll("div").classed("hidden", false);
+          });
+
+          cat.statusDiv.append("div").classed("hidden", true).classed("info", true).html("&#9432; Just because there are no errors doesn't mean there can't be problems. If things look strange, it might be a problem with the settings/data combo or with the renderer itself.");
+        }
       }
-      myChart.init(data);
     });
   }
 
@@ -172,18 +413,17 @@
       document.getElementsByTagName("head")[0].appendChild(link);
     }
 
-    var scriptReady = false;
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    script.src = rendererPath;
-    script.onload = script.onreadystatechange = function () {
-      if (!scriptReady && (!this.readyState || this.readyState == "complete")) {
-        scriptReady = true;
+    var loader = new scriptLoader();
+    loader.require(rendererPath, {
+      async: true,
+      success: function success() {
+        cat.statusDiv.append("div").html("The " + version + " branch of the <i>" + rendererObj.name + "</i> library loaded from <i>" + rendererPath + "</i>. Loading the data ...");
         renderChart(cat);
+      },
+      failure: function failure() {
+        cat.statusDiv.append("div").html("The " + version + " branch of the <i>" + rendererObj.name + "</i> library did NOT load from <i>" + rendererPath + "</i> Aborting chart renderering. Are you sure the specified version exists?").classed("error", true);
       }
-    };
-    var tag = document.getElementsByTagName("script")[0];
-    tag.parentNode.insertBefore(script, tag);
+    });
   }
 
   function loadLibrary(cat) {
@@ -197,11 +437,24 @@
     link.rel = "stylesheet";
     document.getElementsByTagName("head")[0].appendChild(link);
 
+    var loader = new scriptLoader();
+    loader.require(rendererPath, {
+      async: true,
+      success: function success() {
+        cat.statusDiv.append("div").html("The " + version + " branch of <i>Webcharts</i> loaded as expected. Loading the renderer ...");
+        loadRenderer(cat);
+      },
+      failure: function failure() {
+        cat.statusDiv.append("div").html("The " + version + " branch of Webcharts did NOT load. Aborting chart renderering. Are you sure the specified version exists?").classed("error", true);
+      }
+    });
+
+    /*
     var scriptReady = false;
     var script = document.createElement("script");
     script.type = "text/javascript";
     script.src = rendererPath;
-    script.onload = script.onreadystatechange = function () {
+    script.onload = script.onreadystatechange = function() {
       if (!scriptReady && (!this.readyState || this.readyState == "complete")) {
         scriptReady = true;
         loadRenderer(cat);
@@ -209,6 +462,7 @@
     };
     var tag = document.getElementsByTagName("script")[0];
     tag.parentNode.insertBefore(script, tag);
+    */
   }
 
   function initSubmit(cat) {
@@ -216,6 +470,10 @@
 
     cat.controls.submitButton = submitSection.append("button").attr("class", "submit").text("Render Chart").on("click", function () {
       cat.settings.sync(cat);
+      cat.chartWrap.selectAll("*").remove();
+      cat.statusDiv = cat.chartWrap.append("div").attr("class", "status");
+      cat.statusDiv.append("div").text("Starting to render the chart ... ").classed("info", true);
+      cat.chartWrap.append("div").attr("class", "chart");
       loadLibrary(cat);
     });
   }
@@ -225,7 +483,6 @@
     cat.controls.wrap.append("h2").text("Charting Application Tester 😼");
     initSubmit(cat);
     initRendererSelect(cat);
-    initRendererConfig(cat);
     initDataSelect(cat);
     initChartConfig(cat);
 
@@ -335,11 +592,11 @@
       form: formLayout,
       onSubmit: function onSubmit(errors, values) {
         if (errors) {
-          cat.settings.setStatus(cat, "invalid");
+          //cat.settings.setStatus(cat, "invalid");
           cat.current.config = values;
           cat.controls.settingsInput.node().value = JSON.stringify(cat.current.config);
         } else {
-          cat.settings.setStatus(cat, "valid");
+          //cat.settings.setStatus(cat, "valid");
           cat.current.config = values;
           cat.controls.settingsInput.node().value = JSON.stringify(cat.current.config);
         }
@@ -383,6 +640,7 @@
   }
 
   function validateSchema(cat) {
+    // consider: http://epoberezkin.github.io/ajv/#getting-started
     //  var Ajv = require('ajv');
     //  var ajv = new Ajv(); // options can be passed, e.g. {allErrors: true}
     //  var validate = ajv.compile(cat.);
@@ -390,7 +648,7 @@
     return true;
   }
 
-  function set(cat) {
+  function set$1(cat) {
     // load the schema (if any) and see if it is validate
     var version = cat.controls.versionSelect.node().value;
     var schemaPath = cat.config.rootURL + "/" + cat.current.name + "/" + version + "/" + cat.current.schema;
@@ -402,14 +660,17 @@
         cat.current.hasValidSchema = false;
         cat.current.settingsView = "text";
         cat.current.schemaObj = null;
-        cat.settings.setStatus(cat, "no schema");
+        //cat.settings.setStatus(cat, "no schema");
       } else {
         // attempt to validate the schema
         console.log("Schema found ...");
         cat.current.hasValidSchema = validateSchema(schemaObj);
         cat.current.settingsView = cat.current.hasValidSchema ? "form" : "text";
         cat.current.schemaObj = cat.current.hasValidSchema ? schemaObj : null;
-        cat.settings.setStatus(cat, cat.current.hasValidSchema ? "unknown" : "no schema");
+        //  cat.settings.setStatus(
+        //    cat,
+        //    cat.current.hasValidSchema ? "unknown" : "no schema"
+        //  );
       }
       console.log(cat.current);
       //set the radio buttons
@@ -445,7 +706,7 @@
   }
 
   var settings = {
-    set: set,
+    set: set$1,
     sync: sync,
     setStatus: setStatus
   };
