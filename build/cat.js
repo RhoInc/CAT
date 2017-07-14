@@ -1,5 +1,8 @@
-var cat = (function () {
-  'use strict';
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+  typeof define === 'function' && define.amd ? define(factory) :
+  (global.cat = factory());
+}(this, function () { 'use strict';
 
   function init() {
     //layout the cat
@@ -14,33 +17,386 @@ var cat = (function () {
   }
 
   function layout(cat) {
-    cat.controls.wrap = cat.wrap.append("div").attr("class", "cat-controls");
-    cat.chartWrap = cat.wrap.append("div").attr("class", "cat-chart");
-    cat.dataWrap = cat.wrap.append("div").attr("class", "cat-data");
+    cat.controls.wrap = cat.wrap.append("div").attr("class", "cat-controls section");
+    cat.chartWrap = cat.wrap.append("div").attr("class", "cat-chart section");
+    cat.dataWrap = cat.wrap.append("div").attr("class", "cat-data footer");
   }
+
+  function initRendererSelect(cat) {
+    var rendererSection = cat.controls.wrap.append("div").attr("class", "control-section section1");
+
+    rendererSection.append("h3").text("1. Choose a Charting Library");
+    rendererSection.append("span").text("Library: ");
+
+    cat.controls.rendererSelect = rendererSection.append("select");
+    cat.controls.rendererSelect.selectAll("option").data(cat.config.renderers).enter().append("option").text(function (d) {
+      return d.name;
+    });
+    var rendererSection = cat.controls.wrap.append("div").attr("class", "control-section section2");
+
+    cat.controls.rendererSelect.on("change", function (d) {
+      cat.current = d3.select(this).select("option:checked").data()[0];
+
+      //update the chart type configuration to the defaults for the selected renderer
+      cat.controls.mainFunction.node().value = cat.current.main;
+      cat.controls.versionSelect.node().value = "master";
+      cat.controls.subFunction.node().value = cat.current.sub;
+      cat.controls.schema.node().value = cat.current.schema;
+
+      //Re-initialize the chart config section
+      cat.settings.set(cat);
+    });
+
+    rendererSection.append("span").text("Version: ");
+    cat.controls.versionSelect = rendererSection.append("input");
+    cat.controls.versionSelect.node().value = "master";
+    cat.controls.versionSelect.on("change", function () {
+      //checkVersion()
+      cat.settings.set(cat);
+    });
+    rendererSection.append("br");
+
+    rendererSection.append("a").text("More Options").style("text-decoration", "underline").style("color", "blue").style("cursor", "pointer").on("click", function () {
+      d3.select(this).remove();
+      rendererSection.selectAll("*").classed("hidden", false);
+    });
+
+    //specify the code to create the chart
+    rendererSection.append("span").text(" Init: ").classed("hidden", true);
+    cat.controls.mainFunction = rendererSection.append("input").classed("hidden", true);
+    cat.controls.mainFunction.node().value = cat.current.main;
+    rendererSection.append("span").text(".").classed("hidden", true);
+    cat.controls.subFunction = rendererSection.append("input").classed("hidden", true);
+    cat.controls.subFunction.node().value = cat.current.sub;
+    rendererSection.append("br").classed("hidden", true);
+    //Webcharts versionSelect
+    rendererSection.append("span").text("Webcharts Version: ").classed("hidden", true);
+    cat.controls.libraryVersion = rendererSection.append("input").classed("hidden", true);
+    cat.controls.libraryVersion.node().value = "master";
+    rendererSection.append("br").classed("hidden", true);
+
+    rendererSection.append("span").text("Schema: ").classed("hidden", true);
+    cat.controls.schema = rendererSection.append("input").classed("hidden", true);
+    cat.controls.schema.node().value = cat.current.schema;
+    rendererSection.append("br").classed("hidden", true);
+  }
+
+  function initDataSelect(cat) {
+    var dataSection = cat.controls.wrap.append("div").attr("class", "control-section");
+    dataSection.append("h3").text("2. Choose a data Set");
+
+    cat.controls.dataFileSelect = dataSection.append("select");
+    cat.controls.dataFileSelect.selectAll("option").data(cat.config.dataFiles).enter().append("option").text(function (d) {
+      return d;
+    });
+  }
+
+  function initChartConfig(cat) {
+    var settingsSection = cat.controls.wrap.append("div").attr("class", "control-section");
+    var settingsHeading = settingsSection.append("h3").html("3. Customize the Chart ");
+
+    settingsSection.append("span").text("Settings: ");
+
+    /*
+    //////////////////////////////////////
+    //initialize the config status icon
+    //////////////////////////////////////
+    cat.controls.settingsStatus = settingsSection
+      .append("div")
+      .style("font-size", "1.5em")
+      .style("float", "right")
+      .style("cursor", "pointer");
+    settingsSection.append("br");
+    */
+
+    //////////////////////////////////////////////////////////////////////
+    //radio buttons to toggle between "text" and "form" based settings
+    /////////////////////////////////////////////////////////////////////
+    cat.controls.settingsTypeText = settingsSection.append("input").attr("class", "radio").property("type", "radio").property("name", "settingsType").property("value", "text");
+    settingsSection.append("span").text("text");
+    cat.controls.settingsTypeForm = settingsSection.append("input").attr("class", "radio").property("type", "radio").property("name", "settingsType").property("value", "form");
+    settingsSection.append("span").text("form");
+    cat.controls.settingsType = settingsSection.selectAll('input[type="radio"]');
+
+    cat.controls.settingsType.on("change", function (d) {
+      cat.settings.sync(cat); //first sync the current settings to both views
+
+      //then update to the new view, and update controls.
+      cat.current.settingsView = this.value; //
+      if (cat.current.settingsView == "text") {
+        cat.controls.settingsInput.classed("hidden", false);
+        cat.controls.settingsForm.classed("hidden", true);
+      } else if (cat.current.settingsView == "form") {
+        cat.controls.settingsInput.classed("hidden", true);
+        cat.controls.settingsForm.classed("hidden", false);
+      }
+    });
+    settingsSection.append("br");
+
+    //////////////////////////////////////////////////////////////////////
+    //text input section
+    /////////////////////////////////////////////////////////////////////
+    cat.controls.settingsInput = settingsSection.append("textarea").attr("rows", 10).style("width", "90%").text("{}");
+
+    //////////////////////////////////////////////////////////////////////
+    //wrapper for the form
+    /////////////////////////////////////////////////////////////////////
+    cat.controls.settingsForm = settingsSection.append("div").attr("class", "settingsForm").append("form");
+
+    //set the text/form settings for the first renderer
+    cat.settings.set(cat);
+  }
+
+  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+    return typeof obj;
+  } : function (obj) {
+    return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+  };
+
+  var asyncGenerator = function () {
+    function AwaitValue(value) {
+      this.value = value;
+    }
+
+    function AsyncGenerator(gen) {
+      var front, back;
+
+      function send(key, arg) {
+        return new Promise(function (resolve, reject) {
+          var request = {
+            key: key,
+            arg: arg,
+            resolve: resolve,
+            reject: reject,
+            next: null
+          };
+
+          if (back) {
+            back = back.next = request;
+          } else {
+            front = back = request;
+            resume(key, arg);
+          }
+        });
+      }
+
+      function resume(key, arg) {
+        try {
+          var result = gen[key](arg);
+          var value = result.value;
+
+          if (value instanceof AwaitValue) {
+            Promise.resolve(value.value).then(function (arg) {
+              resume("next", arg);
+            }, function (arg) {
+              resume("throw", arg);
+            });
+          } else {
+            settle(result.done ? "return" : "normal", result.value);
+          }
+        } catch (err) {
+          settle("throw", err);
+        }
+      }
+
+      function settle(type, value) {
+        switch (type) {
+          case "return":
+            front.resolve({
+              value: value,
+              done: true
+            });
+            break;
+
+          case "throw":
+            front.reject(value);
+            break;
+
+          default:
+            front.resolve({
+              value: value,
+              done: false
+            });
+            break;
+        }
+
+        front = front.next;
+
+        if (front) {
+          resume(front.key, front.arg);
+        } else {
+          back = null;
+        }
+      }
+
+      this._invoke = send;
+
+      if (typeof gen.return !== "function") {
+        this.return = undefined;
+      }
+    }
+
+    if (typeof Symbol === "function" && Symbol.asyncIterator) {
+      AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
+        return this;
+      };
+    }
+
+    AsyncGenerator.prototype.next = function (arg) {
+      return this._invoke("next", arg);
+    };
+
+    AsyncGenerator.prototype.throw = function (arg) {
+      return this._invoke("throw", arg);
+    };
+
+    AsyncGenerator.prototype.return = function (arg) {
+      return this._invoke("return", arg);
+    };
+
+    return {
+      wrap: function (fn) {
+        return function () {
+          return new AsyncGenerator(fn.apply(this, arguments));
+        };
+      },
+      await: function (value) {
+        return new AwaitValue(value);
+      }
+    };
+  }();
+
+  // Nice script loader from here: https://stackoverflow.com/questions/538745/how-to-tell-if-a-script-tag-failed-to-load
+
+  function scriptLoader() {}
+
+  scriptLoader.prototype = {
+    timer: function timer(times, // number of times to try
+    delay, // delay per try
+    delayMore, // extra delay per try (additional to delay)
+    test, // called each try, timer stops if this returns true
+    failure, // called on failure
+    result // used internally, shouldn't be passed
+    ) {
+      var me = this;
+      if (times == -1 || times > 0) {
+        setTimeout(function () {
+          result = test() ? 1 : 0;
+          me.timer(result ? 0 : times > 0 ? --times : times, delay + (delayMore ? delayMore : 0), delayMore, test, failure, result);
+        }, result || delay < 0 ? 0.1 : delay);
+      } else if (typeof failure == "function") {
+        setTimeout(failure, 1);
+      }
+    },
+
+    addEvent: function addEvent(el, eventName, eventFunc) {
+      if ((typeof el === "undefined" ? "undefined" : _typeof(el)) != "object") {
+        return false;
+      }
+
+      if (el.addEventListener) {
+        el.addEventListener(eventName, eventFunc, false);
+        return true;
+      }
+
+      if (el.attachEvent) {
+        el.attachEvent("on" + eventName, eventFunc);
+        return true;
+      }
+
+      return false;
+    },
+
+    // add script to dom
+    require: function require(url, args) {
+      var me = this;
+      args = args || {};
+
+      var scriptTag = document.createElement("script");
+      var headTag = document.getElementsByTagName("head")[0];
+      if (!headTag) {
+        return false;
+      }
+
+      setTimeout(function () {
+        var f = typeof args.success == "function" ? args.success : function () {};
+        args.failure = typeof args.failure == "function" ? args.failure : function () {};
+        var fail = function fail() {
+          if (!scriptTag.__es) {
+            scriptTag.__es = true;
+            scriptTag.id = "failed";
+            args.failure(scriptTag);
+          }
+        };
+        scriptTag.onload = function () {
+          scriptTag.id = "loaded";
+          f(scriptTag);
+        };
+        scriptTag.type = "text/javascript";
+        scriptTag.async = typeof args.async == "boolean" ? args.async : false;
+        scriptTag.charset = "utf-8";
+        me.__es = false;
+        me.addEvent(scriptTag, "error", fail); // when supported
+        // when error event is not supported fall back to timer
+        me.timer(15, 1000, 0, function () {
+          return scriptTag.id == "loaded";
+        }, function () {
+          if (scriptTag.id != "loaded") {
+            fail();
+          }
+        });
+        scriptTag.src = url;
+        setTimeout(function () {
+          try {
+            headTag.appendChild(scriptTag);
+          } catch (e) {
+            fail();
+          }
+        }, 1);
+      }, typeof args.delay == "number" ? args.delay : 1);
+      return true;
+    }
+  };
 
   function renderChart(cat) {
     var rendererObj = cat.controls.rendererSelect.selectAll("option:checked").data()[0];
-    cat.chartWrap.selectAll("*").remove();
-
+    cat.settings.sync(cat);
+    console.log(cat.current);
     //render the new chart with the current settings
     var dataFile = cat.controls.dataFileSelect.node().value;
     var dataFilePath = cat.config.dataURL + dataFile;
-    var chartSettings = JSON.parse(cat.controls.settingsInput.node().value);
-    console.log("  Settings: " + cat.controls.settingsInput.node().value.replace(/\t/g, " ").replace(/\n| +(?= )/g, ""));
-    console.log("  Data: " + dataFile);
-    d3.csv(dataFilePath, function (data) {
-      console.log(rendererObj);
-      var mainFunction = cat.controls.mainFunction.node().value;
-      if (rendererObj.sub) {
-        console.log("sub");
-        var subFunction = cat.controls.subFunction.node().value;
-        var myChart = window[mainFunction][subFunction](".cat-chart", chartSettings);
+    var version = cat.controls.versionSelect.node().value;
+    d3.csv(dataFilePath, function (error, data) {
+      if (error) {
+        cat.statusDiv.html("Failed to load data from <i>" + dataFilePath + "</i>. Aborting chart renderering. ").classed("error", true);
       } else {
-        console.log("nosub");
-        var myChart = window[mainFunction](".cat-chart", chartSettings);
+        cat.statusDiv.append("div").html("Loaded data from <i>" + dataFilePath + "</i>. Initializing the chart ...  ");
+
+        if (cat.current.sub) {
+          var myChart = window[cat.current.main][cat.current.sub](".cat-chart", cat.current.config);
+          cat.statusDiv.append("div").html("Rendered the chart by calling <i>" + cat.current.main + "." + cat.current.sub + "()</i> with the following settings:<br><small><i>" + JSON.stringify(cat.current.config) + "</small></i><br>Initializing the chart with the loaded data next ...").classed("info", true);
+        } else {
+          var myChart = window[cat.current.main](".cat-chart .chart", cat.current.config);
+
+          cat.statusDiv.append("div").html("Creating the chart by calling <i>" + cat.current.main + "()</i> with the following settings:<br><small><i>" + JSON.stringify(cat.current.config) + "</small></i><br> Initializing the chart with the loaded data next ...").classed("info", true);
+        }
+        try {
+          myChart.init(data);
+        } catch (err) {
+          cat.statusDiv.append("div").html("There might've been some problems initializing the chart. Errors include:<br><small><i>" + err + "</i></small>").classed("error", true);
+        } finally {
+          cat.statusDiv.selectAll("div:not(.error)").classed("hidden", true);
+          cat.statusDiv.append("div").html("All Done. Your <i>" + cat.current.name + "</i> should be below. <span class='details'>Show full log</span>").classed("info", true);
+
+          cat.statusDiv.select("span.details").style("cursor", "pointer").style("text-decoration", "underline").style("float", "right").on("click", function () {
+            console.log("clicked");
+            d3.select(this).remove();
+            cat.statusDiv.selectAll("div").classed("hidden", false);
+          });
+
+          cat.statusDiv.append("div").classed("hidden", true).classed("info", true).html("&#9432; Just because there are no errors doesn't mean there can't be problems. If things look strange, it might be a problem with the settings/data combo or with the renderer itself.");
+        }
       }
-      myChart.init(data);
     });
   }
 
@@ -57,18 +413,17 @@ var cat = (function () {
       document.getElementsByTagName("head")[0].appendChild(link);
     }
 
-    var scriptReady = false;
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    script.src = rendererPath;
-    script.onload = script.onreadystatechange = function () {
-      if (!scriptReady && (!this.readyState || this.readyState == "complete")) {
-        scriptReady = true;
+    var loader = new scriptLoader();
+    loader.require(rendererPath, {
+      async: true,
+      success: function success() {
+        cat.statusDiv.append("div").html("The " + version + " branch of the <i>" + rendererObj.name + "</i> library loaded from <i>" + rendererPath + "</i>. Loading the data ...");
         renderChart(cat);
+      },
+      failure: function failure() {
+        cat.statusDiv.append("div").html("The " + version + " branch of the <i>" + rendererObj.name + "</i> library did NOT load from <i>" + rendererPath + "</i> Aborting chart renderering. Are you sure the specified version exists?").classed("error", true);
       }
-    };
-    var tag = document.getElementsByTagName("script")[0];
-    tag.parentNode.insertBefore(script, tag);
+    });
   }
 
   function loadLibrary(cat) {
@@ -82,11 +437,24 @@ var cat = (function () {
     link.rel = "stylesheet";
     document.getElementsByTagName("head")[0].appendChild(link);
 
+    var loader = new scriptLoader();
+    loader.require(rendererPath, {
+      async: true,
+      success: function success() {
+        cat.statusDiv.append("div").html("The " + version + " branch of <i>Webcharts</i> loaded as expected. Loading the renderer ...");
+        loadRenderer(cat);
+      },
+      failure: function failure() {
+        cat.statusDiv.append("div").html("The " + version + " branch of Webcharts did NOT load. Aborting chart renderering. Are you sure the specified version exists?").classed("error", true);
+      }
+    });
+
+    /*
     var scriptReady = false;
     var script = document.createElement("script");
     script.type = "text/javascript";
     script.src = rendererPath;
-    script.onload = script.onreadystatechange = function () {
+    script.onload = script.onreadystatechange = function() {
       if (!scriptReady && (!this.readyState || this.readyState == "complete")) {
         scriptReady = true;
         loadRenderer(cat);
@@ -94,66 +462,49 @@ var cat = (function () {
     };
     var tag = document.getElementsByTagName("script")[0];
     tag.parentNode.insertBefore(script, tag);
+    */
+  }
+
+  function initSubmit(cat) {
+    var submitSection = cat.controls.wrap.append("div").attr("class", "control-section");
+
+    cat.controls.submitButton = submitSection.append("button").attr("class", "submit").text("Render Chart").on("click", function () {
+      cat.settings.sync(cat);
+      cat.chartWrap.selectAll("*").remove();
+      cat.statusDiv = cat.chartWrap.append("div").attr("class", "status");
+      cat.statusDiv.append("div").text("Starting to render the chart ... ").classed("info", true);
+      cat.chartWrap.append("div").attr("class", "chart");
+      loadLibrary(cat);
+    });
   }
 
   function init$1(cat) {
-    var settings = cat.config;
-    var current = settings.renderers[0];
+    cat.current = cat.config.renderers[0];
+    cat.controls.wrap.append("h2").text("Charting Application Tester 😼");
+    initSubmit(cat);
+    initRendererSelect(cat);
+    initDataSelect(cat);
+    initChartConfig(cat);
 
-    //submit
-    cat.controls.submitButton = cat.controls.wrap.append("button").attr("class", "submit").text("Render Chart");
-
-    //Webcharts versionSelect
-    var libraryVersionWrap = cat.controls.wrap.append("div").attr("class", "webcharts-wrap");
-    libraryVersionWrap.append("span").text("Webcharts Version:");
-    cat.controls.libraryVersion = libraryVersionWrap.append("input");
-    cat.controls.libraryVersion.node().value = "master";
-
-    //Choose a renderer
-    var rendererWrap = cat.controls.wrap.append("div").attr("class", "control-wrap");
-    rendererWrap.append("span").text("Renderer:");
-    cat.controls.rendererSelect = rendererWrap.append("select");
-    cat.controls.rendererSelect.selectAll("option").data(settings.renderers).enter().append("option").text(function (d) {
-      return d.name;
-    });
-
-    cat.controls.rendererSelect.on("change", function (d) {
-      var current = d3.select(this).select("option:checked").data()[0];
-      cat.controls.mainFunction.node().value = current.main;
-      cat.controls.subFunction.node().value = current.sub;
-    });
-
-    //Choose a version
-    rendererWrap.append("span").text("  Version:");
-    cat.controls.versionSelect = rendererWrap.append("input");
-    cat.controls.versionSelect.node().value = "master";
-
-    //specify the code to create the chart
-    rendererWrap.append("span").text(" Init:");
-    cat.controls.mainFunction = rendererWrap.append("input");
-    cat.controls.mainFunction.node().value = current.main;
-    rendererWrap.append("span").text(".");
-    cat.controls.subFunction = rendererWrap.append("input");
-    cat.controls.subFunction.node().value = current.sub;
-
-    //Choose a data file
-    var datafileWrap = cat.controls.wrap.append("div").attr("class", "control-wrap");
-
-    datafileWrap.append("span").text("Data:");
-    cat.controls.dataFileSelect = datafileWrap.append("select");
-    cat.controls.dataFileSelect.selectAll("option").data(settings.dataFiles).enter().append("option").text(function (d) {
-      return d;
-    });
-
-    //Edit the settings
-    var settingsWrap = cat.controls.wrap.append("div").attr("class", "control-wrap");
-    settingsWrap.append("span").text("Settings:");
-    settingsWrap.append("br");
-    cat.controls.settingsInput = settingsWrap.append("textarea").attr("rows", 10).attr("cols", 50).text("{}");
-
-    cat.controls.submitButton.on("click", function () {
-      loadLibrary(cat);
-    });
+    // minimize controls - for later?
+    /*
+    cat.controls.minimize = controlWrap
+      .append("div")
+      .attr("class", "minimize")
+      .text("<<")
+      .style("float", "left")
+      .on("click", function() {
+        cat.controls.wrap.classed("hidden", true);
+        cat.wrap
+          .insert("div", ":first-child")
+          .attr("class", "maximize")
+          .text(">>")
+          .on("click", function() {
+            cat.controls.wrap.classed("hidden", false);
+            d3.select(this).remove();
+          });
+      });
+    */
   }
 
   var controls = {
@@ -163,36 +514,60 @@ var cat = (function () {
   var defaultSettings = {
     rootURL: "https://cdn.rawgit.com/RhoInc",
     renderers: [{
+      name: "aeexplorer",
+      main: "aeTable",
+      sub: "createChart",
+      css: "css/aeTable.css",
+      schema: "settings-schema.json"
+    }, {
       name: "web-codebook",
       main: "webcodebook",
       sub: "createChart",
-      css: "css/webcodebook.css"
+      css: "css/webcodebook.css",
+      schema: null
     }, {
       name: "webCharts",
       main: "webCharts",
       sub: "createChart",
-      css: "css/webcharts.css"
+      css: "css/webcharts.css",
+      schema: null
     }, {
-      name: "aeexplorer",
-      main: "aeTable",
-      sub: "createChart",
-      css: "css/aeTable.css"
-    }, { name: "aetimelines", main: "aeTimelines", sub: null, css: null }, { name: "safety-histogram", main: "safetyHistogram", sub: null, css: null }, {
+      name: "aetimelines",
+      main: "aeTimelines",
+      sub: null,
+      css: null,
+      schema: null
+    }, {
+      name: "safety-histogram",
+      main: "safetyHistogram",
+      sub: null,
+      css: null,
+      schema: null
+    }, {
       name: "safety-outlier-explorer",
       main: "safetyOutlierExplorer",
       sub: null,
-      css: null
+      css: null,
+      schema: null
     }, {
       name: "safety-results-over-time",
       main: "safetyResultsOverTime",
       sub: null,
-      css: null
+      css: null,
+      schema: null
     }, {
       name: "safety-shift-plot",
       main: "safetyShiftPlot",
       sub: null,
-      css: null
-    }, { name: "query-overview", main: "queryOverview", sub: null, css: null }],
+      css: null,
+      schema: null
+    }, {
+      name: "query-overview",
+      main: "queryOverview",
+      sub: null,
+      css: null,
+      schema: null
+    }],
     dataURL: "https://rhoinc.github.io/viz-library/data/",
     dataFiles: ["safetyData-queries/ADAE.csv", "safetyData-queries/ADBDS.csv", "safetyData/ADAE.csv", "safetyData/ADBDS.csv", "safetyData/AE.csv", "safetyData/DM.csv", "safetyData/LB.csv", "queries/queries.csv", "cars.csv", "climate_data.csv", "discrete_score.csv", "elements.csv", "ChickWeight.csv"]
   };
@@ -200,6 +575,143 @@ var cat = (function () {
   function setDefaults(cat) {
     cat.config = defaultSettings; // just ignore the user settings for the moment. Will set up merge later.
   }
+
+  function makeForm(cat, obj) {
+    var formLayout = [{
+      type: "actions",
+      items: [{
+        type: "submit",
+        title: "Submit"
+      }]
+    }, "*"];
+
+    d3.select(".settingsForm form").selectAll("*").remove();
+    var myForm = $(".settingsForm form").jsonForm({
+      schema: cat.current.schemaObj,
+      value: obj,
+      form: formLayout,
+      onSubmit: function onSubmit(errors, values) {
+        if (errors) {
+          //cat.settings.setStatus(cat, "invalid");
+          cat.current.config = values;
+          cat.controls.settingsInput.node().value = JSON.stringify(cat.current.config);
+        } else {
+          //cat.settings.setStatus(cat, "valid");
+          cat.current.config = values;
+          cat.controls.settingsInput.node().value = JSON.stringify(cat.current.config);
+        }
+      }
+    });
+    //handle submission with the "render chart" button
+    d3.select(".settingsForm form .form-actions input").remove();
+    //format the form a little bit so that we can dodge bootstrap
+    d3.selectAll("i.icon-plus-sign").text("+");
+    d3.selectAll("i.icon-minus-sign").text("-");
+  }
+
+  function setStatus(cat, statusVal) {
+    var statusOptions = [{
+      key: "valid",
+      symbol: "&#x2714;",
+      color: "green",
+      details: "Settings match the current schema. Click 'Render Chart' to draw the chart."
+    }, {
+      key: "invalid",
+      symbol: "&#x2718;",
+      color: "red",
+      details: "Settings do not match the current schema. You can still click 'Render Chart' to try to draw the chart, but it might not work as expected."
+    }, {
+      key: "unknown",
+      symbol: "?",
+      color: "blue",
+      details: "You've loaded a schema, but the setting have changed. Click 'Validate Settings' to see if they're valid or you can click 'Render Chart' and see what happens."
+    }, {
+      key: "no schema",
+      symbol: "NA",
+      color: "#999",
+      details: "No Schema loaded. Cannot validate the current settings. You can click 'Render Chart' and see what happens."
+    }];
+
+    var myStatus = statusOptions.filter(function (d) {
+      return d.key == statusVal;
+    })[0];
+
+    cat.controls.settingsStatus.html(myStatus.symbol).style("color", myStatus.color).attr("title", myStatus.details);
+  }
+
+  function validateSchema(cat) {
+    // consider: http://epoberezkin.github.io/ajv/#getting-started
+    //  var Ajv = require('ajv');
+    //  var ajv = new Ajv(); // options can be passed, e.g. {allErrors: true}
+    //  var validate = ajv.compile(cat.);
+    //  console.log(validate)
+    return true;
+  }
+
+  function set$1(cat) {
+    // load the schema (if any) and see if it is validate
+    var version = cat.controls.versionSelect.node().value;
+    var schemaPath = cat.config.rootURL + "/" + cat.current.name + "/" + version + "/" + cat.current.schema;
+    var testPath = "../aeexplorer/settings-schema.json";
+    d3.json(schemaPath, function (error, schemaObj) {
+      //d3.json(testPath, function(error, schemaObj) {
+      if (error) {
+        console.log("No schema loaded.");
+        cat.current.hasValidSchema = false;
+        cat.current.settingsView = "text";
+        cat.current.schemaObj = null;
+        cat.controls.settingsInput.value = "{}";
+        cat.current.config = {};
+        //cat.settings.setStatus(cat, "no schema");
+      } else {
+        // attempt to validate the schema
+        console.log("Schema found ...");
+        cat.current.hasValidSchema = validateSchema(schemaObj);
+        cat.current.settingsView = cat.current.hasValidSchema ? "form" : "text";
+        cat.current.schemaObj = cat.current.hasValidSchema ? schemaObj : null;
+        //  cat.settings.setStatus(
+        //    cat,
+        //    cat.current.hasValidSchema ? "unknown" : "no schema"
+        //  );
+      }
+      console.log(cat.current);
+      //set the radio buttons
+      cat.controls.settingsTypeText.property("checked", cat.current.settingsView == "text");
+
+      cat.controls.settingsTypeForm.property("checked", cat.current.settingsView == "form").property("disabled", !cat.current.hasValidSchema);
+
+      // Show/Hide sections
+      console.log(cat.current.settingsView);
+      cat.controls.settingsInput.classed("hidden", cat.current.settingsView != "text");
+      cat.controls.settingsForm.classed("hidden", cat.current.settingsView != "form");
+
+      if (cat.current.hasValidSchema) {
+        console.log("... and it is valid. Making a nice form.");
+        makeForm(cat);
+      }
+    });
+  }
+
+  function sync(cat) {
+    // set current config
+    if (cat.current.settingsView == "text") {
+      cat.current.config = JSON.parse(cat.controls.settingsInput.node().value);
+      if (cat.current.hasValidSchema) {
+        makeForm(cat, cat.current.config);
+      }
+    } else if (cat.current.settingsView == "form") {
+      //this submits the form which:
+      //- saves the current object
+      //- updates the hidden text view
+      $(".settingsForm form").trigger("submit");
+    }
+  }
+
+  var settings = {
+    set: set$1,
+    sync: sync,
+    setStatus: setStatus
+  };
 
   function createCat() {
     var element = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "body";
@@ -211,7 +723,8 @@ var cat = (function () {
       init: init,
       layout: layout,
       controls: controls,
-      setDefaults: setDefaults
+      setDefaults: setDefaults,
+      settings: settings
     };
 
     return cat;
@@ -223,4 +736,4 @@ var cat = (function () {
 
   return index;
 
-}());
+}));

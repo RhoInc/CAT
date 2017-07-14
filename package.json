@@ -11,7 +11,8 @@
   "author": "Rho, Inc.",
   "license": "MIT",
   "dependencies": {
-    "d3": "^3.5.14"
+    "d3": "^3.5.14",
+    "jquery": "~3"
   },
   "devDependencies": {
     "jimp": "^0.2.27",
