@@ -28,6 +28,15 @@ export function initRendererSelect(cat) {
     cat.controls.subFunction.node().value = cat.current.sub;
     cat.controls.schema.node().value = cat.current.schema;
 
+    //update the selected data set to the default for the new rendererSection
+    cat.controls.dataFileSelect
+      .selectAll("option")
+      .property("selected", function(e) {
+        console.log(e);
+        console.log(cat.current);
+        return cat.current.defaultData == e ? true : null;
+      });
+
     //Re-initialize the chart config section
     cat.settings.set(cat);
   });
