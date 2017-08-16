@@ -3,7 +3,6 @@ export function renderChart(cat) {
     .selectAll("option:checked")
     .data()[0];
   cat.settings.sync(cat);
-  console.log(cat.current);
   //render the new chart with the current settings
   var dataFile = cat.controls.dataFileSelect.node().value;
   var dataFilePath = cat.config.dataURL + dataFile;
@@ -88,7 +87,6 @@ export function renderChart(cat) {
           .style("text-decoration", "underline")
           .style("float", "right")
           .on("click", function() {
-            console.log("clicked");
             d3.select(this).remove();
             cat.statusDiv.selectAll("div").classed("hidden", false);
           });

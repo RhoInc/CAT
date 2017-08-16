@@ -35,7 +35,6 @@ export function set(cat) {
       //    cat.current.hasValidSchema ? "unknown" : "no schema"
       //  );
     }
-    console.log(cat.current);
     //set the radio buttons
     cat.controls.settingsTypeText.property(
       "checked",
@@ -47,7 +46,6 @@ export function set(cat) {
       .property("disabled", !cat.current.hasValidSchema);
 
     // Show/Hide sections
-    console.log(cat.current.settingsView);
     cat.controls.settingsInput.classed(
       "hidden",
       cat.current.settingsView != "text"

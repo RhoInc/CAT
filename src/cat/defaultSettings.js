@@ -26,6 +26,14 @@ const defaultSettings = {
       defaultData: "safetyData-queries/ADAE.csv"
     },
     {
+      name: "paneled-outlier-explorer",
+      main: "paneledOutlierExplorer",
+      sub: null,
+      css: null,
+      schema: null,
+      defaultData: "safetyData-queries/ADBDS.csv"
+    },
+    {
       name: "safety-histogram",
       main: "safetyHistogram",
       sub: null,
