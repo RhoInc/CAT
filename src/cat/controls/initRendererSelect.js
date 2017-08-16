@@ -32,8 +32,6 @@ export function initRendererSelect(cat) {
     cat.controls.dataFileSelect
       .selectAll("option")
       .property("selected", function(e) {
-        console.log(e);
-        console.log(cat.current);
         return cat.current.defaultData == e ? true : null;
       });
 

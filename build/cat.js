@@ -411,7 +411,7 @@
     var rendererObj = cat.controls.rendererSelect.selectAll("option:checked").data()[0];
     var version = cat.controls.versionSelect.node().value;
     var rendererPath = cat.config.rootURL + "/" + rendererObj.name + "/" + version + "/build/" + rendererObj.main + ".js";
-
+    console.log(rendererPath);
     if (rendererObj.css) {
       var link = document.createElement("link");
       link.href = cat.config.rootURL + "/" + rendererObj.name + "/" + version + "/" + rendererObj.css;
@@ -541,6 +541,13 @@
       css: null,
       schema: null,
       defaultData: "safetyData-queries/ADAE.csv"
+    }, {
+      name: "paneled-outlier-explorer",
+      main: "paneledOutlierExplorer",
+      sub: null,
+      css: null,
+      schema: null,
+      defaultData: "safetyData-queries/ADBDS.csv"
     }, {
       name: "safety-histogram",
       main: "safetyHistogram",
