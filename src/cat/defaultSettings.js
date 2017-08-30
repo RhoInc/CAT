@@ -30,7 +30,7 @@ const defaultSettings = {
       main: "paneledOutlierExplorer",
       sub: null,
       css: null,
-      schema: null,
+      schema: "settings-schema.json",
       defaultData: "safetyData-queries/ADBDS.csv"
     },
     {

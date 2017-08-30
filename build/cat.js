@@ -45,8 +45,6 @@
 
       //update the selected data set to the default for the new rendererSection
       cat.controls.dataFileSelect.selectAll("option").property("selected", function (e) {
-        console.log(e);
-        console.log(cat.current);
         return cat.current.defaultData == e ? true : null;
       });
 
@@ -368,7 +366,6 @@
   function renderChart(cat) {
     var rendererObj = cat.controls.rendererSelect.selectAll("option:checked").data()[0];
     cat.settings.sync(cat);
-    console.log(cat.current);
     //render the new chart with the current settings
     var dataFile = cat.controls.dataFileSelect.node().value;
     var dataFilePath = cat.config.dataURL + dataFile;
@@ -396,7 +393,6 @@
           cat.statusDiv.append("div").html("All Done. Your <i>" + cat.current.name + "</i> should be below. <span class='details'>Show full log</span>").classed("info", true);
 
           cat.statusDiv.select("span.details").style("cursor", "pointer").style("text-decoration", "underline").style("float", "right").on("click", function () {
-            console.log("clicked");
             d3.select(this).remove();
             cat.statusDiv.selectAll("div").classed("hidden", false);
           });
@@ -411,7 +407,7 @@
     var rendererObj = cat.controls.rendererSelect.selectAll("option:checked").data()[0];
     var version = cat.controls.versionSelect.node().value;
     var rendererPath = cat.config.rootURL + "/" + rendererObj.name + "/" + version + "/build/" + rendererObj.main + ".js";
-    console.log(rendererPath);
+
     if (rendererObj.css) {
       var link = document.createElement("link");
       link.href = cat.config.rootURL + "/" + rendererObj.name + "/" + version + "/" + rendererObj.css;
@@ -546,7 +542,7 @@
       main: "paneledOutlierExplorer",
       sub: null,
       css: null,
-      schema: null,
+      schema: "settings-schema.json",
       defaultData: "safetyData-queries/ADBDS.csv"
     }, {
       name: "safety-histogram",
@@ -660,7 +656,6 @@
     //  var Ajv = require('ajv');
     //  var ajv = new Ajv(); // options can be passed, e.g. {allErrors: true}
     //  var validate = ajv.compile(cat.);
-    //  console.log(validate)
     return true;
   }
 
@@ -690,14 +685,12 @@
         //    cat.current.hasValidSchema ? "unknown" : "no schema"
         //  );
       }
-      console.log(cat.current);
       //set the radio buttons
       cat.controls.settingsTypeText.property("checked", cat.current.settingsView == "text");
 
       cat.controls.settingsTypeForm.property("checked", cat.current.settingsView == "form").property("disabled", !cat.current.hasValidSchema);
 
       // Show/Hide sections
-      console.log(cat.current.settingsView);
       cat.controls.settingsInput.classed("hidden", cat.current.settingsView != "text");
       cat.controls.settingsForm.classed("hidden", cat.current.settingsView != "form");
 
