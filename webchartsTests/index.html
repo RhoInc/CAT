@@ -3,12 +3,12 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
 <script src="https://d3js.org/d3.v3.min.js"></script>
-<script src="https://rawgit.com/RhoInc/Webcharts/master/build/webcharts.js"></script>
+<!--script src="https://rawgit.com/RhoInc/Webcharts/5472ef6156a30a79c6c9559482eb18871f41244b/build/webcharts.js"></script-->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/arta.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js"></script>
-
-<link rel="stylesheet" href="https://cdn.rawgit.com/RhoInc/Webcharts/master/css/webcharts.css">
+<script src="./scriptLoader.js"></script>
+<!--link rel="stylesheet" href="https://cdn.rawgit.com/RhoInc/Webcharts/5472ef6156a30a79c6c9559482eb18871f41244b/css/webcharts.css"-->
 <link rel="stylesheet" href="index.css">
 
 </head>
@@ -31,7 +31,6 @@ function renderLarge(d){
 }
 
 function renderTest(d) {
-  //console.log("rendering test"+d.index+" - "+d.label)
 
   //draw title
   d3.select(d.wrap).append('h2').text(function(d) {
@@ -46,27 +45,28 @@ function renderTest(d) {
     .append('div')
     .attr("class","notes")
 
-    notes.append("div").html("<strong>File: </strong> ")
+  notes.append("div").html("<strong>File: </strong> ")
     .append("a")
     .attr("href",function(d){return d.root + "/samples/data/"+d.filename})
     .text(function(d){return d.filename})
 
-    notes.append("div").html(function(d){return d.notes ? "<strong>Notes: </strong>"+d.notes : "" })
+  notes.append("div").html(function(d){return d.notes ? "<strong>Notes: </strong>"+d.notes : "" })
 
-    d.tests = d.tests ? d.tests : ["No Tests Specified"]
-    var tests =  notes.append("div").html("<strong>Tests: </strong> ")
-    tests.append("ul")
+  d.tests = d.tests ? d.tests : ["No Tests Specified"]
+
+
+  var tests =  notes.append("div").html("<strong>Tests: </strong> ")
+  tests.append("ul")
     .selectAll("li")
     .data(d.tests)
     .enter()
     .append("li")
     .text(function(d){return d})
 
-    notes.append("button")
+  notes.append("button")
     .text(d.wrap=="#big-one" ? "Show All Tests" : "Show Large Version" )
     .attr("href","#big-one")
     .on("click",function(d){
-      console.log(d)
       if(d.wrap=="#big-one" ){
         d3.select("#big-one").classed("hidden",true).selectAll("*").remove()
         d3.select(".charts").classed("hidden",false)
@@ -91,7 +91,6 @@ function renderTest(d) {
     code.classed("hidden",!status)
     d3.select(this).text(status?"- Settings":"+ Settings")
   })
-  console.log(d)
   var code = settingsWrap
     .append("pre")
     .attr("class","hidden")
@@ -101,19 +100,23 @@ function renderTest(d) {
 
     hljs.highlightBlock(code.node());
 
-    var thisChart = webCharts.createChart(d.wrap+" .chart", d.settings);
-    //console.log(thisChart)
-    thisChart.init(d.raw);
+
+    if(d.type == "charts"){
+      thisChart = webCharts.createChart(d.wrap+" .chart", d.settings);
+      thisChart.init(d.raw);
+    } else if(d.type== "tables"){
+      thisChart = webCharts.createTable(d.wrap+" .chart", d.settings);
+      thisChart.init(d.raw);
+    }
 }
 
-function drawCharts(path, root){
-  console.log(path)
+function drawCharts(path, root, type){
   d3.json(path,function(error,testConfig){
-    console.log(error || testConfig)
     testConfig.forEach(function(d,i){
       d.index = i+1
       d.root = root
       d.wrap = 'div.test' + d.index
+      d.type = type
     })
 
     var chartDivs = d3
@@ -138,7 +141,6 @@ function drawCharts(path, root){
       .values()
       .map(function(d){return {"filename":d, "path":root + "/samples/data/"+d}});
 
-    console.log(dataPaths)
     //load the data and render the chart
     dataPaths.forEach(function(file) {
       d3.csv(file.path, function(error, data) {
@@ -162,38 +164,57 @@ function drawCharts(path, root){
 
 function initTestSuite(version){
   var root = "https://rawgit.com/RhoInc/Webcharts/"+version+"/test";
+  var rendererPath = "https://rawgit.com/RhoInc/Webcharts/"+version+"/build/webcharts.js";
 
-  function drawAll(d){
-    d3.select(".charts").classed("hidden",false)
-    d3.select("#big-one").classed("hidden",true).selectAll("*").remove()
+  var link = document.createElement("link");
+  link.href ="https://rawgit.com/RhoInc/Webcharts/"+version+"/css/webcharts.css"
+  link.type = "text/css";
+  link.rel = "stylesheet";
+  document.getElementsByTagName("head")[0].appendChild(link);
 
-    var label = this.value
-    var filename = d3.select(this).datum().filter(function(d){return d.label == label})[0].filename
-    var path = d.root + "/samples/chart-config/"+filename
-    d3.select(".charts").selectAll("*").remove()
-    drawCharts(root + "/samples/chart-config/"+filename, d.root)
-  }
+  var loader = new scriptLoader();
+  loader.require(rendererPath, {
+    async: true,
+    success: function() {
+      console.log("loaded the script ...")
+      function drawAll(d){
+        d3.select(".charts").classed("hidden",false)
+        d3.select("#big-one").classed("hidden",true).selectAll("*").remove()
 
-  d3.json(root + "/samples/chart-config/testSettingList.json",function(error,allSettings){
-    console.log(error||allSettings)
-    if(!error){
-      allSettings.root = root;
-      var settingsSelect = d3.select(".controls").append("select").datum(allSettings)
-      var options = settingsSelect
-      .selectAll("option")
-      .data(function(d){return d})
-      .enter()
-      .append("option")
-      .text(function(d){return d.label})
+        var label = this.value
+        var filename = d3.select(this).datum().filter(function(d){return d.label == label})[0].filename
+        var type =  d3.select(this).datum().filter(function(d){return d.label == label})[0].type
+        type = type ? type : "charts"
+        var path = d.root + "/samples/chart-config/"+filename
+        d3.select(".charts").selectAll("*").remove()
+        drawCharts(root + "/samples/chart-config/"+filename, d.root, type)
+      }
 
-      settingsSelect.on("change",drawAll)
+      d3.json(root + "/samples/chart-config/testSettingList.json",function(error,allSettings){
+        if(!error){
+          allSettings.root = root;
+          var settingsSelect = d3.select(".controls").append("select").datum(allSettings)
+          var options = settingsSelect
+          .selectAll("option")
+          .data(function(d){return d})
+          .enter()
+          .append("option")
+          .text(function(d){return d.label})
 
-      //initialize the first set of tests on load
-      drawCharts(root + "/samples/chart-config/"+allSettings[0].filename, root)
-    } else {
-      d3.select(".charts").append("span").text("No valid tests found for the version specified").attr("class","error")
+          settingsSelect.on("change",drawAll)
+
+          //initialize the first set of tests on load
+          var type = allSettings[0].type ? allSettings[0].type : "charts"
+          drawCharts(root + "/samples/chart-config/"+allSettings[0].filename, root,type  )
+        } else {
+          d3.select(".charts").append("span").text("No valid tests found for the version specified").attr("class","error")
+        }
+      })
+    },
+    failure: function() {
+      console.log("couldn't load renderer :(")
     }
-  })
+  });
 }
 
 //Select version of webcharts
