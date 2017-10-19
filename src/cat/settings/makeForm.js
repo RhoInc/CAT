@@ -21,12 +21,14 @@ export function makeForm(cat, obj) {
     form: formLayout,
     onSubmit: function(errors, values) {
       if (errors) {
-        cat.statusDiv
-          .append("div")
-          .html(
-            "Attempted to load settings from json-schema form, but there might be a problem ..."
-          )
-          .classed("error", true);
+        if (cat.printStatus) {
+          cat.statusDiv
+            .append("div")
+            .html(
+              "Attempted to load settings from json-schema form, but there might be a problem ..."
+            )
+            .classed("error", true);
+        }
         //cat.settings.setStatus(cat, "invalid");
         cat.current.config = values;
         cat.controls.settingsInput.node().value = JSON.stringify(
@@ -34,11 +36,12 @@ export function makeForm(cat, obj) {
         );
       } else {
         //cat.settings.setStatus(cat, "valid");
-        cat.statusDiv
-          .append("div")
-          .html("Successfully loaded settings from the json-schema form.")
-          .classed("success", true);
-
+        if (cat.printStatus) {
+          cat.statusDiv
+            .append("div")
+            .html("Successfully loaded settings from the json-schema form.")
+            .classed("success", true);
+        }
         cat.current.config = values;
         cat.controls.settingsInput.node().value = JSON.stringify(
           cat.current.config

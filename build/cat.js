@@ -398,6 +398,8 @@
           });
 
           cat.statusDiv.append("div").classed("hidden", true).classed("info", true).html("&#9432; Just because there are no errors doesn't mean there can't be problems. If things look strange, it might be a problem with the settings/data combo or with the renderer itself.");
+
+          cat.printStatus = false;
         }
       }
     });
@@ -473,6 +475,7 @@
 
     cat.controls.submitButton = submitSection.append("button").attr("class", "submit").text("Render Chart").on("click", function () {
       cat.chartWrap.selectAll("*").remove();
+      cat.printStatus = true;
       cat.statusDiv = cat.chartWrap.append("div").attr("class", "status");
       cat.statusDiv.append("div").text("Starting to render the chart ... ").classed("info", true);
 
@@ -604,14 +607,17 @@
       form: formLayout,
       onSubmit: function onSubmit(errors, values) {
         if (errors) {
-          cat.statusDiv.append("div").html("Attempted to load settings from json-schema form, but there might be a problem ...").classed("error", true);
+          if (cat.printStatus) {
+            cat.statusDiv.append("div").html("Attempted to load settings from json-schema form, but there might be a problem ...").classed("error", true);
+          }
           //cat.settings.setStatus(cat, "invalid");
           cat.current.config = values;
           cat.controls.settingsInput.node().value = JSON.stringify(cat.current.config);
         } else {
           //cat.settings.setStatus(cat, "valid");
-          cat.statusDiv.append("div").html("Successfully loaded settings from the json-schema form.").classed("success", true);
-
+          if (cat.printStatus) {
+            cat.statusDiv.append("div").html("Successfully loaded settings from the json-schema form.").classed("success", true);
+          }
           cat.current.config = values;
           cat.controls.settingsInput.node().value = JSON.stringify(cat.current.config);
         }
@@ -704,7 +710,7 @@
     });
   }
 
-  function sync(cat) {
+  function sync(cat, printStatus) {
     function IsJsonString(str) {
       try {
         JSON.parse(str);
@@ -718,11 +724,14 @@
     if (cat.current.settingsView == "text") {
       var jsonText = cat.controls.settingsInput.node().value;
       if (IsJsonString(jsonText)) {
-        cat.statusDiv.append("div").html("Successfully settings from text input.").classed("success", true);
-
+        if (cat.printStatus) {
+          cat.statusDiv.append("div").html("Successfully loaded settings from text input.").classed("success", true);
+        }
         cat.current.config = JSON.parse(jsonText);
       } else {
-        cat.statusDiv.append("div").html("Couldn't load settings from text. Check to see if you have <a href='https://jsonlint.com/?json=" + jsonText + "'>valid json</a>.").classed("error", true);
+        if (cat.printStatus) {
+          cat.statusDiv.append("div").html("Couldn't load settings from text. Check to see if you have <a href='https://jsonlint.com/?json=" + jsonText + "'>valid json</a>.").classed("error", true);
+        }
       }
 
       if (cat.current.hasValidSchema) {

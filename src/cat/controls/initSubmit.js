@@ -11,6 +11,7 @@ export function initSubmit(cat) {
     .text("Render Chart")
     .on("click", function() {
       cat.chartWrap.selectAll("*").remove();
+      cat.printStatus = true;
       cat.statusDiv = cat.chartWrap.append("div").attr("class", "status");
       cat.statusDiv
         .append("div")

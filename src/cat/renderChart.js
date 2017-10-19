@@ -98,6 +98,8 @@ export function renderChart(cat) {
           .html(
             "&#9432; Just because there are no errors doesn't mean there can't be problems. If things look strange, it might be a problem with the settings/data combo or with the renderer itself."
           );
+
+        cat.printStatus = false;
       }
     }
   });
