@@ -472,10 +472,10 @@
     var submitSection = cat.controls.wrap.append("div").attr("class", "control-section");
 
     cat.controls.submitButton = submitSection.append("button").attr("class", "submit").text("Render Chart").on("click", function () {
-      cat.settings.sync(cat);
       cat.chartWrap.selectAll("*").remove();
       cat.statusDiv = cat.chartWrap.append("div").attr("class", "status");
       cat.statusDiv.append("div").text("Starting to render the chart ... ").classed("info", true);
+
       cat.chartWrap.append("div").attr("class", "chart");
       loadLibrary(cat);
     });
@@ -604,11 +604,14 @@
       form: formLayout,
       onSubmit: function onSubmit(errors, values) {
         if (errors) {
+          cat.statusDiv.append("div").html("Attempted to load settings from json-schema form, but there might be a problem ...").classed("error", true);
           //cat.settings.setStatus(cat, "invalid");
           cat.current.config = values;
           cat.controls.settingsInput.node().value = JSON.stringify(cat.current.config);
         } else {
           //cat.settings.setStatus(cat, "valid");
+          cat.statusDiv.append("div").html("Successfully loaded settings from the json-schema form.").classed("success", true);
+
           cat.current.config = values;
           cat.controls.settingsInput.node().value = JSON.stringify(cat.current.config);
         }
@@ -702,9 +705,26 @@
   }
 
   function sync(cat) {
+    function IsJsonString(str) {
+      try {
+        JSON.parse(str);
+      } catch (e) {
+        return false;
+      }
+      return true;
+    }
+
     // set current config
     if (cat.current.settingsView == "text") {
-      cat.current.config = JSON.parse(cat.controls.settingsInput.node().value);
+      var jsonText = cat.controls.settingsInput.node().value;
+      if (IsJsonString(jsonText)) {
+        cat.statusDiv.append("div").html("Successfully settings from text input.").classed("success", true);
+
+        cat.current.config = JSON.parse(jsonText);
+      } else {
+        cat.statusDiv.append("div").html("Couldn't load settings from text. Check to see if you have <a href='https://jsonlint.com/?json=" + jsonText + "'>valid json</a>.").classed("error", true);
+      }
+
       if (cat.current.hasValidSchema) {
         makeForm(cat, cat.current.config);
       }
