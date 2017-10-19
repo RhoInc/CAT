@@ -434,6 +434,40 @@
     });
   }
 
+  function loadBootstrap(cat) {
+    var bootstrapPath_css = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css";
+    var bootstrapPath_js = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js";
+
+    var link = document.createElement("link");
+    link.href = bootstrapPath_css;
+    link.type = "text/css";
+    link.rel = "stylesheet";
+    document.getElementsByTagName("head")[0].appendChild(link);
+
+    var bootstrapLoader = new scriptLoader();
+    bootstrapLoader.require(bootstrapPath_js, {
+      async: true,
+      success: function success() {
+        cat.statusDiv.append("div").html("Loaded bootstrap.");
+
+        loadRenderer(cat);
+      },
+      failure: function failure() {
+        cat.statusDiv.append("div").html("The " + version + "Couldn't load bootstrap. Aborting.").classed("error", true);
+      }
+    });
+  }
+
+  function initBootstrapConfig(cat) {
+    var settingsSection = cat.controls.wrap.append("div").attr("class", "control-section");
+    var settingsHeading = settingsSection.append("h3").html("4. Styling ");
+
+    cat.controls.bootstrapButton = settingsSection.append("button").text("Load Bootstrap").on("click", function () {
+      loadBootstrap();
+    });
+    settingsSection.append("div").append("small").text("Load bootstrap with the button above. Refresh the page if you want to remove bootstrap.");
+  }
+
   function loadLibrary(cat) {
     var version = cat.controls.libraryVersion.node().value;
     var rendererPath = cat.config.rootURL + "/" + "webcharts" + //hardcode to webcharts for now - could generalize later
@@ -494,6 +528,7 @@
     initRendererSelect(cat);
     initDataSelect(cat);
     initChartConfig(cat);
+    initBootstrapConfig(cat);
 
     // minimize controls - for later?
     /*
