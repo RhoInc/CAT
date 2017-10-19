@@ -7,6 +7,9 @@ export function renderChart(cat) {
   var dataFile = cat.controls.dataFileSelect.node().value;
   var dataFilePath = cat.config.dataURL + dataFile;
   var version = cat.controls.versionSelect.node().value;
+  cat.current.main = cat.controls.mainFunction.node().value;
+  cat.current.sub = cat.controls.subFunction.node().value;
+
   d3.csv(dataFilePath, function(error, data) {
     if (error) {
       cat.statusDiv
