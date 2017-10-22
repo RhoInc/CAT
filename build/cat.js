@@ -814,7 +814,15 @@
         sub: "createChart",
         css: "css/aeTable.css",
         schema: "settings-schema.json",
-        default: "safetyData-queries/ADAE.csv"
+        defaultData: "safetyData-queries/ADAE.csv"
+      },
+      {
+        name: "clinical-timelines",
+        main: "clinicalTimelines",
+        sub: null,
+        css: null,
+        schema: null,
+        defaultData: "safetyData/ADTIMELINES.csv"
       },
       {
         name: "web-codebook",
@@ -887,9 +895,14 @@
       "safetyData-queries/ADBDS.csv",
       "safetyData/ADAE.csv",
       "safetyData/ADBDS.csv",
-      "safetyData/AE.csv",
-      "safetyData/DM.csv",
-      "safetyData/LB.csv",
+      "safetyData/ADTIMELINES.csv",
+      "safetyData/ADCM.csv",
+      "safetyData/SDTM/DM.csv",
+      "safetyData/SDTM/AE.csv",
+      "safetyData/SDTM/CM.csv",
+      "safetyData/SDTM/SV.csv",
+      "safetyData/SDTM/LB.csv",
+      "safetyData/SDTM/VS.csv",
       "queries/queries.csv",
       "cars.csv",
       "climate_data.csv",
