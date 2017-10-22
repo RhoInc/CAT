@@ -1,6 +1,7 @@
 import { initRendererSelect } from "./initRendererSelect";
 import { initDataSelect } from "./initDataSelect";
 import { initChartConfig } from "./initChartConfig";
+import { initBootstrapConfig } from "./initBootstrapConfig";
 import { initSubmit } from "./initSubmit";
 
 export function init(cat) {
@@ -10,6 +11,7 @@ export function init(cat) {
   initRendererSelect(cat);
   initDataSelect(cat);
   initChartConfig(cat);
+  initBootstrapConfig(cat);
 
   // minimize controls - for later?
   /*

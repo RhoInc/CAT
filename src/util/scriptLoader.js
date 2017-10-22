@@ -60,9 +60,8 @@ scriptLoader.prototype = {
 
     setTimeout(function() {
       var f = typeof args.success == "function" ? args.success : function() {};
-      args.failure = typeof args.failure == "function"
-        ? args.failure
-        : function() {};
+      args.failure =
+        typeof args.failure == "function" ? args.failure : function() {};
       var fail = function() {
         if (!scriptTag.__es) {
           scriptTag.__es = true;
