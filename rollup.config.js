@@ -1,10 +1,12 @@
 import babel from 'rollup-plugin-babel';
 
 module.exports = {
-  moduleName: 'cat',
-  entry: './src/index.js',
-  dest: './build/cat.js',
-  format: 'umd',
+  name: 'cat',
+  input: './src/index.js',
+  output: {
+    file: './build/cat.js',
+    format: 'umd'
+  },
   globals: {
     d3: 'd3',
     webcharts: 'webCharts',

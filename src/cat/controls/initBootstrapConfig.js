@@ -10,7 +10,7 @@ export function initBootstrapConfig(cat) {
     .append("button")
     .text("Load Bootstrap")
     .on("click", function() {
-      loadBootstrap();
+      loadBootstrap(cat);
     });
   settingsSection
     .append("div")
