@@ -4,11 +4,11 @@
   "description": "The Charting Application Tester (CAT) lets users make and adjust web graphics on the fly.",
   "main": "./index.html",
   "scripts": {
-    "format": "npm run format-src && npm run format-bundle",
-    "format-src": "prettier --write \"src/**/*.js\"",
-    "format-bundle": "prettier --write \"build/CAT.js\"",
     "build": "npm run bundle && npm run format",
     "bundle": "rollup -c",
+    "format": "npm run format-src && npm run format-bundle",
+        "format-bundle": "prettier --write \"build/CAT.js\"",
+        "format-src": "prettier --write \"src/**/*.js\"",
     "watch": "rollup -c -w"
   },
   "author": "Rho, Inc.",
@@ -22,6 +22,7 @@
     "babel-preset-es2015-rollup": "^1.1.1",
     "jimp": "^0.2.27",
     "jsdom": "~7",
+    "prettier": "^1.7.4",
     "rollup": "^0.50.0",
     "rollup-plugin-babel": "^2.3.9",
     "rollup-watch": "^4.3.1",

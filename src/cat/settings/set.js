@@ -13,7 +13,6 @@ export function set(cat) {
     version +
     "/" +
     cat.current.schema;
-  var testPath = "../aeexplorer/settings-schema.json";
   d3.json(schemaPath, function(error, schemaObj) {
     //d3.json(testPath, function(error, schemaObj) {
     if (error) {
