@@ -14,7 +14,7 @@ const defaultSettings = {
       main: "clinicalTimelines",
       sub: null,
       css: null,
-      schema: null,
+      schema: "settings-schema.json",
       defaultData: "safetyData/ADTIMELINES.csv"
     },
     {
