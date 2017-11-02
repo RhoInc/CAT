@@ -55,7 +55,7 @@ export function set(cat) {
     );
     //update the text or make the schema
 
-    cat.controls.settingsInput.node().value = JSON.stringify(
+    cat.controls.settingsInput.node().value = JSON5.stringify(
       cat.current.config
     );
 

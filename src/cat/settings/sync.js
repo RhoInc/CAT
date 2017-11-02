@@ -3,7 +3,7 @@ import { makeForm } from "./makeForm";
 export function sync(cat, printStatus) {
   function IsJsonString(str) {
     try {
-      JSON.parse(str);
+      JSON5.parse(str);
     } catch (e) {
       return false;
     }
@@ -20,7 +20,7 @@ export function sync(cat, printStatus) {
           .html("Successfully loaded settings from text input.")
           .classed("success", true);
       }
-      cat.current.config = JSON.parse(jsonText);
+      cat.current.config = JSON5.parse(jsonText);
     } else {
       if (cat.printStatus) {
         cat.statusDiv
