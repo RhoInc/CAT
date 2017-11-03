@@ -20,6 +20,9 @@ export function sync(cat, printStatus) {
           .html("Successfully loaded settings from text input.")
           .classed("success", true);
       }
+      cat.controls.settingsInput.node().value = JSON.stringify(
+        JSON5.parse(jsonText)
+      );
       cat.current.config = JSON5.parse(jsonText);
     } else {
       if (cat.printStatus) {
