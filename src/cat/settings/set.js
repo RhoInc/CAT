@@ -53,6 +53,11 @@ export function set(cat) {
       "hidden",
       cat.current.settingsView != "form"
     );
+    //update the text or make the schema
+
+    cat.controls.settingsInput.node().value = JSON5.stringify(
+      cat.current.config
+    );
 
     if (cat.current.hasValidSchema) {
       console.log("... and it is valid. Making a nice form.");

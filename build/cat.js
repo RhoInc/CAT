@@ -1091,6 +1091,11 @@
         "hidden",
         cat.current.settingsView != "form"
       );
+      //update the text or make the schema
+
+      cat.controls.settingsInput.node().value = JSON5.stringify(
+        cat.current.config
+      );
 
       if (cat.current.hasValidSchema) {
         console.log("... and it is valid. Making a nice form.");
@@ -1102,6 +1107,7 @@
   function sync(cat, printStatus) {
     function IsJsonString(str) {
       try {
+        JSON5.parse(str);
       } catch (e) {
         return false;
       }
@@ -1118,7 +1124,10 @@
             .html("Successfully loaded settings from text input.")
             .classed("success", true);
         }
-        cat.current.config = JSON.parse(jsonText);
+        cat.controls.settingsInput.node().value = JSON.stringify(
+          JSON5.parse(jsonText)
+        );
+        cat.current.config = JSON5.parse(jsonText);
       } else {
         if (cat.printStatus) {
           cat.statusDiv
