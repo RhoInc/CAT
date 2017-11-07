@@ -782,6 +782,34 @@
       });
   }
 
+  function exportChart(cat) {
+    console.log(cat);
+    var exampleTemplate =
+      "\n<!DOCTYPE html>\n    <html>\n    <head>\n        <title>" +
+      cat.current.name +
+      "</title>\n\n        <meta http-equiv = 'Content-Type' content = 'text/html; charset = utf-8'>\n\n        <script type = 'text/javascript' src = 'https://d3js.org/d3.v3.min.js'></script>\n        <script type = 'text/javascript' src = 'https://rawgit.com/RhoInc/Webcharts/master/build/webcharts.js'></script>\n        <script type = 'text/javascript' src = 'https://rawgit.com/RhoInc/paneled-outlier-explorer/master/build/paneledOutlierExplorer.js'></script>\n\n        <link type = 'text/css' rel = 'stylesheet' href = 'https://rawgit.com/RhoInc/Webcharts/master/css/webcharts.min.css'>\n    </head>\n\n    <body>\n        <div id = 'title'>" +
+      cat.current.name +
+      " created for " +
+      cat.current.defaultData +
+      "</div>\n        <div id = 'subtitle'></div>\n        <div id = 'container'>\n        </div>\n    </body>\n\n    <script type = 'text/javascript'>\n        let settings = {\n            measure_col: 'VSTEST',\n            time_col: 'VSDY',\n            value_col: 'VSSTRESN'\n        };\n        let chart = paneledOutlierExplorer('#container', {});\n        d3.csv('../../data/hys_law.csv', function(data) {\n            chart.init(data);\n        });\n    </script>\n</html>\n";
+    return exampleTemplate;
+  }
+
+  function initExport(cat) {
+    var settingsSection = cat.controls.wrap
+      .append("div")
+      .attr("class", "control-section");
+    var settingsHeading = settingsSection.append("h3").html("5. Export ");
+
+    cat.controls.exportButton = settingsSection
+      .append("button")
+      .text("Export Chart")
+      .on("click", function() {
+        var chartCode = exportChart(cat);
+        alert(chartCode);
+      });
+  }
+
   function init$1(cat) {
     cat.current = cat.config.renderers[0];
     cat.controls.wrap.append("h2").text("Charting Application Tester 😼");
@@ -790,6 +818,7 @@
     initDataSelect(cat);
     initChartConfig(cat);
     initBootstrapConfig(cat);
+    initExport(cat);
 
     // minimize controls - for later?
     /*
