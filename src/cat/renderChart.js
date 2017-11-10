@@ -1,3 +1,5 @@
+import { exportChart } from "./export/exportChart";
+
 export function renderChart(cat) {
   var rendererObj = cat.controls.rendererSelect
     .selectAll("option:checked")
@@ -62,6 +64,9 @@ export function renderChart(cat) {
           )
           .classed("info", true);
       }
+
+      cat.current.htmlExport = exportChart(cat); // save the source code before init
+
       try {
         myChart.init(data);
       } catch (err) {
@@ -101,6 +106,29 @@ export function renderChart(cat) {
           .html(
             "&#9432; Just because there are no errors doesn't mean there can't be problems. If things look strange, it might be a problem with the settings/data combo or with the renderer itself."
           );
+
+        cat.statusDiv
+          .append("div")
+          .classed("hidden", true)
+          .classed("export", true)
+          .classed("minimized", true)
+          .html("Click to see chart's full source code");
+
+        cat.statusDiv.select("div.export.minimized").on("click", function() {
+          d3.select(this).classed("minimized", false);
+          d3.select(this).html("<strong>Source code for chart:</strong>");
+          d3
+            .select(this)
+            .append("code")
+            .html(
+              cat.current.htmlExport
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/\n/g, "<br/>")
+                .replace(/ /g, "&nbsp;")
+            );
+        });
 
         cat.printStatus = false;
       }

@@ -100,3 +100,14 @@
   background-color: white;
   border-color: black;
 }
+
+.cat-wrap .cat-chart .status div.export{
+  font-size:0.6em;
+  color: black;
+  background-color: #ffffe5;
+  border-color: black;
+}
+
+.cat-wrap .cat-chart .status div.export.minimized{
+  font-size:1.0em;
+}
