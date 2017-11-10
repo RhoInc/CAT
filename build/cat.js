@@ -784,14 +784,60 @@
 
   function exportChart(cat) {
     console.log(cat);
+
+    /* Get settings from current controls */
+    var webcharts_version = cat.controls.libraryVersion.node().value;
+    var renderer_version = cat.controls.versionSelect.node().value;
+    var data_file = cat.controls.dataFileSelect.node().value;
+    var data_file_path = cat.config.dataURL + data_file;
+    var init_string = cat.current.sub
+      ? cat.current.main + "." + cat.current.sub
+      : cat.current.main;
+
+    var chart_config = JSON.stringify(cat.current.config, null, " ");
+    console.log(chart_config);
+    var renderer_css = "";
+    if (cat.current.css) {
+      var css_path =
+        cat.config.rootURL +
+        "/" +
+        cat.current.name +
+        "/" +
+        renderer_version +
+        "/" +
+        cat.current.css;
+      renderer_css =
+        "<link type = 'text/css' rel = 'stylesheet' href = '" + css_path + "'>";
+    }
+
+    /* Return a html for a working chart */
     var exampleTemplate =
       "\n<!DOCTYPE html>\n    <html>\n    <head>\n        <title>" +
       cat.current.name +
-      "</title>\n\n        <meta http-equiv = 'Content-Type' content = 'text/html; charset = utf-8'>\n\n        <script type = 'text/javascript' src = 'https://d3js.org/d3.v3.min.js'></script>\n        <script type = 'text/javascript' src = 'https://rawgit.com/RhoInc/Webcharts/master/build/webcharts.js'></script>\n        <script type = 'text/javascript' src = 'https://rawgit.com/RhoInc/paneled-outlier-explorer/master/build/paneledOutlierExplorer.js'></script>\n\n        <link type = 'text/css' rel = 'stylesheet' href = 'https://rawgit.com/RhoInc/Webcharts/master/css/webcharts.min.css'>\n    </head>\n\n    <body>\n        <div id = 'title'>" +
+      "</title>\n\n        <meta http-equiv = 'Content-Type' content = 'text/html; charset = utf-8'>\n\n        <script type = 'text/javascript' src = 'https://d3js.org/d3.v3.min.js'></script>\n        <script type = 'text/javascript' src = 'https://rawgit.com/RhoInc/Webcharts/" +
+      webcharts_version +
+      "/build/webcharts.js'></script>\n        <script type = 'text/javascript' src = 'https://rawgit.com/RhoInc/" +
+      cat.current.name +
+      "/" +
+      renderer_version +
+      "/build/" +
+      cat.current.main +
+      ".js'></script>\n\n        <link type = 'text/css' rel = 'stylesheet' href = 'https://rawgit.com/RhoInc/Webcharts/" +
+      webcharts_version +
+      "/css/webcharts.min.css'>\n        " +
+      renderer_css +
+      "\n    </head>\n\n    <body>\n        <div id = 'title'>" +
       cat.current.name +
       " created for " +
       cat.current.defaultData +
-      "</div>\n        <div id = 'subtitle'></div>\n        <div id = 'container'>\n        </div>\n    </body>\n\n    <script type = 'text/javascript'>\n        let settings = {\n            measure_col: 'VSTEST',\n            time_col: 'VSDY',\n            value_col: 'VSSTRESN'\n        };\n        let chart = paneledOutlierExplorer('#container', {});\n        d3.csv('../../data/hys_law.csv', function(data) {\n            chart.init(data);\n        });\n    </script>\n</html>\n";
+      "</div>\n        <div id = 'container'>\n        </div>\n    </body>\n\n    <script type = 'text/javascript'>\n        let settings = " +
+      chart_config +
+      "\n        let chart = " +
+      init_string +
+      "('#container', settings);\n        d3.csv('" +
+      data_file_path +
+      "', function(data) {\n            chart.init(data);\n        });\n\n    </script>\n</html>\n";
+    console.log(exampleTemplate);
     return exampleTemplate;
   }
 
