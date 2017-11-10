@@ -3,7 +3,6 @@ import { initDataSelect } from "./initDataSelect";
 import { initChartConfig } from "./initChartConfig";
 import { initBootstrapConfig } from "./initBootstrapConfig";
 import { initSubmit } from "./initSubmit";
-import { initExport } from "./initExport";
 
 export function init(cat) {
   cat.current = cat.config.renderers[0];
@@ -13,7 +12,6 @@ export function init(cat) {
   initDataSelect(cat);
   initChartConfig(cat);
   initBootstrapConfig(cat);
-  initExport(cat);
 
   // minimize controls - for later?
   /*

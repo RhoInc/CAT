@@ -468,6 +468,61 @@
     }
   };
 
+  function exportChart(cat) {
+    /* Get settings from current controls */
+    var webcharts_version = cat.controls.libraryVersion.node().value;
+    var renderer_version = cat.controls.versionSelect.node().value;
+    var data_file = cat.controls.dataFileSelect.node().value;
+    var data_file_path = cat.config.dataURL + data_file;
+    var init_string = cat.current.sub
+      ? cat.current.main + "." + cat.current.sub
+      : cat.current.main;
+
+    var chart_config = JSON.stringify(cat.current.config, null, " ");
+    var renderer_css = "";
+    if (cat.current.css) {
+      var css_path =
+        cat.config.rootURL +
+        "/" +
+        cat.current.name +
+        "/" +
+        renderer_version +
+        "/" +
+        cat.current.css;
+      renderer_css =
+        "<link type = 'text/css' rel = 'stylesheet' href = '" + css_path + "'>";
+    }
+
+    /* Return a html for a working chart */
+    var exampleTemplate =
+      "\n<!DOCTYPE html>\n    <html>\n    <head>\n        <title>" +
+      cat.current.name +
+      "</title>\n\n        <meta http-equiv = 'Content-Type' content = 'text/html; charset = utf-8'>\n\n        <script type = 'text/javascript' src = 'https://d3js.org/d3.v3.min.js'></script>\n        <script type = 'text/javascript' src = 'https://rawgit.com/RhoInc/Webcharts/" +
+      webcharts_version +
+      "/build/webcharts.js'></script>\n        <script type = 'text/javascript' src = 'https://rawgit.com/RhoInc/" +
+      cat.current.name +
+      "/" +
+      renderer_version +
+      "/build/" +
+      cat.current.main +
+      ".js'></script>\n\n        <link type = 'text/css' rel = 'stylesheet' href = 'https://rawgit.com/RhoInc/Webcharts/" +
+      webcharts_version +
+      "/css/webcharts.min.css'>\n        " +
+      renderer_css +
+      "\n    </head>\n\n    <body>\n        <div id = 'title'>" +
+      cat.current.name +
+      " created for " +
+      cat.current.defaultData +
+      "</div>\n        <div id = 'container'>\n        </div>\n    </body>\n\n    <script type = 'text/javascript'>\n        let settings = " +
+      chart_config +
+      "\n        let chart = " +
+      init_string +
+      "('#container', settings);\n        d3.csv('" +
+      data_file_path +
+      "', function(data) {\n            chart.init(data);\n        });\n\n    </script>\n</html>\n";
+    return exampleTemplate;
+  }
+
   function renderChart(cat) {
     var rendererObj = cat.controls.rendererSelect
       .selectAll("option:checked")
@@ -544,6 +599,7 @@
             )
             .classed("error", true);
         } finally {
+          cat.current.htmlExport = exportChart(cat);
           cat.statusDiv.selectAll("div:not(.error)").classed("hidden", true);
           cat.statusDiv
             .append("div")
@@ -571,6 +627,18 @@
             .html(
               "&#9432; Just because there are no errors doesn't mean there can't be problems. If things look strange, it might be a problem with the settings/data combo or with the renderer itself."
             );
+
+          cat.statusDiv
+            .append("div")
+            .classed("hidden", true)
+            .classed("export", true)
+            .classed("minimized", true)
+            .html("Click to see chart's full source code");
+
+          cat.statusDiv.select("div.export.minimized").on("click", function() {
+            d3.select(this).classed("minimized", false);
+            d3.select(this).text(cat.current.htmlExport);
+          });
 
           cat.printStatus = false;
         }
@@ -782,80 +850,6 @@
       });
   }
 
-  function exportChart(cat) {
-    console.log(cat);
-
-    /* Get settings from current controls */
-    var webcharts_version = cat.controls.libraryVersion.node().value;
-    var renderer_version = cat.controls.versionSelect.node().value;
-    var data_file = cat.controls.dataFileSelect.node().value;
-    var data_file_path = cat.config.dataURL + data_file;
-    var init_string = cat.current.sub
-      ? cat.current.main + "." + cat.current.sub
-      : cat.current.main;
-
-    var chart_config = JSON.stringify(cat.current.config, null, " ");
-    console.log(chart_config);
-    var renderer_css = "";
-    if (cat.current.css) {
-      var css_path =
-        cat.config.rootURL +
-        "/" +
-        cat.current.name +
-        "/" +
-        renderer_version +
-        "/" +
-        cat.current.css;
-      renderer_css =
-        "<link type = 'text/css' rel = 'stylesheet' href = '" + css_path + "'>";
-    }
-
-    /* Return a html for a working chart */
-    var exampleTemplate =
-      "\n<!DOCTYPE html>\n    <html>\n    <head>\n        <title>" +
-      cat.current.name +
-      "</title>\n\n        <meta http-equiv = 'Content-Type' content = 'text/html; charset = utf-8'>\n\n        <script type = 'text/javascript' src = 'https://d3js.org/d3.v3.min.js'></script>\n        <script type = 'text/javascript' src = 'https://rawgit.com/RhoInc/Webcharts/" +
-      webcharts_version +
-      "/build/webcharts.js'></script>\n        <script type = 'text/javascript' src = 'https://rawgit.com/RhoInc/" +
-      cat.current.name +
-      "/" +
-      renderer_version +
-      "/build/" +
-      cat.current.main +
-      ".js'></script>\n\n        <link type = 'text/css' rel = 'stylesheet' href = 'https://rawgit.com/RhoInc/Webcharts/" +
-      webcharts_version +
-      "/css/webcharts.min.css'>\n        " +
-      renderer_css +
-      "\n    </head>\n\n    <body>\n        <div id = 'title'>" +
-      cat.current.name +
-      " created for " +
-      cat.current.defaultData +
-      "</div>\n        <div id = 'container'>\n        </div>\n    </body>\n\n    <script type = 'text/javascript'>\n        let settings = " +
-      chart_config +
-      "\n        let chart = " +
-      init_string +
-      "('#container', settings);\n        d3.csv('" +
-      data_file_path +
-      "', function(data) {\n            chart.init(data);\n        });\n\n    </script>\n</html>\n";
-    console.log(exampleTemplate);
-    return exampleTemplate;
-  }
-
-  function initExport(cat) {
-    var settingsSection = cat.controls.wrap
-      .append("div")
-      .attr("class", "control-section");
-    var settingsHeading = settingsSection.append("h3").html("5. Export ");
-
-    cat.controls.exportButton = settingsSection
-      .append("button")
-      .text("Export Chart")
-      .on("click", function() {
-        var chartCode = exportChart(cat);
-        alert(chartCode);
-      });
-  }
-
   function init$1(cat) {
     cat.current = cat.config.renderers[0];
     cat.controls.wrap.append("h2").text("Charting Application Tester 😼");
@@ -864,7 +858,6 @@
     initDataSelect(cat);
     initChartConfig(cat);
     initBootstrapConfig(cat);
-    initExport(cat);
 
     // minimize controls - for later?
     /*

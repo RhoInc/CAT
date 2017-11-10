@@ -1,6 +1,4 @@
 export function exportChart(cat) {
-  console.log(cat);
-
   /* Get settings from current controls */
   var webcharts_version = cat.controls.libraryVersion.node().value;
   var renderer_version = cat.controls.versionSelect.node().value;
@@ -11,7 +9,6 @@ export function exportChart(cat) {
     : cat.current.main;
 
   var chart_config = JSON.stringify(cat.current.config, null, " ");
-  console.log(chart_config);
   var renderer_css = "";
   if (cat.current.css) {
     var css_path =
@@ -62,6 +59,5 @@ export function exportChart(cat) {
     </script>
 </html>
 `;
-  console.log(exampleTemplate);
   return exampleTemplate;
 }

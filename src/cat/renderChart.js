@@ -1,3 +1,5 @@
+import { exportChart } from "./export/exportChart";
+
 export function renderChart(cat) {
   var rendererObj = cat.controls.rendererSelect
     .selectAll("option:checked")
@@ -74,6 +76,7 @@ export function renderChart(cat) {
           )
           .classed("error", true);
       } finally {
+        cat.current.htmlExport = exportChart(cat);
         cat.statusDiv.selectAll("div:not(.error)").classed("hidden", true);
         cat.statusDiv
           .append("div")
@@ -101,6 +104,18 @@ export function renderChart(cat) {
           .html(
             "&#9432; Just because there are no errors doesn't mean there can't be problems. If things look strange, it might be a problem with the settings/data combo or with the renderer itself."
           );
+
+        cat.statusDiv
+          .append("div")
+          .classed("hidden", true)
+          .classed("export", true)
+          .classed("minimized", true)
+          .html("Click to see chart's full source code");
+
+        cat.statusDiv.select("div.export.minimized").on("click", function() {
+          d3.select(this).classed("minimized", false);
+          d3.select(this).text(cat.current.htmlExport);
+        });
 
         cat.printStatus = false;
       }
