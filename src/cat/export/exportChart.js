@@ -25,8 +25,8 @@ export function exportChart(cat) {
 
   /* Return a html for a working chart */
   const exampleTemplate = `
-<!DOCTYPE html>
-    <html>
+<!DOCTYPE html>\n
+    <html>\n
     <head>
         <title>${cat.current.name}</title>
 
@@ -43,8 +43,8 @@ export function exportChart(cat) {
     </head>
 
     <body>
-        <div id = 'title'>${cat.current.name} created for ${cat.current
-    .defaultData}</div>
+        <h1 id = 'title'>${cat.current.name} created for ${cat.current
+    .defaultData}</h1>
         <div id = 'container'>
         </div>
     </body>

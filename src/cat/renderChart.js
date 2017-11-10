@@ -64,6 +64,9 @@ export function renderChart(cat) {
           )
           .classed("info", true);
       }
+
+      cat.current.htmlExport = exportChart(cat); // save the source code before init
+
       try {
         myChart.init(data);
       } catch (err) {
@@ -76,7 +79,6 @@ export function renderChart(cat) {
           )
           .classed("error", true);
       } finally {
-        cat.current.htmlExport = exportChart(cat);
         cat.statusDiv.selectAll("div:not(.error)").classed("hidden", true);
         cat.statusDiv
           .append("div")
@@ -114,7 +116,18 @@ export function renderChart(cat) {
 
         cat.statusDiv.select("div.export.minimized").on("click", function() {
           d3.select(this).classed("minimized", false);
-          d3.select(this).text(cat.current.htmlExport);
+          d3.select(this).html("<strong>Source code for chart:</strong>");
+          d3
+            .select(this)
+            .append("code")
+            .html(
+              cat.current.htmlExport
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/\n/g, "<br/>")
+                .replace(/ /g, "&nbsp;")
+            );
         });
 
         cat.printStatus = false;

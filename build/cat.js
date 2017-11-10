@@ -495,7 +495,7 @@
 
     /* Return a html for a working chart */
     var exampleTemplate =
-      "\n<!DOCTYPE html>\n    <html>\n    <head>\n        <title>" +
+      "\n<!DOCTYPE html>\n\n    <html>\n\n    <head>\n        <title>" +
       cat.current.name +
       "</title>\n\n        <meta http-equiv = 'Content-Type' content = 'text/html; charset = utf-8'>\n\n        <script type = 'text/javascript' src = 'https://d3js.org/d3.v3.min.js'></script>\n        <script type = 'text/javascript' src = 'https://rawgit.com/RhoInc/Webcharts/" +
       webcharts_version +
@@ -509,11 +509,11 @@
       webcharts_version +
       "/css/webcharts.min.css'>\n        " +
       renderer_css +
-      "\n    </head>\n\n    <body>\n        <div id = 'title'>" +
+      "\n    </head>\n\n    <body>\n        <h1 id = 'title'>" +
       cat.current.name +
       " created for " +
       cat.current.defaultData +
-      "</div>\n        <div id = 'container'>\n        </div>\n    </body>\n\n    <script type = 'text/javascript'>\n        let settings = " +
+      "</h1>\n        <div id = 'container'>\n        </div>\n    </body>\n\n    <script type = 'text/javascript'>\n        let settings = " +
       chart_config +
       "\n        let chart = " +
       init_string +
@@ -587,6 +587,9 @@
             )
             .classed("info", true);
         }
+
+        cat.current.htmlExport = exportChart(cat); // save the source code before init
+
         try {
           myChart.init(data);
         } catch (err) {
@@ -599,7 +602,6 @@
             )
             .classed("error", true);
         } finally {
-          cat.current.htmlExport = exportChart(cat);
           cat.statusDiv.selectAll("div:not(.error)").classed("hidden", true);
           cat.statusDiv
             .append("div")
@@ -637,7 +639,18 @@
 
           cat.statusDiv.select("div.export.minimized").on("click", function() {
             d3.select(this).classed("minimized", false);
-            d3.select(this).text(cat.current.htmlExport);
+            d3.select(this).html("<strong>Source code for chart:</strong>");
+            d3
+              .select(this)
+              .append("code")
+              .html(
+                cat.current.htmlExport
+                  .replace(/&/g, "&amp;")
+                  .replace(/</g, "&lt;")
+                  .replace(/>/g, "&gt;")
+                  .replace(/\n/g, "<br/>")
+                  .replace(/ /g, "&nbsp;")
+              );
           });
 
           cat.printStatus = false;
