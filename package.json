@@ -9,14 +9,16 @@
     "format": "npm run format-src && npm run format-bundle",
     "format-bundle": "prettier --write \"build/CAT.js\"",
     "format-src": "prettier --write \"src/**/*.js\"",
-    "watch": "rollup -c -w"
+    "watch": "rollup -c -w",
+    "start": "node server/app.js"
   },
   "author": "Rho, Inc.",
   "license": "MIT",
   "dependencies": {
     "d3": "^3.5.14",
     "jquery": "~3",
-    "json5": "^0.5.1"
+    "json5": "^0.5.1",
+    "express": "~4"
   },
   "devDependencies": {
     "babel-cli": "^6.5.1",

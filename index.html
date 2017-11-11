@@ -8,11 +8,11 @@
 
         <title>Charting Application Tester (CAT) </title>
         <script type='text/javascript' src ='https://d3js.org/d3.v3.min.js'></script>
-        <script type="text/javascript" src="deps/jquery.min.js"></script>
-        <script type="text/javascript" src="deps/underscore.js"></script>
-        <script type="text/javascript" src="deps/opt/jsv.js"></script>
-        <script type="text/javascript" src="deps/jsonform.js"></script>
-        <script type="text/javascript" src="deps/json5.js"></script>
+        <script type="text/javascript" src="server/pages/deps/jquery.min.js"></script>
+        <script type="text/javascript" src="server/pages/deps/underscore.js"></script>
+        <script type="text/javascript" src="server/pages/deps/opt/jsv.js"></script>
+        <script type="text/javascript" src="server/pages/deps/jsonform.js"></script>
+        <script type="text/javascript" src="server/pages/deps/json5.js"></script>
         <script type='text/javascript' src ='./build/cat.js'></script>
 
         <link type = 'text/css' rel = 'stylesheet' href = './css/cat.css'>
@@ -20,9 +20,12 @@
 
     <body>
     </body>
-</html>
 
-<script>
-  var myCat = cat.createCat('body',{})
-  myCat.init()
-</script>
+    <script>
+
+    var myCat = cat.createCat('body',{})
+    myCat.init()
+
+
+    </script>
+</html>
