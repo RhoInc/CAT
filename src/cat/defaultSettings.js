@@ -1,5 +1,27 @@
 const defaultSettings = {
+  useServer: false,
   rootURL: "https://cdn.rawgit.com/RhoInc",
+  dataURL: "https://rhoinc.github.io/viz-library/data/",
+  dataFiles: [
+    "safetyData-queries/ADAE.csv",
+    "safetyData-queries/ADBDS.csv",
+    "safetyData/ADAE.csv",
+    "safetyData/ADBDS.csv",
+    "safetyData/ADTIMELINES.csv",
+    "safetyData/ADCM.csv",
+    "safetyData/SDTM/DM.csv",
+    "safetyData/SDTM/AE.csv",
+    "safetyData/SDTM/CM.csv",
+    "safetyData/SDTM/SV.csv",
+    "safetyData/SDTM/LB.csv",
+    "safetyData/SDTM/VS.csv",
+    "queries/queries.csv",
+    "cars.csv",
+    "climate_data.csv",
+    "discrete_score.csv",
+    "elements.csv",
+    "ChickWeight.csv"
+  ],
   renderers: [
     {
       name: "aeexplorer",
@@ -81,27 +103,6 @@ const defaultSettings = {
       schema: null,
       defaultData: "queries/queries.csv"
     }
-  ],
-  dataURL: "https://rhoinc.github.io/viz-library/data/",
-  dataFiles: [
-    "safetyData-queries/ADAE.csv",
-    "safetyData-queries/ADBDS.csv",
-    "safetyData/ADAE.csv",
-    "safetyData/ADBDS.csv",
-    "safetyData/ADTIMELINES.csv",
-    "safetyData/ADCM.csv",
-    "safetyData/SDTM/DM.csv",
-    "safetyData/SDTM/AE.csv",
-    "safetyData/SDTM/CM.csv",
-    "safetyData/SDTM/SV.csv",
-    "safetyData/SDTM/LB.csv",
-    "safetyData/SDTM/VS.csv",
-    "queries/queries.csv",
-    "cars.csv",
-    "climate_data.csv",
-    "discrete_score.csv",
-    "elements.csv",
-    "ChickWeight.csv"
   ]
 };
 

@@ -82,12 +82,41 @@ export function renderChart(cat) {
         cat.statusDiv.selectAll("div:not(.error)").classed("hidden", true);
         cat.statusDiv
           .append("div")
+          .attr("class", "summary")
           .html(
             "All Done. Your <i>" +
               cat.current.name +
               "</i> should be below. <span class='details'>Show full log</span>"
           )
           .classed("info", true);
+
+        if (cat.config.useServer) {
+          var saveSpan = cat.statusDiv.select("div.summary").append("span");
+
+          var saveButton = saveSpan
+            .append("span")
+            .text("Save a copy?")
+            .style("cursor", "pointer")
+            .style("text-decoration", "underline")
+            .on("click", function() {
+              d3.select(this.remove());
+              var chartObj = { chart: btoa(cat.current.htmlExport) };
+              $.post("./export/", chartObj, function(data) {
+                saveSpan.html(
+                  "Chart saved as <a href='" +
+                    data.url +
+                    "'>" +
+                    data.url +
+                    "</a>"
+                );
+              }).fail(function() {
+                saveSpan
+                  .text("Sorry. Couldn't save the chart.")
+                  .style("text", "red");
+                console.warn("Error :( Something went wrong saving the chart.");
+              });
+            });
+        }
 
         cat.statusDiv
           .select("span.details")

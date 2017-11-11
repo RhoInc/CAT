@@ -22,10 +22,7 @@
     </body>
 
     <script>
-      var href = window.location.href;
-      var code_string = href.slice(href.indexOf("?")+1,href.length);
-      console.log(code_string)
-      var myCat = cat.createCat('body',{})
+      var myCat = cat.createCat('body',{"useServer":true})
       myCat.init()
     </script>
 </html>

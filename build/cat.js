@@ -605,12 +605,43 @@
           cat.statusDiv.selectAll("div:not(.error)").classed("hidden", true);
           cat.statusDiv
             .append("div")
+            .attr("class", "summary")
             .html(
               "All Done. Your <i>" +
                 cat.current.name +
                 "</i> should be below. <span class='details'>Show full log</span>"
             )
             .classed("info", true);
+
+          if (cat.config.useServer) {
+            var saveSpan = cat.statusDiv.select("div.summary").append("span");
+
+            var saveButton = saveSpan
+              .append("span")
+              .text("Save a copy?")
+              .style("cursor", "pointer")
+              .style("text-decoration", "underline")
+              .on("click", function() {
+                d3.select(this.remove());
+                var chartObj = { chart: btoa(cat.current.htmlExport) };
+                $.post("./export/", chartObj, function(data) {
+                  saveSpan.html(
+                    "Chart saved as <a href='" +
+                      data.url +
+                      "'>" +
+                      data.url +
+                      "</a>"
+                  );
+                }).fail(function() {
+                  saveSpan
+                    .text("Sorry. Couldn't save the chart.")
+                    .style("text", "red");
+                  console.warn(
+                    "Error :( Something went wrong saving the chart."
+                  );
+                });
+              });
+          }
 
           cat.statusDiv
             .select("span.details")
@@ -902,7 +933,29 @@
   };
 
   var defaultSettings = {
+    useServer: false,
     rootURL: "https://cdn.rawgit.com/RhoInc",
+    dataURL: "https://rhoinc.github.io/viz-library/data/",
+    dataFiles: [
+      "safetyData-queries/ADAE.csv",
+      "safetyData-queries/ADBDS.csv",
+      "safetyData/ADAE.csv",
+      "safetyData/ADBDS.csv",
+      "safetyData/ADTIMELINES.csv",
+      "safetyData/ADCM.csv",
+      "safetyData/SDTM/DM.csv",
+      "safetyData/SDTM/AE.csv",
+      "safetyData/SDTM/CM.csv",
+      "safetyData/SDTM/SV.csv",
+      "safetyData/SDTM/LB.csv",
+      "safetyData/SDTM/VS.csv",
+      "queries/queries.csv",
+      "cars.csv",
+      "climate_data.csv",
+      "discrete_score.csv",
+      "elements.csv",
+      "ChickWeight.csv"
+    ],
     renderers: [
       {
         name: "aeexplorer",
@@ -984,32 +1037,15 @@
         schema: null,
         defaultData: "queries/queries.csv"
       }
-    ],
-    dataURL: "https://rhoinc.github.io/viz-library/data/",
-    dataFiles: [
-      "safetyData-queries/ADAE.csv",
-      "safetyData-queries/ADBDS.csv",
-      "safetyData/ADAE.csv",
-      "safetyData/ADBDS.csv",
-      "safetyData/ADTIMELINES.csv",
-      "safetyData/ADCM.csv",
-      "safetyData/SDTM/DM.csv",
-      "safetyData/SDTM/AE.csv",
-      "safetyData/SDTM/CM.csv",
-      "safetyData/SDTM/SV.csv",
-      "safetyData/SDTM/LB.csv",
-      "safetyData/SDTM/VS.csv",
-      "queries/queries.csv",
-      "cars.csv",
-      "climate_data.csv",
-      "discrete_score.csv",
-      "elements.csv",
-      "ChickWeight.csv"
     ]
   };
 
   function setDefaults(cat) {
-    cat.config = defaultSettings; // just ignore the user settings for the moment. Will set up merge later.
+    cat.config.useServer = cat.config.useServer || defaultSettings.useServer;
+    cat.config.rootURL = cat.config.rootURL || defaultSettings.rootURL;
+    cat.config.dataURL = cat.config.dataURL || defaultSettings.dataURL;
+    cat.config.dataFiles = cat.config.dataFiles || defaultSettings.dataFiles;
+    cat.config.renderers = cat.config.renderers || defaultSettings.renderers;
   }
 
   function makeForm(cat, obj) {

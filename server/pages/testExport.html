@@ -38,25 +38,6 @@
         .fail(function() {
           d3.select("span.note").text("Error :( Something went wrong.")
         });
-        /*
-        $.ajax({
-          cache: false,
-          type: "POST",
-          async: true,
-          url: "./export/",
-          data: {"a":1},
-          contentType: "application/json",
-          dataType: "json",
-          success: function(resp) {
-            d3.select("span.note").text("Success! Saved your chart as ...")
-            console.log(resp)
-          },
-          error: function(xhr) {
-            d3.select("span.note").text("Error :( Something went wrong.")
-            console.log(xhr)
-          }
-        });
-        */
       })
 
     </script>
