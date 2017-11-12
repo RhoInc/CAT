@@ -29,13 +29,30 @@ app.post('/export', function(req, res) {
 
   //save as an html file
   var fs = require('fs');
-  var filename = "./server/pages/charts/chart_"+req.requestTime+".html"
-  var url = "/charts/chart_"+req.requestTime+".html"
+  var filename = "./server/pages/charts/fromCAT/"+req.requestTime+".html"
+  var url = "/charts/fromCAT/"+req.requestTime+".html"
   fs.writeFile(filename, htmlText, function(err) {
       if(err) {
           return console.log("Couldn't save file: "+err);
       }
-      console.log("The file was saved at "+filename+"!");
+      console.log("The file was saved at "+filename);
+  });
+
+  //update the list of charts (https://stackoverflow.com/questions/36856232/write-add-data-in-json-file-using-node-js)
+  var chartListPath = './server/pages/charts/chartList.json';
+  req.body.time = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '')
+  fs.readFile(chartListPath, 'utf8', function readFileCallback(err, data){
+      if (err){
+        console.log(err);
+      } else {
+        var chartList = JSON.parse(data); //now it an object
+        req.body.index  = chartList.length+1
+        req.body.filename = filename
+        req.body.url = url
+        chartList.push(req.body); //add some data
+        chartList_text = JSON.stringify(chartList); //convert it back to text
+        fs.writeFile(chartListPath, chartList_text, 'utf8'); // write it back
+      }
   });
 
   //return success and send the url

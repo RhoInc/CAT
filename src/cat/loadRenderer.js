@@ -35,32 +35,23 @@ export function loadRenderer(cat) {
   loader.require(rendererPath, {
     async: true,
     success: function() {
-      cat.statusDiv
-        .append("div")
-        .html(
-          "The " +
-            version +
-            " branch of the <i>" +
-            rendererObj.name +
-            "</i> library loaded from <i>" +
-            rendererPath +
-            "</i>. Loading the data ..."
-        );
+      cat.status.loadStatus(
+        cat.statusDiv,
+        true,
+        rendererPath,
+        rendererObj.name,
+        version
+      );
       renderChart(cat);
     },
     failure: function() {
-      cat.statusDiv
-        .append("div")
-        .html(
-          "The " +
-            version +
-            " branch of the <i>" +
-            rendererObj.name +
-            "</i> library did NOT load from <i>" +
-            rendererPath +
-            "</i> Aborting chart renderering. Are you sure the specified version exists?"
-        )
-        .classed("error", true);
+      cat.status.loadStatus(
+        cat.statusDiv,
+        false,
+        rendererPath,
+        rendererObj.name,
+        version
+      );
     }
   });
 }

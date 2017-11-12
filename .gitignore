@@ -8,4 +8,5 @@ node_modules
 local
 
 # Don't put charts from server in version control
-server/pages/charts/
+server/pages/charts/fromCAT
+server/pages/charts/chartList.json

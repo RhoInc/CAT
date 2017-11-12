@@ -468,7 +468,7 @@
     }
   };
 
-  function exportChart(cat) {
+  function createChartExport(cat) {
     /* Get settings from current controls */
     var webcharts_version = cat.controls.libraryVersion.node().value;
     var renderer_version = cat.controls.versionSelect.node().value;
@@ -537,153 +537,47 @@
 
     d3.csv(dataFilePath, function(error, data) {
       if (error) {
-        cat.statusDiv
-          .html(
-            "Failed to load data from <i>" +
-              dataFilePath +
-              "</i>. Aborting chart renderering. "
-          )
-          .classed("error", true);
+        cat.status.loadStatus(cat.statusDiv, false, dataFilePath);
       } else {
-        cat.statusDiv
-          .append("div")
-          .html(
-            "Loaded data from <i>" +
-              dataFilePath +
-              "</i>. Initializing the chart ...  "
-          );
-
+        cat.status.loadStatus(cat.statusDiv, true, dataFilePath);
         if (cat.current.sub) {
           var myChart = window[cat.current.main][cat.current.sub](
             ".cat-chart",
             cat.current.config
           );
-          cat.statusDiv
-            .append("div")
-            .html(
-              "Rendered the chart by calling <i>" +
-                cat.current.main +
-                "." +
-                cat.current.sub +
-                "()</i> with the following settings:<br><small><i>" +
-                JSON.stringify(cat.current.config) +
-                "</small></i><br>Initializing the chart with the loaded data next ..."
-            )
-            .classed("info", true);
+          cat.status.chartCreateStatus(
+            cat.statusDiv,
+            cat.current.main,
+            cat.current.sub
+          );
         } else {
           var myChart = window[cat.current.main](
             ".cat-chart .chart",
             cat.current.config
           );
-
-          cat.statusDiv
-            .append("div")
-            .html(
-              "Creating the chart by calling <i>" +
-                cat.current.main +
-                "()</i> with the following settings:<br><small><i>" +
-                JSON.stringify(cat.current.config) +
-                "</small></i><br> Initializing the chart with the loaded data next ..."
-            )
-            .classed("info", true);
+          cat.status.chartCreateStatus(cat.statusDiv, cat.current.main);
         }
 
-        cat.current.htmlExport = exportChart(cat); // save the source code before init
+        cat.current.htmlExport = createChartExport(cat); // save the source code before init
 
         try {
           myChart.init(data);
         } catch (err) {
-          cat.statusDiv
-            .append("div")
-            .html(
-              "There might've been some problems initializing the chart. Errors include:<br><small><i>" +
-                err +
-                "</i></small>"
-            )
-            .classed("error", true);
+          cat.status.chartInitStatus(cat.statusDiv, false, err);
         } finally {
-          cat.statusDiv.selectAll("div:not(.error)").classed("hidden", true);
-          cat.statusDiv
-            .append("div")
-            .attr("class", "summary")
-            .html(
-              "All Done. Your <i>" +
-                cat.current.name +
-                "</i> should be below. <span class='details'>Show full log</span>"
-            )
-            .classed("info", true);
+          cat.status.chartInitStatus(
+            cat.statusDiv,
+            true,
+            null,
+            cat.current.htmlExport
+          );
 
+          // save to server button
           if (cat.config.useServer) {
-            var saveSpan = cat.statusDiv.select("div.summary").append("span");
-
-            var saveButton = saveSpan
-              .append("span")
-              .text("Save a copy?")
-              .style("cursor", "pointer")
-              .style("text-decoration", "underline")
-              .on("click", function() {
-                d3.select(this.remove());
-                var chartObj = { chart: btoa(cat.current.htmlExport) };
-                $.post("./export/", chartObj, function(data) {
-                  saveSpan.html(
-                    "Chart saved as <a href='" +
-                      data.url +
-                      "'>" +
-                      data.url +
-                      "</a>"
-                  );
-                }).fail(function() {
-                  saveSpan
-                    .text("Sorry. Couldn't save the chart.")
-                    .style("text", "red");
-                  console.warn(
-                    "Error :( Something went wrong saving the chart."
-                  );
-                });
-              });
+            cat.status.saveToServer(cat);
           }
 
-          cat.statusDiv
-            .select("span.details")
-            .style("cursor", "pointer")
-            .style("text-decoration", "underline")
-            .style("float", "right")
-            .on("click", function() {
-              d3.select(this).remove();
-              cat.statusDiv.selectAll("div").classed("hidden", false);
-            });
-
-          cat.statusDiv
-            .append("div")
-            .classed("hidden", true)
-            .classed("info", true)
-            .html(
-              "&#9432; Just because there are no errors doesn't mean there can't be problems. If things look strange, it might be a problem with the settings/data combo or with the renderer itself."
-            );
-
-          cat.statusDiv
-            .append("div")
-            .classed("hidden", true)
-            .classed("export", true)
-            .classed("minimized", true)
-            .html("Click to see chart's full source code");
-
-          cat.statusDiv.select("div.export.minimized").on("click", function() {
-            d3.select(this).classed("minimized", false);
-            d3.select(this).html("<strong>Source code for chart:</strong>");
-            d3
-              .select(this)
-              .append("code")
-              .html(
-                cat.current.htmlExport
-                  .replace(/&/g, "&amp;")
-                  .replace(/</g, "&lt;")
-                  .replace(/>/g, "&gt;")
-                  .replace(/\n/g, "<br/>")
-                  .replace(/ /g, "&nbsp;")
-              );
-          });
-
+          //don't print any new statuses until a new chart is rendered
           cat.printStatus = false;
         }
       }
@@ -724,32 +618,23 @@
     loader.require(rendererPath, {
       async: true,
       success: function success() {
-        cat.statusDiv
-          .append("div")
-          .html(
-            "The " +
-              version +
-              " branch of the <i>" +
-              rendererObj.name +
-              "</i> library loaded from <i>" +
-              rendererPath +
-              "</i>. Loading the data ..."
-          );
+        cat.status.loadStatus(
+          cat.statusDiv,
+          true,
+          rendererPath,
+          rendererObj.name,
+          version
+        );
         renderChart(cat);
       },
       failure: function failure() {
-        cat.statusDiv
-          .append("div")
-          .html(
-            "The " +
-              version +
-              " branch of the <i>" +
-              rendererObj.name +
-              "</i> library did NOT load from <i>" +
-              rendererPath +
-              "</i> Aborting chart renderering. Are you sure the specified version exists?"
-          )
-          .classed("error", true);
+        cat.status.loadStatus(
+          cat.statusDiv,
+          false,
+          rendererPath,
+          rendererObj.name,
+          version
+        );
       }
     });
   }
@@ -805,10 +690,11 @@
 
   function loadLibrary(cat) {
     var version = cat.controls.libraryVersion.node().value;
+    var library = "webcharts"; //hardcode to webcharts for now - could generalize later
     var rendererPath =
       cat.config.rootURL +
       "/" +
-      "webcharts" + //hardcode to webcharts for now - could generalize later
+      library +
       "/" +
       version +
       "/build/" +
@@ -834,41 +720,25 @@
     loader.require(rendererPath, {
       async: true,
       success: function success() {
-        cat.statusDiv
-          .append("div")
-          .html(
-            "The " +
-              version +
-              " branch of <i>Webcharts</i> loaded as expected. Loading the renderer ..."
-          );
+        cat.status.loadStatus(
+          cat.statusDiv,
+          true,
+          rendererPath,
+          library,
+          version
+        );
         loadRenderer(cat);
       },
       failure: function failure() {
-        cat.statusDiv
-          .append("div")
-          .html(
-            "The " +
-              version +
-              " branch of Webcharts did NOT load. Aborting chart renderering. Are you sure the specified version exists?"
-          )
-          .classed("error", true);
+        cat.status.loadStatus(
+          cat.statusDiv,
+          false,
+          rendererPath,
+          library,
+          version
+        );
       }
     });
-
-    /*
-  var scriptReady = false;
-  var script = document.createElement("script");
-  script.type = "text/javascript";
-  script.src = rendererPath;
-  script.onload = script.onreadystatechange = function() {
-    if (!scriptReady && (!this.readyState || this.readyState == "complete")) {
-      scriptReady = true;
-      loadRenderer(cat);
-    }
-  };
-  var tag = document.getElementsByTagName("script")[0];
-  tag.parentNode.insertBefore(script, tag);
-  */
   }
 
   function initSubmit(cat) {
@@ -1279,6 +1149,159 @@
     setStatus: setStatus
   };
 
+  function chartCreateStatus(statusDiv, main, sub) {
+    var message = sub
+      ? "Created the chart by calling <i>" + main + "." + sub + "()</i>."
+      : "Created the chart by calling <i>" + main + "()</i>.";
+
+    statusDiv
+      .append("div")
+      .html(message)
+      .classed("info", true);
+  }
+
+  function chartInitStatus(statusDiv, success, err, htmlExport) {
+    if (success) {
+      //hide all non-error statuses
+      statusDiv.selectAll("div:not(.error)").classed("hidden", true);
+
+      // Print basic success message
+      statusDiv
+        .append("div")
+        .attr("class", "initSuccess")
+        .html(
+          "All Done. Your chart should be below. <span class='showLog'>Show full log</span>"
+        )
+        .classed("info", true);
+
+      //Click to show all statuses
+      statusDiv
+        .select("div.initSuccess")
+        .select("span.showLog")
+        .style("cursor", "pointer")
+        .style("text-decoration", "underline")
+        .style("float", "right")
+        .on("click", function() {
+          d3.select(this).remove();
+          statusDiv.selectAll("div").classed("hidden", false);
+        });
+
+      //generic caution (hidden by default)
+      statusDiv
+        .append("div")
+        .classed("hidden", true)
+        .classed("info", true)
+        .html(
+          "&#9432; Just because there are no errors doesn't mean there can't be problems. If things look strange, it might be a problem with the settings/data combo or with the renderer itself."
+        );
+
+      //export source code (via copy/paste)
+      statusDiv
+        .append("div")
+        .classed("hidden", true)
+        .classed("export", true)
+        .classed("minimized", true)
+        .html("Click to see chart's full source code");
+
+      statusDiv.select("div.export.minimized").on("click", function() {
+        d3.select(this).classed("minimized", false);
+        d3.select(this).html("<strong>Source code for chart:</strong>");
+        d3
+          .select(this)
+          .append("code")
+          .html(
+            htmlExport
+              .replace(/&/g, "&amp;")
+              .replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;")
+              .replace(/\n/g, "<br/>")
+              .replace(/ /g, "&nbsp;")
+          );
+      });
+    } else {
+      //if init fails (success == false)
+      statusDiv
+        .append("div")
+        .html(
+          "There might've been some problems initializing the chart. Errors include:<br><small><i>" +
+            err +
+            "</i></small>"
+        )
+        .classed("error", true);
+    }
+  }
+
+  function saveToServer(cat) {
+    var serverDiv = cat.statusDiv
+      .append("div")
+      .attr("class", "info")
+      .text("Enter your name and click save for a reusable URL. ");
+    var nameInput = serverDiv.append("input").property("placeholder", "Name");
+    var saveButton = serverDiv
+      .append("button")
+      .text("Save")
+      .property("disabled", true);
+
+    nameInput.on("input", function() {
+      saveButton.property("disabled", nameInput.node().value.length == 0);
+    });
+
+    saveButton.on("click", function() {
+      //remove the form
+      d3.select(this).remove();
+      nameInput.remove();
+
+      //format an object for the post
+      var dataFile = cat.controls.dataFileSelect.node().value;
+      var dataFilePath = cat.config.dataURL + dataFile;
+      var chartObj = {
+        name: nameInput.node().value,
+        renderer: cat.current.name,
+        version: cat.controls.versionSelect.node().value,
+        dataFile: dataFilePath,
+        chart: btoa(cat.current.htmlExport)
+      };
+
+      //post the object, get a URL back
+      $.post("./export/", chartObj, function(data) {
+        serverDiv.html(
+          "Chart saved as <a href='" + data.url + "'>" + data.url + "</a>"
+        );
+      }).fail(function() {
+        serverDiv
+          .text("Sorry. Couldn't save the chart.")
+          .classed("error", true);
+        console.warn("Error :( Something went wrong saving the chart.");
+      });
+    });
+  }
+
+  function loadStatus(statusDiv, passed, path, library, version) {
+    var message = passed
+      ? "Successfully loaded " + path
+      : "Failed to load " + path;
+
+    if ((library != undefined) & (version != undefined))
+      message =
+        message + " (Library: " + library + ", Version: " + version + ")";
+
+    statusDiv
+      .append("div")
+      .html(message)
+      .classed("error", !passed);
+  }
+
+  /*------------------------------------------------------------------------------------------------\
+  Define controls object.
+\------------------------------------------------------------------------------------------------*/
+
+  var status = {
+    chartCreateStatus: chartCreateStatus,
+    chartInitStatus: chartInitStatus,
+    saveToServer: saveToServer,
+    loadStatus: loadStatus
+  };
+
   function createCat() {
     var element =
       arguments.length > 0 && arguments[0] !== undefined
@@ -1293,7 +1316,8 @@
       layout: layout,
       controls: controls,
       setDefaults: setDefaults,
-      settings: settings
+      settings: settings,
+      status: status
     };
 
     return cat;
