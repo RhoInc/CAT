@@ -30,7 +30,6 @@
         }
         var fileTable = webCharts.createTable(".chartList",settings)
         fileTable.on("draw",function(){
-          console.log(this)
           this.tbody.selectAll("td.chartLink").html(function(d){
             return d.text
           })
