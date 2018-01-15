@@ -14,10 +14,7 @@ export function makeForm(cat, obj) {
     "*"
   ];
 
-  d3
-    .select(".settingsForm form")
-    .selectAll("*")
-    .remove();
+  d3.select(".settingsForm form").selectAll("*").remove();
   var myForm = $(".settingsForm form").jsonForm({
     schema: cat.current.schemaObj,
     value: obj,

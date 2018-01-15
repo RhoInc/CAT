@@ -96,6 +96,7 @@ const defaultSettings = {
     "safetyData/SDTM/SV.csv",
     "safetyData/SDTM/LB.csv",
     "safetyData/SDTM/VS.csv",
+    "testData/ADBDS_missingVisits.csv",
     "testData/ADTIMELINES_noDays.csv",
     "testData/ADTIMELINES_partialMissing.csv",
     "queries/queries.csv",

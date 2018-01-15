@@ -9,10 +9,7 @@
 
   function init() {
     //layout the cat
-    this.wrap = d3
-      .select(this.element)
-      .append("div")
-      .attr("class", "cat-wrap");
+    this.wrap = d3.select(this.element).append("div").attr("class", "cat-wrap");
     this.layout(this);
 
     //initialize the settings
@@ -52,10 +49,7 @@
       .attr("class", "control-section section2");
 
     cat.controls.rendererSelect.on("change", function(d) {
-      cat.current = d3
-        .select(this)
-        .select("option:checked")
-        .data()[0];
+      cat.current = d3.select(this).select("option:checked").data()[0];
 
       //update the chart type configuration to the defaults for the selected renderer
       cat.controls.mainFunction.node().value = cat.current.main;
@@ -95,18 +89,12 @@
       });
 
     //specify the code to create the chart
-    rendererSection
-      .append("span")
-      .text(" Init: ")
-      .classed("hidden", true);
+    rendererSection.append("span").text(" Init: ").classed("hidden", true);
     cat.controls.mainFunction = rendererSection
       .append("input")
       .classed("hidden", true);
     cat.controls.mainFunction.node().value = cat.current.main;
-    rendererSection
-      .append("span")
-      .text(".")
-      .classed("hidden", true);
+    rendererSection.append("span").text(".").classed("hidden", true);
     cat.controls.subFunction = rendererSection
       .append("input")
       .classed("hidden", true);
@@ -123,10 +111,7 @@
     cat.controls.libraryVersion.node().value = "master";
     rendererSection.append("br").classed("hidden", true);
 
-    rendererSection
-      .append("span")
-      .text("Schema: ")
-      .classed("hidden", true);
+    rendererSection.append("span").text("Schema: ").classed("hidden", true);
     cat.controls.schema = rendererSection
       .append("input")
       .classed("hidden", true);
@@ -237,9 +222,9 @@
         }
       : function(obj) {
           return obj &&
-            typeof Symbol === "function" &&
-            obj.constructor === Symbol &&
-            obj !== Symbol.prototype
+          typeof Symbol === "function" &&
+          obj.constructor === Symbol &&
+          obj !== Symbol.prototype
             ? "symbol"
             : typeof obj;
         };
@@ -999,6 +984,7 @@
       "safetyData/SDTM/SV.csv",
       "safetyData/SDTM/LB.csv",
       "safetyData/SDTM/VS.csv",
+      "testData/ADBDS_missingVisits.csv",
       "testData/ADTIMELINES_noDays.csv",
       "testData/ADTIMELINES_partialMissing.csv",
       "queries/queries.csv",
@@ -1028,10 +1014,7 @@
       "*"
     ];
 
-    d3
-      .select(".settingsForm form")
-      .selectAll("*")
-      .remove();
+    d3.select(".settingsForm form").selectAll("*").remove();
     var myForm = $(".settingsForm form").jsonForm({
       schema: cat.current.schemaObj,
       value: obj,
