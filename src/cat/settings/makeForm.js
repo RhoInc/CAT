@@ -14,7 +14,10 @@ export function makeForm(cat, obj) {
     "*"
   ];
 
-  d3.select(".settingsForm form").selectAll("*").remove();
+  d3
+    .select(".settingsForm form")
+    .selectAll("*")
+    .remove();
   var myForm = $(".settingsForm form").jsonForm({
     schema: cat.current.schemaObj,
     value: obj,
@@ -54,4 +57,13 @@ export function makeForm(cat, obj) {
   //format the form a little bit so that we can dodge bootstrap
   d3.selectAll("i.icon-plus-sign").text("+");
   d3.selectAll("i.icon-minus-sign").text("-");
+  d3.selectAll(".settingsForm input, .settingsForm select").each(function() {
+    this.addEventListener("keypress", function(e) {
+      var key = e.which || e.keyCode;
+      if (key === 13) {
+        // 13 is enter
+        cat.controls.submitButton.node().click();
+      }
+    });
+  });
 }
