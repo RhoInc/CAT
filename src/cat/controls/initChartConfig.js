@@ -62,6 +62,13 @@ export function initChartConfig(cat) {
     .attr("rows", 10)
     .style("width", "90%")
     .text("{}");
+  cat.controls.settingsInput.node().addEventListener("keypress", function(e) {
+    var key = e.which || e.keyCode;
+    if (key === 13) {
+      // 13 is enter
+      cat.controls.submitButton.node().click();
+    }
+  });
 
   //////////////////////////////////////////////////////////////////////
   //wrapper for the form

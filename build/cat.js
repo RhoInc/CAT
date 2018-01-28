@@ -9,7 +9,10 @@
 
   function init() {
     //layout the cat
-    this.wrap = d3.select(this.element).append("div").attr("class", "cat-wrap");
+    this.wrap = d3
+      .select(this.element)
+      .append("div")
+      .attr("class", "cat-wrap");
     this.layout(this);
 
     //initialize the settings
@@ -49,7 +52,10 @@
       .attr("class", "control-section section2");
 
     cat.controls.rendererSelect.on("change", function(d) {
-      cat.current = d3.select(this).select("option:checked").data()[0];
+      cat.current = d3
+        .select(this)
+        .select("option:checked")
+        .data()[0];
 
       //update the chart type configuration to the defaults for the selected renderer
       cat.controls.mainFunction.node().value = cat.current.main;
@@ -67,6 +73,15 @@
       //Re-initialize the chart config section
       cat.settings.set(cat);
     });
+    cat.controls.rendererSelect
+      .node()
+      .addEventListener("keypress", function(e) {
+        var key = e.which || e.keyCode;
+        if (key === 13) {
+          // 13 is enter
+          cat.controls.submitButton.node().click();
+        }
+      });
 
     rendererSection.append("span").text("Version: ");
     cat.controls.versionSelect = rendererSection.append("input");
@@ -74,6 +89,13 @@
     cat.controls.versionSelect.on("change", function() {
       //checkVersion()
       cat.settings.set(cat);
+    });
+    cat.controls.versionSelect.node().addEventListener("keypress", function(e) {
+      var key = e.which || e.keyCode;
+      if (key === 13) {
+        // 13 is enter
+        cat.controls.submitButton.node().click();
+      }
     });
     rendererSection.append("br");
 
@@ -89,12 +111,18 @@
       });
 
     //specify the code to create the chart
-    rendererSection.append("span").text(" Init: ").classed("hidden", true);
+    rendererSection
+      .append("span")
+      .text(" Init: ")
+      .classed("hidden", true);
     cat.controls.mainFunction = rendererSection
       .append("input")
       .classed("hidden", true);
     cat.controls.mainFunction.node().value = cat.current.main;
-    rendererSection.append("span").text(".").classed("hidden", true);
+    rendererSection
+      .append("span")
+      .text(".")
+      .classed("hidden", true);
     cat.controls.subFunction = rendererSection
       .append("input")
       .classed("hidden", true);
@@ -111,7 +139,10 @@
     cat.controls.libraryVersion.node().value = "master";
     rendererSection.append("br").classed("hidden", true);
 
-    rendererSection.append("span").text("Schema: ").classed("hidden", true);
+    rendererSection
+      .append("span")
+      .text("Schema: ")
+      .classed("hidden", true);
     cat.controls.schema = rendererSection
       .append("input")
       .classed("hidden", true);
@@ -133,6 +164,15 @@
       .append("option")
       .text(function(d) {
         return d;
+      });
+    cat.controls.dataFileSelect
+      .node()
+      .addEventListener("keypress", function(e) {
+        var key = e.which || e.keyCode;
+        if (key === 13) {
+          // 13 is enter
+          cat.controls.submitButton.node().click();
+        }
       });
   }
 
@@ -202,6 +242,13 @@
       .attr("rows", 10)
       .style("width", "90%")
       .text("{}");
+    cat.controls.settingsInput.node().addEventListener("keypress", function(e) {
+      var key = e.which || e.keyCode;
+      if (key === 13) {
+        // 13 is enter
+        cat.controls.submitButton.node().click();
+      }
+    });
 
     //////////////////////////////////////////////////////////////////////
     //wrapper for the form
@@ -222,9 +269,9 @@
         }
       : function(obj) {
           return obj &&
-          typeof Symbol === "function" &&
-          obj.constructor === Symbol &&
-          obj !== Symbol.prototype
+            typeof Symbol === "function" &&
+            obj.constructor === Symbol &&
+            obj !== Symbol.prototype
             ? "symbol"
             : typeof obj;
         };
@@ -835,6 +882,19 @@
       .attr("class", "submit")
       .text("Render Chart")
       .on("click", function() {
+        //Disable and/or remove previously loaded stylesheets.
+        d3
+          .selectAll("link")
+          .filter(function() {
+            return !this.href.indexOf("css/cat.css");
+          })
+          .property("disabled", true)
+          .remove();
+        d3
+          .selectAll("style")
+          .property("disabled", true)
+          .remove();
+
         cat.chartWrap.selectAll("*").remove();
         cat.printStatus = true;
         cat.statusDiv = cat.chartWrap.append("div").attr("class", "status");
@@ -895,7 +955,7 @@
         sub: "createChart",
         css: "css/aeTable.css",
         schema: "settings-schema.json",
-        defaultData: "safetyData-queries/ADAE.csv"
+        defaultData: "safetyData/ADAE.csv"
       },
       {
         name: "clinical-timelines",
@@ -911,7 +971,7 @@
         sub: "createChart",
         css: "css/webcodebook.css",
         schema: null,
-        defaultData: "safetyData-queries/ADAE.csv"
+        defaultData: "safetyData/ADAE.csv"
       },
       {
         name: "aetimelines",
@@ -919,7 +979,7 @@
         sub: null,
         css: null,
         schema: null,
-        defaultData: "safetyData-queries/ADAE.csv"
+        defaultData: "safetyData/ADAE.csv"
       },
       {
         name: "paneled-outlier-explorer",
@@ -927,7 +987,7 @@
         sub: null,
         css: null,
         schema: "settings-schema.json",
-        defaultData: "safetyData-queries/ADBDS.csv"
+        defaultData: "safetyData/ADBDS.csv"
       },
       {
         name: "safety-histogram",
@@ -935,23 +995,23 @@
         sub: null,
         css: null,
         schema: null,
-        defaultData: "safetyData-queries/ADBDS.csv"
+        defaultData: "safetyData/ADBDS.csv"
       },
       {
         name: "safety-outlier-explorer",
         main: "safetyOutlierExplorer",
         sub: null,
         css: null,
-        schema: null,
-        defaultData: "safetyData-queries/ADBDS.csv"
+        schema: "settings-schema.json",
+        defaultData: "safetyData/ADBDS.csv"
       },
       {
         name: "safety-results-over-time",
         main: "safetyResultsOverTime",
         sub: null,
         css: null,
-        schema: null,
-        defaultData: "safetyData-queries/ADBDS.csv"
+        schema: "settings-schema.json",
+        defaultData: "safetyData/ADBDS.csv"
       },
       {
         name: "safety-shift-plot",
@@ -959,7 +1019,7 @@
         sub: null,
         css: null,
         schema: null,
-        defaultData: "safetyData-queries/ADBDS.csv"
+        defaultData: "safetyData/ADBDS.csv"
       },
       {
         name: "query-overview",
@@ -1014,7 +1074,10 @@
       "*"
     ];
 
-    d3.select(".settingsForm form").selectAll("*").remove();
+    d3
+      .select(".settingsForm form")
+      .selectAll("*")
+      .remove();
     var myForm = $(".settingsForm form").jsonForm({
       schema: cat.current.schemaObj,
       value: obj,
@@ -1054,6 +1117,15 @@
     //format the form a little bit so that we can dodge bootstrap
     d3.selectAll("i.icon-plus-sign").text("+");
     d3.selectAll("i.icon-minus-sign").text("-");
+    d3.selectAll(".settingsForm input, .settingsForm select").each(function() {
+      this.addEventListener("keypress", function(e) {
+        var key = e.which || e.keyCode;
+        if (key === 13) {
+          // 13 is enter
+          cat.controls.submitButton.node().click();
+        }
+      });
+    });
   }
 
   function setStatus(cat, statusVal) {

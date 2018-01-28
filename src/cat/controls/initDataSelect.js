@@ -13,4 +13,11 @@ export function initDataSelect(cat) {
     .text(function(d) {
       return d;
     });
+  cat.controls.dataFileSelect.node().addEventListener("keypress", function(e) {
+    var key = e.which || e.keyCode;
+    if (key === 13) {
+      // 13 is enter
+      cat.controls.submitButton.node().click();
+    }
+  });
 }
