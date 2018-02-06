@@ -11,7 +11,7 @@
     "format-src": "prettier --write \"src/**/*.js\"",
     "watch": "rollup -c -w",
     "start": "node server/app.js",
-    "initServer":"node server/initServer.js"
+    "initServer": "node server/initServer.js"
   },
   "author": "Rho, Inc.",
   "license": "MIT",
@@ -20,7 +20,7 @@
     "jquery": "~3",
     "json5": "^0.5.1",
     "express": "~4",
-    "body-parser":"~1"
+    "body-parser": "~1"
   },
   "devDependencies": {
     "babel-cli": "^6.5.1",

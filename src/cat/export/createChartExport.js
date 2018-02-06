@@ -33,16 +33,12 @@ export function createChartExport(cat) {
         <meta http-equiv = 'Content-Type' content = 'text/html; charset = utf-8'>
 
         <script type = 'text/javascript' src = 'https://d3js.org/d3.v3.min.js'></script>
-        <script type = 'text/javascript' src = 'https://rawgit.com/RhoInc/Webcharts/${
-          webcharts_version
-        }/build/webcharts.js'></script>
+        <script type = 'text/javascript' src = 'https://rawgit.com/RhoInc/Webcharts/${webcharts_version}/build/webcharts.js'></script>
         <script type = 'text/javascript' src = 'https://rawgit.com/RhoInc/${
           cat.current.name
         }/${renderer_version}/build/${cat.current.main}.js'></script>
 
-        <link type = 'text/css' rel = 'stylesheet' href = 'https://rawgit.com/RhoInc/Webcharts/${
-          webcharts_version
-        }/css/webcharts.min.css'>
+        <link type = 'text/css' rel = 'stylesheet' href = 'https://rawgit.com/RhoInc/Webcharts/${webcharts_version}/css/webcharts.min.css'>
         ${renderer_css}
     </head>
 
