@@ -41,6 +41,13 @@ export function initRendererSelect(cat) {
     //Re-initialize the chart config section
     cat.settings.set(cat);
   });
+  cat.controls.rendererSelect.node().addEventListener("keypress", function(e) {
+    var key = e.which || e.keyCode;
+    if (key === 13) {
+      // 13 is enter
+      cat.controls.submitButton.node().click();
+    }
+  });
 
   rendererSection.append("span").text("Version: ");
   cat.controls.versionSelect = rendererSection.append("input");
@@ -48,6 +55,13 @@ export function initRendererSelect(cat) {
   cat.controls.versionSelect.on("change", function() {
     //checkVersion()
     cat.settings.set(cat);
+  });
+  cat.controls.versionSelect.node().addEventListener("keypress", function(e) {
+    var key = e.which || e.keyCode;
+    if (key === 13) {
+      // 13 is enter
+      cat.controls.submitButton.node().click();
+    }
   });
   rendererSection.append("br");
 

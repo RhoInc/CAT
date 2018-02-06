@@ -29,7 +29,7 @@ const defaultSettings = {
       sub: "createChart",
       css: "css/aeTable.css",
       schema: "settings-schema.json",
-      defaultData: "safetyData-queries/ADAE.csv"
+      defaultData: "safetyData/ADAE.csv"
     },
     {
       name: "clinical-timelines",
@@ -45,7 +45,7 @@ const defaultSettings = {
       sub: "createChart",
       css: "css/webcodebook.css",
       schema: null,
-      defaultData: "safetyData-queries/ADAE.csv"
+      defaultData: "safetyData/ADAE.csv"
     },
     {
       name: "aetimelines",
@@ -53,7 +53,7 @@ const defaultSettings = {
       sub: null,
       css: null,
       schema: null,
-      defaultData: "safetyData-queries/ADAE.csv"
+      defaultData: "safetyData/ADAE.csv"
     },
     {
       name: "paneled-outlier-explorer",
@@ -61,7 +61,7 @@ const defaultSettings = {
       sub: null,
       css: null,
       schema: "settings-schema.json",
-      defaultData: "safetyData-queries/ADBDS.csv"
+      defaultData: "safetyData/ADBDS.csv"
     },
     {
       name: "safety-histogram",
@@ -69,23 +69,23 @@ const defaultSettings = {
       sub: null,
       css: null,
       schema: null,
-      defaultData: "safetyData-queries/ADBDS.csv"
+      defaultData: "safetyData/ADBDS.csv"
     },
     {
       name: "safety-outlier-explorer",
       main: "safetyOutlierExplorer",
       sub: null,
       css: null,
-      schema: null,
-      defaultData: "safetyData-queries/ADBDS.csv"
+      schema: "settings-schema.json",
+      defaultData: "safetyData/ADBDS.csv"
     },
     {
       name: "safety-results-over-time",
       main: "safetyResultsOverTime",
       sub: null,
       css: null,
-      schema: null,
-      defaultData: "safetyData-queries/ADBDS.csv"
+      schema: "settings-schema.json",
+      defaultData: "safetyData/ADBDS.csv"
     },
     {
       name: "safety-shift-plot",
@@ -93,7 +93,7 @@ const defaultSettings = {
       sub: null,
       css: null,
       schema: null,
-      defaultData: "safetyData-queries/ADBDS.csv"
+      defaultData: "safetyData/ADBDS.csv"
     },
     {
       name: "query-overview",
