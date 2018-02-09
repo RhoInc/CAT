@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta
+            http-equiv = 'Content-Type'
+            content = 'text/html; charset = utf-8'>
+
+        <title>Charting Application Tester (CAT) </title>
+        <script type='text/javascript' src ='https://d3js.org/d3.v3.min.js'></script>
+        <script type="text/javascript" src="deps/jquery.min.js"></script>
+        <script type="text/javascript" src="deps/underscore.js"></script>
+        <script type="text/javascript" src="deps/opt/jsv.js"></script>
+        <script type="text/javascript" src="deps/jsonform.js"></script>
+        <script type="text/javascript" src="deps/json5.js"></script>
+        <script type='text/javascript' src ='../../build/cat.js'></script>
+
+        <link type = 'text/css' rel = 'stylesheet' href = './css/cat.css'>
+    </head>
+
+    <body>
+      <button class="submit">Export a Chart</button>
+      <span class="note">Click export to test stuff</span>
+    </body>
+
+    <script>
+      var testObj = {}
+      var myChartString = "CjwhRE9DVFlQRSBodG1sPgoKICAgIDxodG1sPgoKICAgIDxoZWFkPgogICAgICAgIDx0aXRsZT5hZWV4cGxvcmVyPC90aXRsZT4KCiAgICAgICAgPG1ldGEgaHR0cC1lcXVpdiA9ICdDb250ZW50LVR5cGUnIGNvbnRlbnQgPSAndGV4dC9odG1sOyBjaGFyc2V0ID0gdXRmLTgnPgoKICAgICAgICA8c2NyaXB0IHR5cGUgPSAndGV4dC9qYXZhc2NyaXB0JyBzcmMgPSAnaHR0cHM6Ly9kM2pzLm9yZy9kMy52My5taW4uanMnPjwvc2NyaXB0PgogICAgICAgIDxzY3JpcHQgdHlwZSA9ICd0ZXh0L2phdmFzY3JpcHQnIHNyYyA9ICdodHRwczovL3Jhd2dpdC5jb20vUmhvSW5jL1dlYmNoYXJ0cy9tYXN0ZXIvYnVpbGQvd2ViY2hhcnRzLmpzJz48L3NjcmlwdD4KICAgICAgICA8c2NyaXB0IHR5cGUgPSAndGV4dC9qYXZhc2NyaXB0JyBzcmMgPSAnaHR0cHM6Ly9yYXdnaXQuY29tL1Job0luYy9hZWV4cGxvcmVyL21hc3Rlci9idWlsZC9hZVRhYmxlLmpzJz48L3NjcmlwdD4KCiAgICAgICAgPGxpbmsgdHlwZSA9ICd0ZXh0L2NzcycgcmVsID0gJ3N0eWxlc2hlZXQnIGhyZWYgPSAnaHR0cHM6Ly9yYXdnaXQuY29tL1Job0luYy9XZWJjaGFydHMvbWFzdGVyL2Nzcy93ZWJjaGFydHMubWluLmNzcyc+CiAgICAgICAgPGxpbmsgdHlwZSA9ICd0ZXh0L2NzcycgcmVsID0gJ3N0eWxlc2hlZXQnIGhyZWYgPSAnaHR0cHM6Ly9jZG4ucmF3Z2l0LmNvbS9SaG9JbmMvYWVleHBsb3Jlci9tYXN0ZXIvY3NzL2FlVGFibGUuY3NzJz4KICAgIDwvaGVhZD4KCiAgICA8Ym9keT4KICAgICAgICA8aDEgaWQgPSAndGl0bGUnPmFlZXhwbG9yZXIgY3JlYXRlZCBmb3Igc2FmZXR5RGF0YS1xdWVyaWVzL0FEQUUuY3N2PC9oMT4KICAgICAgICA8ZGl2IGlkID0gJ2NvbnRhaW5lcic+CiAgICAgICAgPC9kaXY+CiAgICA8L2JvZHk+CgogICAgPHNjcmlwdCB0eXBlID0gJ3RleHQvamF2YXNjcmlwdCc+CiAgICAgICAgbGV0IHNldHRpbmdzID0gewogInZhcmlhYmxlcyI6IHsKICAiaWQiOiAiVVNVQkpJRCIsCiAgIm1ham9yIjogIkFFQk9EU1lTIiwKICAibWlub3IiOiAiQUVERUNPRCIsCiAgImdyb3VwIjogIkFSTSIKIH0sCiAiZGVmYXVsdHMiOiB7CiAgIm1heEdyb3VwcyI6IDYsCiAgInRvdGFsQ29sIjogdHJ1ZSwKICAiZGlmZkNvbCI6IHRydWUsCiAgInN1bW1hcml6ZUJ5IjogInBhcnRpY2lwYW50IiwKICAicHJlZlRlcm1zIjogZmFsc2UKIH0sCiAicGxvdFNldHRpbmdzIjogewogICJoIjogMTUsCiAgInciOiAyMDAsCiAgInIiOiA3LAogICJtYXJnaW4iOiB7CiAgICJsZWZ0IjogNDAsCiAgICJyaWdodCI6IDQwCiAgfSwKICAicGxvdE1hcmdpbiI6IHsKICAgImxlZnQiOiA1LAogICAicmlnaHQiOiA1CiAgfQogfSwKICJ2YWxpZGF0aW9uIjogZmFsc2UKfQogICAgICAgIGxldCBjaGFydCA9IGFlVGFibGUuY3JlYXRlQ2hhcnQoJyNjb250YWluZXInLCBzZXR0aW5ncyk7CiAgICAgICAgZDMuY3N2KCdodHRwczovL3Job2luYy5naXRodWIuaW8vdml6LWxpYnJhcnkvZGF0YS9zYWZldHlEYXRhLXF1ZXJpZXMvQURBRS5jc3YnLCBmdW5jdGlvbihkYXRhKSB7CiAgICAgICAgICAgIGNoYXJ0LmluaXQoZGF0YSk7CiAgICAgICAgfSk7CgogICAgPC9zY3JpcHQ+CjwvaHRtbD4K"
+
+      var chartObj = {chart:myChartString};
+      //var chartObj = {"a":"123","b":1}; // this one throws an error
+      console.log(chartObj);
+      d3.select("button.submit").on("click",function(){
+        $.post("./export/",chartObj, function(data){
+          d3.select("span.note").html("Success! Here is <a href='"+data.url+"'>your chart</a>")
+          console.log(data)
+        })
+        .fail(function() {
+          d3.select("span.note").text("Error :( Something went wrong.")
+        });
+      })
+
+    </script>
+</html>

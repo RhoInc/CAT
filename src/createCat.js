@@ -3,6 +3,7 @@ import { layout } from "./cat/layout";
 import { controls } from "./cat/controls";
 import { setDefaults } from "./cat/setDefaults";
 import { settings } from "./cat/settings";
+import { status } from "./cat/status";
 
 export function createCat(element = "body", config) {
   let cat = {
@@ -12,7 +13,8 @@ export function createCat(element = "body", config) {
     layout: layout,
     controls: controls,
     setDefaults: setDefaults,
-    settings: settings
+    settings: settings,
+    status: status
   };
 
   return cat;

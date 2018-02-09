@@ -1,6 +1,6 @@
 {
   "name": "cat",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "The Charting Application Tester (CAT) lets users make and adjust web graphics on the fly.",
   "main": "./index.html",
   "scripts": {
@@ -9,14 +9,18 @@
     "format": "npm run format-src && npm run format-bundle",
     "format-bundle": "prettier --write \"build/CAT.js\"",
     "format-src": "prettier --write \"src/**/*.js\"",
-    "watch": "rollup -c -w"
+    "watch": "rollup -c -w",
+    "start": "node server/app.js",
+    "initServer": "node server/initServer.js"
   },
   "author": "Rho, Inc.",
   "license": "MIT",
   "dependencies": {
     "d3": "^3.5.14",
     "jquery": "~3",
-    "json5": "^0.5.1"
+    "json5": "^0.5.1",
+    "express": "~4",
+    "body-parser": "~1"
   },
   "devDependencies": {
     "babel-cli": "^6.5.1",

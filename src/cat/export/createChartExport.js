@@ -1,4 +1,4 @@
-export function exportChart(cat) {
+export function createChartExport(cat) {
   /* Get settings from current controls */
   var webcharts_version = cat.controls.libraryVersion.node().value;
   var renderer_version = cat.controls.versionSelect.node().value;

@@ -3,10 +3,11 @@ import { loadRenderer } from "./loadRenderer";
 
 export function loadLibrary(cat) {
   var version = cat.controls.libraryVersion.node().value;
+  var library = "webcharts"; //hardcode to webcharts for now - could generalize later
   var rendererPath =
     cat.config.rootURL +
     "/" +
-    "webcharts" + //hardcode to webcharts for now - could generalize later
+    library +
     "/" +
     version +
     "/build/" +
@@ -32,39 +33,23 @@ export function loadLibrary(cat) {
   loader.require(rendererPath, {
     async: true,
     success: function() {
-      cat.statusDiv
-        .append("div")
-        .html(
-          "The " +
-            version +
-            " branch of <i>Webcharts</i> loaded as expected. Loading the renderer ..."
-        );
+      cat.status.loadStatus(
+        cat.statusDiv,
+        true,
+        rendererPath,
+        library,
+        version
+      );
       loadRenderer(cat);
     },
     failure: function() {
-      cat.statusDiv
-        .append("div")
-        .html(
-          "The " +
-            version +
-            " branch of Webcharts did NOT load. Aborting chart renderering. Are you sure the specified version exists?"
-        )
-        .classed("error", true);
+      cat.status.loadStatus(
+        cat.statusDiv,
+        false,
+        rendererPath,
+        library,
+        version
+      );
     }
   });
-
-  /*
-  var scriptReady = false;
-  var script = document.createElement("script");
-  script.type = "text/javascript";
-  script.src = rendererPath;
-  script.onload = script.onreadystatechange = function() {
-    if (!scriptReady && (!this.readyState || this.readyState == "complete")) {
-      scriptReady = true;
-      loadRenderer(cat);
-    }
-  };
-  var tag = document.getElementsByTagName("script")[0];
-  tag.parentNode.insertBefore(script, tag);
-*/
 }
