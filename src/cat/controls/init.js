@@ -1,5 +1,6 @@
 import { initRendererSelect } from "./initRendererSelect";
 import { initDataSelect } from "./initDataSelect";
+import { initFileLoad } from "./initFileLoad";
 import { initChartConfig } from "./initChartConfig";
 import { initBootstrapConfig } from "./initBootstrapConfig";
 import { initSubmit } from "./initSubmit";
@@ -10,6 +11,7 @@ export function init(cat) {
   initSubmit(cat);
   initRendererSelect(cat);
   initDataSelect(cat);
+  initFileLoad.call(cat);
   initChartConfig(cat);
   initBootstrapConfig(cat);
 
