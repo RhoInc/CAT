@@ -7,6 +7,8 @@ export function layout(cat) {
   cat.dataWrap = cat.wrap.append("div").attr("class", "cat-data footer");
 
   /* Layout CAT Controls Divs */
+  cat.controls.wrap.append("h2").text("Charting Application Tester 😼");
+
   cat.controls.submitWrap = cat.controls.wrap
     .append("div")
     .attr("class", "control-section submit-section");

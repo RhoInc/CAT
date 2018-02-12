@@ -31,6 +31,8 @@
     cat.dataWrap = cat.wrap.append("div").attr("class", "cat-data footer");
 
     /* Layout CAT Controls Divs */
+    cat.controls.wrap.append("h2").text("Charting Application Tester 😼");
+
     cat.controls.submitWrap = cat.controls.wrap
       .append("div")
       .attr("class", "control-section submit-section");
@@ -65,9 +67,6 @@
       .text(function(d) {
         return d.name;
       });
-    var rendererSection = cat.controls.wrap
-      .append("div")
-      .attr("class", "control-section section2");
 
     cat.controls.rendererSelect.on("change", function(d) {
       cat.current = d3
@@ -100,9 +99,9 @@
           cat.controls.submitButton.node().click();
         }
       });
-
-    rendererSection.append("span").text("Version: ");
-    cat.controls.versionSelect = rendererSection.append("input");
+    cat.controls.rendererWrap.append("br");
+    cat.controls.rendererWrap.append("span").text("Version: ");
+    cat.controls.versionSelect = cat.controls.rendererWrap.append("input");
     cat.controls.versionSelect.node().value = "master";
     cat.controls.versionSelect.on("change", function() {
       //checkVersion()
@@ -115,9 +114,9 @@
         cat.controls.submitButton.node().click();
       }
     });
-    rendererSection.append("br");
+    cat.controls.rendererWrap.append("br");
 
-    rendererSection
+    cat.controls.rendererWrap
       .append("a")
       .text("More Options")
       .style("text-decoration", "underline")
@@ -125,47 +124,47 @@
       .style("cursor", "pointer")
       .on("click", function() {
         d3.select(this).remove();
-        rendererSection.selectAll("*").classed("hidden", false);
+        cat.controls.rendererWrap.selectAll("*").classed("hidden", false);
       });
 
     //specify the code to create the chart
-    rendererSection
+    cat.controls.rendererWrap
       .append("span")
       .text(" Init: ")
       .classed("hidden", true);
-    cat.controls.mainFunction = rendererSection
+    cat.controls.mainFunction = cat.controls.rendererWrap
       .append("input")
       .classed("hidden", true);
     cat.controls.mainFunction.node().value = cat.current.main;
-    rendererSection
+    cat.controls.rendererWrap
       .append("span")
       .text(".")
       .classed("hidden", true);
-    cat.controls.subFunction = rendererSection
+    cat.controls.subFunction = cat.controls.rendererWrap
       .append("input")
       .classed("hidden", true);
     cat.controls.subFunction.node().value = cat.current.sub;
-    rendererSection.append("br").classed("hidden", true);
+    cat.controls.rendererWrap.append("br").classed("hidden", true);
     //Webcharts versionSelect
-    rendererSection
+    cat.controls.rendererWrap
       .append("span")
       .text("Webcharts Version: ")
       .classed("hidden", true);
-    cat.controls.libraryVersion = rendererSection
+    cat.controls.libraryVersion = cat.controls.rendererWrap
       .append("input")
       .classed("hidden", true);
     cat.controls.libraryVersion.node().value = "master";
-    rendererSection.append("br").classed("hidden", true);
+    cat.controls.rendererWrap.append("br").classed("hidden", true);
 
-    rendererSection
+    cat.controls.rendererWrap
       .append("span")
       .text("Schema: ")
       .classed("hidden", true);
-    cat.controls.schema = rendererSection
+    cat.controls.schema = cat.controls.rendererWrap
       .append("input")
       .classed("hidden", true);
     cat.controls.schema.node().value = cat.current.schema;
-    rendererSection.append("br").classed("hidden", true);
+    cat.controls.rendererWrap.append("br").classed("hidden", true);
   }
 
   function initDataSelect(cat) {
@@ -918,7 +917,6 @@
   function init$1(cat) {
     console.log("initializing controls");
     cat.current = cat.config.renderers[0];
-    cat.controls.wrap.append("h2").text("Charting Application Tester 😼");
     initSubmit(cat);
     initRendererSelect(cat);
     initDataSelect(cat);

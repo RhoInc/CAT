@@ -8,7 +8,6 @@ import { initSubmit } from "./initSubmit";
 export function init(cat) {
   console.log("initializing controls");
   cat.current = cat.config.renderers[0];
-  cat.controls.wrap.append("h2").text("Charting Application Tester 😼");
   initSubmit(cat);
   initRendererSelect(cat);
   initDataSelect(cat);
