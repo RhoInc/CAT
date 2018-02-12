@@ -1,11 +1,7 @@
 import { loadLibrary } from "../loadLibrary";
 
 export function initSubmit(cat) {
-  var submitSection = cat.controls.wrap
-    .append("div")
-    .attr("class", "control-section");
-
-  cat.controls.submitButton = submitSection
+  cat.controls.submitButton = cat.controls.submitWrap
     .append("button")
     .attr("class", "submit")
     .text("Render Chart")

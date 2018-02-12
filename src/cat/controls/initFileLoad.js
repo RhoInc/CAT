@@ -1,12 +1,12 @@
 export function initFileLoad() {
   var cat = this;
   //draw the control
-  var dataSection = cat.controls.wrap.select("div.control-section");
-  cat.controls.dataFileLoad = dataSection
+
+  cat.controls.dataFileLoad = cat.controls.dataWrap
     .append("input")
     .attr("type", "file")
     .attr("class", "file-load-input");
-  cat.controls.dataFileLoadButton = dataSection
+  cat.controls.dataFileLoadButton = cat.controls.dataWrap
     .append("button")
     .text("Load File")
     .attr("class", "file-load-button")

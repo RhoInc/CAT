@@ -1,12 +1,8 @@
 export function initRendererSelect(cat) {
-  var rendererSection = cat.controls.wrap
-    .append("div")
-    .attr("class", "control-section section1");
+  cat.controls.rendererWrap.append("h3").text("1. Choose a Charting Library");
+  cat.controls.rendererWrap.append("span").text("Library: ");
 
-  rendererSection.append("h3").text("1. Choose a Charting Library");
-  rendererSection.append("span").text("Library: ");
-
-  cat.controls.rendererSelect = rendererSection.append("select");
+  cat.controls.rendererSelect = cat.controls.rendererWrap.append("select");
   cat.controls.rendererSelect
     .selectAll("option")
     .data(cat.config.renderers)

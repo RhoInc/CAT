@@ -23,22 +23,40 @@
   }
 
   function layout(cat) {
+    /* Layout primary sections */
     cat.controls.wrap = cat.wrap
       .append("div")
       .attr("class", "cat-controls section");
     cat.chartWrap = cat.wrap.append("div").attr("class", "cat-chart section");
     cat.dataWrap = cat.wrap.append("div").attr("class", "cat-data footer");
+
+    /* Layout CAT Controls Divs */
+    cat.controls.submitWrap = cat.controls.wrap
+      .append("div")
+      .attr("class", "control-section submit-section");
+
+    cat.controls.rendererWrap = cat.controls.wrap
+      .append("div")
+      .attr("class", "control-section renderer-section");
+
+    cat.controls.dataWrap = cat.controls.wrap
+      .append("div")
+      .attr("class", "control-section data-section");
+
+    cat.controls.settingsWrap = cat.controls.wrap
+      .append("div")
+      .attr("class", "control-section settings-section");
+
+    cat.controls.environmentWrap = cat.controls.wrap
+      .append("div")
+      .attr("class", "control-section environment-section");
   }
 
   function initRendererSelect(cat) {
-    var rendererSection = cat.controls.wrap
-      .append("div")
-      .attr("class", "control-section section1");
+    cat.controls.rendererWrap.append("h3").text("1. Choose a Charting Library");
+    cat.controls.rendererWrap.append("span").text("Library: ");
 
-    rendererSection.append("h3").text("1. Choose a Charting Library");
-    rendererSection.append("span").text("Library: ");
-
-    cat.controls.rendererSelect = rendererSection.append("select");
+    cat.controls.rendererSelect = cat.controls.rendererWrap.append("select");
     cat.controls.rendererSelect
       .selectAll("option")
       .data(cat.config.renderers)
@@ -151,12 +169,9 @@
   }
 
   function initDataSelect(cat) {
-    var dataSection = cat.controls.wrap
-      .append("div")
-      .attr("class", "control-section");
-    dataSection.append("h3").text("2. Choose a data Set");
+    cat.controls.dataWrap.append("h3").text("2. Choose a data Set");
 
-    cat.controls.dataFileSelect = dataSection.append("select");
+    cat.controls.dataFileSelect = cat.controls.dataWrap.append("select");
     cat.controls.dataFileSelect
       .selectAll("option")
       .data(cat.config.dataFiles)
@@ -179,12 +194,12 @@
   function initFileLoad() {
     var cat = this;
     //draw the control
-    var dataSection = cat.controls.wrap.select("div.control-section");
-    cat.controls.dataFileLoad = dataSection
+
+    cat.controls.dataFileLoad = cat.controls.dataWrap
       .append("input")
       .attr("type", "file")
       .attr("class", "file-load-input");
-    cat.controls.dataFileLoadButton = dataSection
+    cat.controls.dataFileLoadButton = cat.controls.dataWrap
       .append("button")
       .text("Load File")
       .attr("class", "file-load-button")
@@ -196,14 +211,11 @@
   }
 
   function initChartConfig(cat) {
-    var settingsSection = cat.controls.wrap
-      .append("div")
-      .attr("class", "control-section");
-    var settingsHeading = settingsSection
+    var settingsHeading = cat.controls.settingsWrap
       .append("h3")
       .html("3. Customize the Chart ");
 
-    settingsSection.append("span").text("Settings: ");
+    cat.controls.settingsWrap.append("span").text("Settings: ");
 
     /*
   //////////////////////////////////////
@@ -220,21 +232,21 @@
     //////////////////////////////////////////////////////////////////////
     //radio buttons to toggle between "text" and "form" based settings
     /////////////////////////////////////////////////////////////////////
-    cat.controls.settingsTypeText = settingsSection
+    cat.controls.settingsTypeText = cat.controls.settingsWrap
       .append("input")
       .attr("class", "radio")
       .property("type", "radio")
       .property("name", "settingsType")
       .property("value", "text");
-    settingsSection.append("span").text("text");
-    cat.controls.settingsTypeForm = settingsSection
+    cat.controls.settingsWrap.append("span").text("text");
+    cat.controls.settingsTypeForm = cat.controls.settingsWrap
       .append("input")
       .attr("class", "radio")
       .property("type", "radio")
       .property("name", "settingsType")
       .property("value", "form");
-    settingsSection.append("span").text("form");
-    cat.controls.settingsType = settingsSection.selectAll(
+    cat.controls.settingsWrap.append("span").text("form");
+    cat.controls.settingsType = cat.controls.settingsWrap.selectAll(
       'input[type="radio"]'
     );
 
@@ -251,12 +263,12 @@
         cat.controls.settingsForm.classed("hidden", false);
       }
     });
-    settingsSection.append("br");
+    cat.controls.settingsWrap.append("br");
 
     //////////////////////////////////////////////////////////////////////
     //text input section
     /////////////////////////////////////////////////////////////////////
-    cat.controls.settingsInput = settingsSection
+    cat.controls.settingsInput = cat.controls.settingsWrap
       .append("textarea")
       .attr("rows", 10)
       .style("width", "90%")
@@ -272,7 +284,7 @@
     //////////////////////////////////////////////////////////////////////
     //wrapper for the form
     /////////////////////////////////////////////////////////////////////
-    cat.controls.settingsForm = settingsSection
+    cat.controls.settingsForm = cat.controls.settingsWrap
       .append("div")
       .attr("class", "settingsForm")
       .append("form");
@@ -720,18 +732,18 @@
   }
 
   function initBootstrapConfig(cat) {
-    var settingsSection = cat.controls.wrap
-      .append("div")
-      .attr("class", "control-section");
-    var settingsHeading = settingsSection.append("h3").html("4. Styling ");
+    var settingsHeading = cat.controls.environmentWrap
+      .append("h3")
+      .html("4. Environment ");
 
-    cat.controls.bootstrapButton = settingsSection
+    cat.controls.bootstrapButton = cat.controls.environmentWrap
       .append("button")
       .text("Load Bootstrap")
       .on("click", function() {
         loadBootstrap(cat);
       });
-    settingsSection
+
+    cat.controls.environmentWrap
       .append("div")
       .append("small")
       .text(
@@ -793,11 +805,7 @@
   }
 
   function initSubmit(cat) {
-    var submitSection = cat.controls.wrap
-      .append("div")
-      .attr("class", "control-section");
-
-    cat.controls.submitButton = submitSection
+    cat.controls.submitButton = cat.controls.submitWrap
       .append("button")
       .attr("class", "submit")
       .text("Render Chart")
