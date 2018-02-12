@@ -170,7 +170,6 @@
 
   function initDataSelect(cat) {
     cat.controls.dataWrap.append("h3").text("2. Choose a data Set");
-
     cat.controls.dataFileSelect = cat.controls.dataWrap.append("select");
     cat.controls.dataFileSelect
       .selectAll("option")
@@ -178,7 +177,7 @@
       .enter()
       .append("option")
       .text(function(d) {
-        return d;
+        return d.label;
       });
     cat.controls.dataFileSelect
       .node()
@@ -204,10 +203,38 @@
       .text("Load File")
       .attr("class", "file-load-button")
       .on("click", function(d) {
-        console.log("you loaded a file");
-        console.log(cat.controls.dataFileLoad.node());
+        //credit to https://jsfiddle.net/Ln37kqc0/
+        var files = cat.controls.dataFileLoad.node().files;
+        if (files.length <= 0) {
+          console.log("No file selected ...");
+          return false;
+        }
+
+        var fr = new FileReader();
+        fr.onload = function(e) {
+          //make sure the file is a csv
+
+          //make an object for the file
+          var dataObject = {
+            label: files[0].name + " (loaded by user)",
+            user_loaded: true,
+            csv_raw: e.target.result
+          };
+          cat.config.dataFiles.push(dataObject);
+
+          //add it to the select dropdown
+          cat.controls.dataFileSelect
+            .append("option")
+            .datum(dataObject)
+            .text(function(d) {
+              return d.label;
+            });
+
+          //let the user know that it's been added
+        };
+
+        fr.readAsText(files.item(0));
       });
-    //when a file is uploaded, add it to the data select dropdown
   }
 
   function initChartConfig(cat) {
@@ -593,12 +620,14 @@
     cat.settings.sync(cat);
     //render the new chart with the current settings
     var dataFile = cat.controls.dataFileSelect.node().value;
-    var dataFilePath = cat.config.dataURL + dataFile;
+    var dataObject = cat.config.dataFiles.find(function(f) {
+      return f.label == dataFile;
+    });
     var version = cat.controls.versionSelect.node().value;
     cat.current.main = cat.controls.mainFunction.node().value;
     cat.current.sub = cat.controls.subFunction.node().value;
 
-    d3.csv(dataFilePath, function(error, data) {
+    function render(error, data) {
       if (error) {
         cat.status.loadStatus(cat.statusDiv, false, dataFilePath);
       } else {
@@ -644,7 +673,17 @@
           cat.printStatus = false;
         }
       }
-    });
+    }
+
+    if (dataObject.user_loaded) {
+      dataObject.json = d3.csv.parse(dataObject.csv_raw);
+      render(false, dataObject.json);
+    } else {
+      var dataFilePath = dataObject.path + dataFile;
+      d3.csv(dataFilePath, function(error, data) {
+        render(error, data);
+      });
+    }
   }
 
   function loadRenderer(cat) {
@@ -837,6 +876,7 @@
   }
 
   function init$1(cat) {
+    console.log("initializing controls");
     cat.current = cat.config.renderers[0];
     cat.controls.wrap.append("h2").text("Charting Application Tester 😼");
     initSubmit(cat);
@@ -989,6 +1029,13 @@
     cat.config.dataURL = cat.config.dataURL || defaultSettings.dataURL;
     cat.config.dataFiles = cat.config.dataFiles || defaultSettings.dataFiles;
     cat.config.renderers = cat.config.renderers || defaultSettings.renderers;
+
+    cat.config.dataFiles = cat.config.dataFiles.map(function(df) {
+      return typeof df == "string"
+        ? { label: df, path: cat.config.dataURL, user_loaded: false }
+        : df;
+    });
+    console.log(cat.config.dataFiles);
   }
 
   function makeForm(cat, obj) {

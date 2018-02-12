@@ -11,8 +11,34 @@ export function initFileLoad() {
     .text("Load File")
     .attr("class", "file-load-button")
     .on("click", function(d) {
-      console.log("you loaded a file");
-      console.log(cat.controls.dataFileLoad.node());
+      //credit to https://jsfiddle.net/Ln37kqc0/
+      var files = cat.controls.dataFileLoad.node().files;
+      if (files.length <= 0) {
+        console.log("No file selected ...");
+        return false;
+      }
+
+      var fr = new FileReader();
+      fr.onload = function(e) {
+        //make sure the file is a csv
+
+        //make an object for the file
+        var dataObject = {
+          label: files[0].name + " (loaded by user)",
+          user_loaded: true,
+          csv_raw: e.target.result
+        };
+        cat.config.dataFiles.push(dataObject);
+
+        //add it to the select dropdown
+        cat.controls.dataFileSelect
+          .append("option")
+          .datum(dataObject)
+          .text(d => d.label);
+
+        //let the user know that it's been added
+      };
+
+      fr.readAsText(files.item(0));
     });
-  //when a file is uploaded, add it to the data select dropdown
 }
