@@ -359,6 +359,71 @@
     cat.settings.set(cat);
   }
 
+  function resetEnv() {
+    console.log("Resetting dat env");
+  }
+
+  function showEnv(cat) {
+    console.log("showing the env");
+    var current_css = [];
+    d3.selectAll("link").each(function() {
+      var obj = {};
+      obj.link = d3.select(this).property("href");
+      obj.active = d3.select(this).property("disabled");
+
+      current_css.push(obj);
+    });
+
+    console.log(current_css);
+    var cssItems = cat.controls.cssList.selectAll("li").data(current_css);
+
+    cssItems.enter().append("li");
+
+    cssItems.text(function(d) {
+      return d.link;
+    });
+
+    cssItems.exit().remove();
+  }
+
+  function initEnvConfig(cat) {
+    var settingsHeading = cat.controls.environmentWrap
+      .append("h3")
+      .html("4. Environment ");
+
+    cat.controls.environmentWrap.append("span").text("Environment: ");
+    cat.controls.chooseEnv = cat.controls.environmentWrap.append("select");
+    cat.controls.chooseEnv
+      .selectAll("option")
+      .data(cat.config.env)
+      .enter()
+      .append("option")
+      .text(function(d) {
+        return d.label;
+      });
+
+    cat.controls.chooseEnv.on("change", function() {
+      console.log("choosing an environment");
+    });
+
+    cat.controls.envReset = cat.controls.environmentWrap
+      .append("button")
+      .text("Clear Environment")
+      .on("click", function() {
+        resetEnv(cat);
+      });
+
+    cat.controls.cssList = cat.controls.environmentWrap
+      .append("ul")
+      .attr("class", "cssList");
+
+    cat.controls.jsList = cat.controls.environmentWrap
+      .append("ul")
+      .attr("class", "jsList");
+
+    showEnv(cat);
+  }
+
   var _typeof =
     typeof Symbol === "function" && typeof Symbol.iterator === "symbol"
       ? function(obj) {
@@ -780,55 +845,6 @@
     });
   }
 
-  function loadBootstrap(cat) {
-    var bootstrapPath_css =
-      "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css";
-    var bootstrapPath_js =
-      "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js";
-
-    var link = document.createElement("link");
-    link.href = bootstrapPath_css;
-    link.type = "text/css";
-    link.rel = "stylesheet";
-    document.getElementsByTagName("head")[0].appendChild(link);
-
-    var bootstrapLoader = new scriptLoader();
-    bootstrapLoader.require(bootstrapPath_js, {
-      async: true,
-      success: function success() {
-        cat.statusDiv.append("div").html("Loaded bootstrap.");
-
-        loadRenderer(cat);
-      },
-      failure: function failure() {
-        cat.statusDiv
-          .append("div")
-          .html("The " + version + "Couldn't load bootstrap. Aborting.")
-          .classed("error", true);
-      }
-    });
-  }
-
-  function initBootstrapConfig(cat) {
-    var settingsHeading = cat.controls.environmentWrap
-      .append("h3")
-      .html("4. Environment ");
-
-    cat.controls.bootstrapButton = cat.controls.environmentWrap
-      .append("button")
-      .text("Load Bootstrap")
-      .on("click", function() {
-        loadBootstrap(cat);
-      });
-
-    cat.controls.environmentWrap
-      .append("div")
-      .append("small")
-      .text(
-        "Load bootstrap with the button above. Refresh the page if you want to remove bootstrap."
-      );
-  }
-
   function loadLibrary(cat) {
     var version = cat.controls.libraryVersion.node().value;
     var library = "webcharts"; //hardcode to webcharts for now - could generalize later
@@ -922,7 +938,7 @@
     initDataSelect(cat);
     initFileLoad.call(cat);
     initChartConfig(cat);
-    initBootstrapConfig(cat);
+    initEnvConfig(cat);
 
     // minimize controls - for later?
     /*
@@ -958,7 +974,8 @@
     rootURL: null,
     dataURL: null,
     dataFiles: [],
-    renderers: []
+    renderers: [],
+    env: []
   };
 
   function setDefaults(cat) {
@@ -967,13 +984,13 @@
     cat.config.dataURL = cat.config.dataURL || defaultSettings.dataURL;
     cat.config.dataFiles = cat.config.dataFiles || defaultSettings.dataFiles;
     cat.config.renderers = cat.config.renderers || defaultSettings.renderers;
+    cat.config.env = cat.config.env || defaultSettings.env;
 
     cat.config.dataFiles = cat.config.dataFiles.map(function(df) {
       return typeof df == "string"
         ? { label: df, path: cat.config.dataURL, user_loaded: false }
         : df;
     });
-    console.log(cat.config.dataFiles);
   }
 
   function makeForm(cat, obj) {

@@ -17,6 +17,8 @@
         <script type='text/javascript' src ='https://cdn.rawgit.com/RhoInc/viz-library/7783f26e/util/web/data/dataFiles.js'></script>
 
         <link type = 'text/css' rel = 'stylesheet' href = './css/cat.css'>
+        <link type = 'text/css' rel = 'stylesheet' href = 'https://cdn.rawgit.com/RhoInc/webcharts/master/css/webcharts.css'>
+
     </head>
 
     <body>
@@ -109,7 +111,25 @@
           schema: null,
           defaultData: "queries/queries.csv"
         }
-      ]
+      ],
+      "env":[
+        {
+          label:"webcharts",
+          css:["https://cdn.rawgit.com/RhoInc/webcharts/master/css/webcharts.css"],
+          js:["https://cdn.rawgit.com/RhoInc/webcharts/master/build/webcharts.js"]
+        },
+        {
+          label:"webcharts+bootstrap",
+          css:[
+            "https://cdn.rawgit.com/RhoInc/webcharts/master/css/webcharts.css",
+            "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          ],
+          js:[
+            "https://cdn.rawgit.com/RhoInc/webcharts/master/build/webcharts.js",
+            "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+          ]
+      }
+    ]
     }
 
     myCatConfig.dataFiles = dataFiles.map(function(m){

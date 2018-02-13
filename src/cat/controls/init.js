@@ -2,7 +2,7 @@ import { initRendererSelect } from "./initRendererSelect";
 import { initDataSelect } from "./initDataSelect";
 import { initFileLoad } from "./initFileLoad";
 import { initChartConfig } from "./initChartConfig";
-import { initBootstrapConfig } from "./initBootstrapConfig";
+import { initEnvConfig } from "./initEnvConfig";
 import { initSubmit } from "./initSubmit";
 
 export function init(cat) {
@@ -13,7 +13,7 @@ export function init(cat) {
   initDataSelect(cat);
   initFileLoad.call(cat);
   initChartConfig(cat);
-  initBootstrapConfig(cat);
+  initEnvConfig(cat);
 
   // minimize controls - for later?
   /*
