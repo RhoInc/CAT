@@ -6,7 +6,6 @@ export function setDefaults(cat) {
   cat.config.dataURL = cat.config.dataURL || defaultSettings.dataURL;
   cat.config.dataFiles = cat.config.dataFiles || defaultSettings.dataFiles;
   cat.config.renderers = cat.config.renderers || defaultSettings.renderers;
-  cat.config.env = cat.config.env || defaultSettings.env;
 
   cat.config.dataFiles = cat.config.dataFiles.map(function(df) {
     return typeof df == "string"

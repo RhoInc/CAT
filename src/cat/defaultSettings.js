@@ -3,8 +3,7 @@ const defaultSettings = {
   rootURL: null,
   dataURL: null,
   dataFiles: [],
-  renderers: [],
-  env: []
+  renderers: []
 };
 
 export default defaultSettings;

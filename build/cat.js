@@ -18,6 +18,8 @@
     //initialize the settings
     this.setDefaults(this);
 
+    //add others here!
+
     //create the controls
     this.controls.init(this);
   }
@@ -359,31 +361,94 @@
     cat.settings.set(cat);
   }
 
-  function resetEnv() {
-    console.log("Resetting dat env");
-  }
-
   function showEnv(cat) {
     console.log("showing the env");
+
+    /*build list of loaded CSS */
     var current_css = [];
     d3.selectAll("link").each(function() {
       var obj = {};
       obj.link = d3.select(this).property("href");
-      obj.active = d3.select(this).property("disabled");
-
+      obj.disabled = d3.select(this).property("disabled");
+      obj.filename = obj.link.substring(obj.link.lastIndexOf("/") + 1);
+      obj.wrap = d3.select(this);
       current_css.push(obj);
     });
 
     console.log(current_css);
     var cssItems = cat.controls.cssList.selectAll("li").data(current_css);
 
-    cssItems.enter().append("li");
+    var newItems = cssItems.enter().append("li");
 
-    cssItems.text(function(d) {
+    var itemContents = newItems.append("span").property("title", function(d) {
       return d.link;
     });
 
+    itemContents
+      .append("a")
+      .text(function(d) {
+        return d.filename;
+      })
+      .attr("href", function(d) {
+        return d.link;
+      })
+      .property("target", "_blank");
+
+    var switchWrap = itemContents
+      .append("label")
+      .attr("class", "switch")
+      .classed("hidden", function(d) {
+        return d.filename == "cat.css";
+      });
+
+    var switchCheck = switchWrap
+      .append("input")
+      .property("type", "checkbox")
+      .property("checked", function(d) {
+        return !d.disabled;
+      });
+    switchWrap.append("span").attr("class", "slider round");
+
+    switchCheck.on("click", function(d) {
+      //load or unload css
+      d.disabled = !d.disabled;
+      d.wrap.property("disabled", d.disabled);
+
+      //update toggle mark
+      this.checked = !d.disabled;
+    });
+
     cssItems.exit().remove();
+
+    /*build list of loaded JS */
+    var current_js = [];
+    d3.selectAll("script").each(function() {
+      var obj = {};
+      obj.link = d3.select(this).property("src");
+      obj.filename = obj.link.substring(obj.link.lastIndexOf("/") + 1);
+      if (obj.link) {
+        current_js.push(obj);
+      }
+    });
+
+    var jsItems = cat.controls.jsList.selectAll("li").data(current_js);
+
+    jsItems
+      .enter()
+      .append("li")
+      .append("a")
+      .text(function(d) {
+        return d.filename;
+      })
+      .property("title", function(d) {
+        return d.link;
+      })
+      .attr("href", function(d) {
+        return d.link;
+      })
+      .property("target", "_blank");
+
+    jsItems.exit().remove();
   }
 
   function initEnvConfig(cat) {
@@ -391,35 +456,15 @@
       .append("h3")
       .html("4. Environment ");
 
-    cat.controls.environmentWrap.append("span").text("Environment: ");
-    cat.controls.chooseEnv = cat.controls.environmentWrap.append("select");
-    cat.controls.chooseEnv
-      .selectAll("option")
-      .data(cat.config.env)
-      .enter()
-      .append("option")
-      .text(function(d) {
-        return d.label;
-      });
-
-    cat.controls.chooseEnv.on("change", function() {
-      console.log("choosing an environment");
-    });
-
-    cat.controls.envReset = cat.controls.environmentWrap
-      .append("button")
-      .text("Clear Environment")
-      .on("click", function() {
-        resetEnv(cat);
-      });
-
     cat.controls.cssList = cat.controls.environmentWrap
       .append("ul")
       .attr("class", "cssList");
+    cat.controls.cssList.append("h5").text("Loaded Stylesheets");
 
     cat.controls.jsList = cat.controls.environmentWrap
       .append("ul")
       .attr("class", "jsList");
+    cat.controls.jsList.append("h5").text("Loaded javascript");
 
     showEnv(cat);
   }
@@ -772,6 +817,7 @@
           if (cat.config.useServer) {
             cat.status.saveToServer(cat);
           }
+          showEnv(cat);
 
           //don't print any new statuses until a new chart is rendered
           cat.printStatus = false;
@@ -974,8 +1020,7 @@
     rootURL: null,
     dataURL: null,
     dataFiles: [],
-    renderers: [],
-    env: []
+    renderers: []
   };
 
   function setDefaults(cat) {
@@ -984,7 +1029,6 @@
     cat.config.dataURL = cat.config.dataURL || defaultSettings.dataURL;
     cat.config.dataFiles = cat.config.dataFiles || defaultSettings.dataFiles;
     cat.config.renderers = cat.config.renderers || defaultSettings.renderers;
-    cat.config.env = cat.config.env || defaultSettings.env;
 
     cat.config.dataFiles = cat.config.dataFiles.map(function(df) {
       return typeof df == "string"
