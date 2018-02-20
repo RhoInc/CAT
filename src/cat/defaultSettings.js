@@ -68,7 +68,7 @@ const defaultSettings = {
       main: "safetyHistogram",
       sub: null,
       css: null,
-      schema: null,
+      schema: "settings-schema.json",
       defaultData: "safetyData/ADBDS.csv"
     },
     {
