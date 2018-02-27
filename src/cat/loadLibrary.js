@@ -19,13 +19,12 @@ export function loadLibrary(cat) {
     "/" +
     "webcharts.css";
 
-  var current_css = getCSS().filter(f => (f.link = cssPath));
+  var current_css = getCSS().filter(f => f.link == cssPath);
   var css_loaded = current_css.length > 0;
-
   if (!css_loaded) {
     //load the css if it isn't already loaded
     var link = document.createElement("link");
-    link.href = css_path;
+    link.href = cssPath;
     link.type = "text/css";
     link.rel = "stylesheet";
     document.getElementsByTagName("head")[0].appendChild(link);
