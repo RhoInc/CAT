@@ -5,7 +5,7 @@ export function showEnv(cat) {
   console.log("showing the env");
 
   /*build list of loaded CSS */
-  var current_css = getCSS()
+  var current_css = getCSS();
   var cssItems = cat.controls.cssList.selectAll("li").data(current_css);
   var newItems = cssItems.enter().append("li");
   var itemContents = newItems.append("span").property("title", d => d.link);
@@ -39,7 +39,7 @@ export function showEnv(cat) {
   cssItems.exit().remove();
 
   /*build list of loaded JS */
-  var current_js = getJS()
+  var current_js = getJS();
   var jsItems = cat.controls.jsList.selectAll("li").data(current_js);
 
   jsItems

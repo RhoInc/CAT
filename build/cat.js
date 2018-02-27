@@ -361,25 +361,40 @@
     cat.settings.set(cat);
   }
 
-  function showEnv(cat) {
-    console.log("showing the env");
-
-    /*build list of loaded CSS */
+  function getCSS() {
     var current_css = [];
     d3.selectAll("link").each(function() {
       var obj = {};
+      obj.sel = this;
       obj.link = d3.select(this).property("href");
       obj.disabled = d3.select(this).property("disabled");
       obj.filename = obj.link.substring(obj.link.lastIndexOf("/") + 1);
       obj.wrap = d3.select(this);
       current_css.push(obj);
     });
+    return current_css;
+  }
 
-    console.log(current_css);
+  function getJS() {
+    var current_js = [];
+    d3.selectAll("script").each(function() {
+      var obj = {};
+      obj.link = d3.select(this).property("src");
+      obj.filename = obj.link.substring(obj.link.lastIndexOf("/") + 1);
+      if (obj.link) {
+        current_js.push(obj);
+      }
+    });
+    return current_js;
+  }
+
+  function showEnv(cat) {
+    console.log("showing the env");
+
+    /*build list of loaded CSS */
+    var current_css = getCSS();
     var cssItems = cat.controls.cssList.selectAll("li").data(current_css);
-
     var newItems = cssItems.enter().append("li");
-
     var itemContents = newItems.append("span").property("title", function(d) {
       return d.link;
     });
@@ -421,16 +436,7 @@
     cssItems.exit().remove();
 
     /*build list of loaded JS */
-    var current_js = [];
-    d3.selectAll("script").each(function() {
-      var obj = {};
-      obj.link = d3.select(this).property("src");
-      obj.filename = obj.link.substring(obj.link.lastIndexOf("/") + 1);
-      if (obj.link) {
-        current_js.push(obj);
-      }
-    });
-
+    var current_js = getJS();
     var jsItems = cat.controls.jsList.selectAll("li").data(current_js);
 
     jsItems
@@ -840,7 +846,42 @@
     var rendererObj = cat.controls.rendererSelect
       .selectAll("option:checked")
       .data()[0];
+
     var version = cat.controls.versionSelect.node().value;
+
+    if (rendererObj.css) {
+      var cssPath =
+        cat.config.rootURL +
+        "/" +
+        rendererObj.name +
+        "/" +
+        version +
+        "/" +
+        rendererObj.css;
+      var current_css = getCSS().filter(function(f) {
+        return f.link == cssPath;
+      });
+      var css_loaded = current_css.length > 0;
+      if (!css_loaded) {
+        var link = document.createElement("link");
+        link.href = cssPath;
+
+        link.type = "text/css";
+        link.rel = "stylesheet";
+        document.getElementsByTagName("head")[0].appendChild(link);
+      } else if (current_css[0].disabled) {
+        //enable the css if it's disabled
+        d3.select(current_css[0].sel).property("disabled", false);
+        cat.controls.cssList
+          .selectAll("li")
+          .filter(function(d) {
+            return d.link == cssPath;
+          })
+          .select("input")
+          .property("checked", true);
+      }
+    }
+
     var rendererPath =
       cat.config.rootURL +
       "/" +
@@ -851,49 +892,88 @@
       rendererObj.main +
       ".js";
 
-    if (rendererObj.css) {
-      var link = document.createElement("link");
-      link.href =
-        cat.config.rootURL +
-        "/" +
-        rendererObj.name +
-        "/" +
-        version +
-        "/" +
-        rendererObj.css;
-      link.type = "text/css";
-      link.rel = "stylesheet";
-      document.getElementsByTagName("head")[0].appendChild(link);
-    }
-
-    var loader = new scriptLoader();
-    loader.require(rendererPath, {
-      async: true,
-      success: function success() {
-        cat.status.loadStatus(
-          cat.statusDiv,
-          true,
-          rendererPath,
-          rendererObj.name,
-          version
-        );
-        renderChart(cat);
-      },
-      failure: function failure() {
-        cat.status.loadStatus(
-          cat.statusDiv,
-          false,
-          rendererPath,
-          rendererObj.name,
-          version
-        );
-      }
+    var current_js = getJS().filter(function(f) {
+      return f.link == rendererPath;
     });
+    var js_loaded = current_js.length > 0;
+
+    if (!js_loaded) {
+      var loader = new scriptLoader();
+      loader.require(rendererPath, {
+        async: true,
+        success: function success() {
+          cat.status.loadStatus(
+            cat.statusDiv,
+            true,
+            rendererPath,
+            rendererObj.name,
+            version
+          );
+          renderChart(cat);
+        },
+        failure: function failure() {
+          cat.status.loadStatus(
+            cat.statusDiv,
+            false,
+            rendererPath,
+            rendererObj.name,
+            version
+          );
+        }
+      });
+    } else {
+      cat.status.loadStatus(
+        cat.statusDiv,
+        true,
+        rendererPath,
+        rendererObj.name,
+        version
+      );
+      renderChart(cat);
+    }
   }
 
   function loadLibrary(cat) {
     var version = cat.controls.libraryVersion.node().value;
     var library = "webcharts"; //hardcode to webcharts for now - could generalize later
+
+    // --- load css --- //
+    var cssPath =
+      cat.config.rootURL +
+      "/" +
+      "webcharts" +
+      "/" +
+      version +
+      "/" +
+      "css" +
+      "/" +
+      "webcharts.css";
+
+    var current_css = getCSS().filter(function(f) {
+      return (f.link = cssPath);
+    });
+    var css_loaded = current_css.length > 0;
+
+    if (!css_loaded) {
+      //load the css if it isn't already loaded
+      var link = document.createElement("link");
+      link.href = css_path;
+      link.type = "text/css";
+      link.rel = "stylesheet";
+      document.getElementsByTagName("head")[0].appendChild(link);
+    } else if (current_css[0].disabled) {
+      //enable the css if it's disabled
+      d3.select(current_css[0].sel).property("disabled", false);
+      cat.controls.cssList
+        .selectAll("li")
+        .filter(function(d) {
+          return d.link == cssPath;
+        })
+        .select("input")
+        .property("checked", true);
+    }
+
+    // --- load js --- //
     var rendererPath =
       cat.config.rootURL +
       "/" +
@@ -904,44 +984,46 @@
       "webcharts" +
       ".js";
 
-    var link = document.createElement("link");
-    link.href =
-      cat.config.rootURL +
-      "/" +
-      "webcharts" +
-      "/" +
-      version +
-      "/" +
-      "css" +
-      "/" +
-      "webcharts.css";
-    link.type = "text/css";
-    link.rel = "stylesheet";
-    document.getElementsByTagName("head")[0].appendChild(link);
-
-    var loader = new scriptLoader();
-    loader.require(rendererPath, {
-      async: true,
-      success: function success() {
-        cat.status.loadStatus(
-          cat.statusDiv,
-          true,
-          rendererPath,
-          library,
-          version
-        );
-        loadRenderer(cat);
-      },
-      failure: function failure() {
-        cat.status.loadStatus(
-          cat.statusDiv,
-          false,
-          rendererPath,
-          library,
-          version
-        );
-      }
+    var current_js = getJS().filter(function(f) {
+      return f.link == rendererPath;
     });
+    console.log(current_js);
+    var js_loaded = current_js.length > 0;
+
+    if (!js_loaded) {
+      var loader = new scriptLoader();
+      loader.require(rendererPath, {
+        async: true,
+        success: function success() {
+          cat.status.loadStatus(
+            cat.statusDiv,
+            true,
+            rendererPath,
+            library,
+            version
+          );
+          loadRenderer(cat);
+        },
+        failure: function failure() {
+          cat.status.loadStatus(
+            cat.statusDiv,
+            false,
+            rendererPath,
+            library,
+            version
+          );
+        }
+      });
+    } else {
+      cat.status.loadStatus(
+        cat.statusDiv,
+        true,
+        rendererPath,
+        library,
+        version
+      );
+      loadRenderer(cat);
+    }
   }
 
   function initSubmit(cat) {
