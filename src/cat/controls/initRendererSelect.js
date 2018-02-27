@@ -28,7 +28,7 @@ export function initRendererSelect(cat) {
     cat.controls.dataFileSelect
       .selectAll("option")
       .property("selected", function(e) {
-        return cat.current.defaultData == e ? true : null;
+        return cat.current.defaultData == e.label ? true : null;
       });
 
     //Re-initialize the chart config section

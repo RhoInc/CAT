@@ -6,7 +6,11 @@ export function initDataSelect(cat) {
     .data(cat.config.dataFiles)
     .enter()
     .append("option")
-    .text(d => d.label);
+    .text(d => d.label)
+    .property("selected", function(d) {
+      return cat.current.defaultData == d.label ? true : null;
+    });
+
   cat.controls.dataFileSelect.node().addEventListener("keypress", function(e) {
     var key = e.which || e.keyCode;
     if (key === 13) {

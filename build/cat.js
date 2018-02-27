@@ -86,7 +86,7 @@
       cat.controls.dataFileSelect
         .selectAll("option")
         .property("selected", function(e) {
-          return cat.current.defaultData == e ? true : null;
+          return cat.current.defaultData == e.label ? true : null;
         });
 
       //Re-initialize the chart config section
@@ -179,7 +179,11 @@
       .append("option")
       .text(function(d) {
         return d.label;
+      })
+      .property("selected", function(d) {
+        return cat.current.defaultData == d.label ? true : null;
       });
+
     cat.controls.dataFileSelect
       .node()
       .addEventListener("keypress", function(e) {
