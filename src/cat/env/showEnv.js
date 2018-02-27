@@ -1,22 +1,13 @@
+import { getCSS } from "./getCSS";
+import { getJS } from "./getJS";
+
 export function showEnv(cat) {
   console.log("showing the env");
 
   /*build list of loaded CSS */
-  var current_css = [];
-  d3.selectAll("link").each(function() {
-    var obj = {};
-    obj.link = d3.select(this).property("href");
-    obj.disabled = d3.select(this).property("disabled");
-    obj.filename = obj.link.substring(obj.link.lastIndexOf("/") + 1);
-    obj.wrap = d3.select(this);
-    current_css.push(obj);
-  });
-
-  console.log(current_css);
+  var current_css = getCSS()
   var cssItems = cat.controls.cssList.selectAll("li").data(current_css);
-
   var newItems = cssItems.enter().append("li");
-
   var itemContents = newItems.append("span").property("title", d => d.link);
 
   itemContents
@@ -48,16 +39,7 @@ export function showEnv(cat) {
   cssItems.exit().remove();
 
   /*build list of loaded JS */
-  var current_js = [];
-  d3.selectAll("script").each(function() {
-    var obj = {};
-    obj.link = d3.select(this).property("src");
-    obj.filename = obj.link.substring(obj.link.lastIndexOf("/") + 1);
-    if (obj.link) {
-      current_js.push(obj);
-    }
-  });
-
+  var current_js = getJS()
   var jsItems = cat.controls.jsList.selectAll("li").data(current_js);
 
   jsItems
