@@ -30,7 +30,10 @@
       .append("div")
       .attr("class", "cat-controls section");
     cat.chartWrap = cat.wrap.append("div").attr("class", "cat-chart section");
-    cat.dataWrap = cat.wrap.append("div").attr("class", "cat-data footer");
+    cat.dataWrap = cat.wrap
+      .append("div")
+      .attr("class", "cat-data section")
+      .classed("hidden", true);
 
     /* Layout CAT Controls Divs */
     cat.controls.wrap.append("h2").text("Charting Application Tester 😼");
@@ -169,9 +172,58 @@
     cat.controls.rendererWrap.append("br").classed("hidden", true);
   }
 
+  function showDataPreview(cat) {
+    cat.dataWrap.classed("hidden", false);
+    cat.chartWrap.classed("hidden", true);
+    cat.dataWrap.selectAll("*").remove();
+
+    if (cat.dataPreview) {
+      cat.dataPreview.destroy();
+    }
+
+    var dataFile = cat.controls.dataFileSelect.node().value;
+    var dataObject = cat.config.dataFiles.find(function(f) {
+      return f.label == dataFile;
+    });
+    var path = dataObject.path + dataObject.label;
+    console.log(dataObject);
+
+    cat.dataWrap
+      .append("button")
+      .text("<< Close Data Preview")
+      .on("click", function() {
+        cat.dataWrap.classed("hidden", true);
+        cat.chartWrap.classed("hidden", false);
+      });
+
+    cat.dataWrap.append("h3").text("Data Preview for " + dataFile);
+
+    cat.dataWrap
+      .append("div")
+      .attr("class", "dataPreview")
+      .style("overflow-x", "overlay");
+    cat.dataPreview = webCharts.createTable(".dataPreview");
+    if (dataObject.user_loaded) {
+      cat.dataPreview.init(d3.csv.parse(dataObject.csv_raw));
+    } else {
+      d3.csv(path, function(raw) {
+        cat.dataPreview.init(raw);
+      });
+    }
+  }
+
   function initDataSelect(cat) {
     cat.controls.dataWrap.append("h3").text("2. Choose a data Set");
     cat.controls.dataFileSelect = cat.controls.dataWrap.append("select");
+
+    cat.controls.dataWrap
+      .append("span")
+      .html("&#128269;")
+      .style("cursor", "pointer")
+      .on("click", function() {
+        showDataPreview(cat);
+      });
+
     cat.controls.dataFileSelect
       .selectAll("option")
       .data(cat.config.dataFiles)
@@ -1035,6 +1087,9 @@
       .attr("class", "submit")
       .text("Render Chart")
       .on("click", function() {
+        cat.dataWrap.classed("hidden", true);
+        cat.chartWrap.classed("hidden", false);
+
         //Disable and/or remove previously loaded stylesheets.
         d3
           .selectAll("link")
@@ -1043,6 +1098,7 @@
           })
           .property("disabled", true)
           .remove();
+
         d3
           .selectAll("style")
           .property("disabled", true)

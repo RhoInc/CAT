@@ -4,7 +4,10 @@ export function layout(cat) {
     .append("div")
     .attr("class", "cat-controls section");
   cat.chartWrap = cat.wrap.append("div").attr("class", "cat-chart section");
-  cat.dataWrap = cat.wrap.append("div").attr("class", "cat-data footer");
+  cat.dataWrap = cat.wrap
+    .append("div")
+    .attr("class", "cat-data section")
+    .classed("hidden", true);
 
   /* Layout CAT Controls Divs */
   cat.controls.wrap.append("h2").text("Charting Application Tester 😼");

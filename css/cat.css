@@ -17,7 +17,7 @@
   border:1px solid #999;
 }
 
-.cat-wrap .cat-chart{
+.cat-wrap .cat-chart, .cat-wrap .cat-data{
   margin-left:300px;
   padding-left: 3em;
 }

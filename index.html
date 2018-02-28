@@ -9,6 +9,7 @@
         <title>Charting Application Tester (CAT) </title>
 
         <script type='text/javascript' src ='https://d3js.org/d3.v3.min.js'></script>
+        <script src="https://cdn.rawgit.com/RhoInc/webcharts/master/build/webcharts.js"></script>
         <script type="text/javascript" src="server/pages/deps/jquery.min.js"></script>
         <script type="text/javascript" src="server/pages/deps/underscore.js"></script>
         <script type="text/javascript" src="server/pages/deps/opt/jsv.js"></script>
@@ -16,11 +17,12 @@
         <script type="text/javascript" src="server/pages/deps/json5.js"></script>
         <script type='text/javascript' src ='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js'></script>
         <script type="text/javascript" src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
-        
+
         <script type='text/javascript' src ='./build/cat.js'></script>
-        <script type='text/javascript' src ='https://cdn.rawgit.com/RhoInc/viz-library/7783f26e/util/web/data/dataFiles.js'></script>
+        <script type='text/javascript' src ='https://rawgit.com/RhoInc/viz-library/7783f26e/util/web/data/dataFiles.js'></script>
 
         <link type = 'text/css' rel = 'stylesheet' href = './css/cat.css'>
+        <link rel="stylesheet" href="https://cdn.rawgit.com/RhoInc/webcharts/master/css/webcharts.css">
         <link type = 'text/css' rel = 'stylesheet' href = 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' disabled>
         <link type = 'text/css' rel = 'stylesheet' href = '//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css' disabled>
     </head>
@@ -115,25 +117,7 @@
           schema: null,
           defaultData: "queries/queries.csv"
         }
-      ],
-      "envList":[
-        {
-          label:"webcharts",
-          css:["https://cdn.rawgit.com/RhoInc/webcharts/master/css/webcharts.css"],
-          js:["https://cdn.rawgit.com/RhoInc/webcharts/master/build/webcharts.js"]
-        },
-        {
-          label:"webcharts+bootstrap",
-          css:[
-            "https://cdn.rawgit.com/RhoInc/webcharts/master/css/webcharts.css",
-            "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-          ],
-          js:[
-            "https://cdn.rawgit.com/RhoInc/webcharts/master/build/webcharts.js",
-            "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
-          ]
-      }
-    ]
+      ]
     }
 
     myCatConfig.dataFiles = dataFiles.map(function(m){
