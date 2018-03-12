@@ -1,9 +1,12 @@
 export function initChartConfig(cat) {
-  var settingsHeading = cat.controls.settingsWrap
+  var settingsSection = cat.controls.wrap
+    .append("div")
+    .attr("class", "control-section");
+  var settingsHeading = settingsSection
     .append("h3")
     .html("3. Customize the Chart ");
 
-  cat.controls.settingsWrap.append("span").text("Settings: ");
+  settingsSection.append("span").text("Settings: ");
 
   /*
   //////////////////////////////////////
@@ -20,23 +23,21 @@ export function initChartConfig(cat) {
   //////////////////////////////////////////////////////////////////////
   //radio buttons to toggle between "text" and "form" based settings
   /////////////////////////////////////////////////////////////////////
-  cat.controls.settingsTypeText = cat.controls.settingsWrap
+  cat.controls.settingsTypeText = settingsSection
     .append("input")
     .attr("class", "radio")
     .property("type", "radio")
     .property("name", "settingsType")
     .property("value", "text");
-  cat.controls.settingsWrap.append("span").text("text");
-  cat.controls.settingsTypeForm = cat.controls.settingsWrap
+  settingsSection.append("span").text("text");
+  cat.controls.settingsTypeForm = settingsSection
     .append("input")
     .attr("class", "radio")
     .property("type", "radio")
     .property("name", "settingsType")
     .property("value", "form");
-  cat.controls.settingsWrap.append("span").text("form");
-  cat.controls.settingsType = cat.controls.settingsWrap.selectAll(
-    'input[type="radio"]'
-  );
+  settingsSection.append("span").text("form");
+  cat.controls.settingsType = settingsSection.selectAll('input[type="radio"]');
 
   cat.controls.settingsType.on("change", function(d) {
     cat.settings.sync(cat); //first sync the current settings to both views
@@ -51,12 +52,12 @@ export function initChartConfig(cat) {
       cat.controls.settingsForm.classed("hidden", false);
     }
   });
-  cat.controls.settingsWrap.append("br");
+  settingsSection.append("br");
 
   //////////////////////////////////////////////////////////////////////
   //text input section
   /////////////////////////////////////////////////////////////////////
-  cat.controls.settingsInput = cat.controls.settingsWrap
+  cat.controls.settingsInput = settingsSection
     .append("textarea")
     .attr("rows", 10)
     .style("width", "90%")
@@ -72,7 +73,7 @@ export function initChartConfig(cat) {
   //////////////////////////////////////////////////////////////////////
   //wrapper for the form
   /////////////////////////////////////////////////////////////////////
-  cat.controls.settingsForm = cat.controls.settingsWrap
+  cat.controls.settingsForm = settingsSection
     .append("div")
     .attr("class", "settingsForm")
     .append("form");
