@@ -23,22 +23,42 @@
   }
 
   function layout(cat) {
+    /* Layout primary sections */
     cat.controls.wrap = cat.wrap
       .append("div")
       .attr("class", "cat-controls section");
     cat.chartWrap = cat.wrap.append("div").attr("class", "cat-chart section");
     cat.dataWrap = cat.wrap.append("div").attr("class", "cat-data footer");
+
+    /* Layout CAT Controls Divs */
+    cat.controls.wrap.append("h2").text("Charting Application Tester 😼");
+
+    cat.controls.submitWrap = cat.controls.wrap
+      .append("div")
+      .attr("class", "control-section submit-section");
+
+    cat.controls.rendererWrap = cat.controls.wrap
+      .append("div")
+      .attr("class", "control-section renderer-section");
+
+    cat.controls.dataWrap = cat.controls.wrap
+      .append("div")
+      .attr("class", "control-section data-section");
+
+    cat.controls.settingsWrap = cat.controls.wrap
+      .append("div")
+      .attr("class", "control-section settings-section");
+
+    cat.controls.environmentWrap = cat.controls.wrap
+      .append("div")
+      .attr("class", "control-section environment-section");
   }
 
   function initRendererSelect(cat) {
-    var rendererSection = cat.controls.wrap
-      .append("div")
-      .attr("class", "control-section section1");
+    cat.controls.rendererWrap.append("h3").text("1. Choose a Charting Library");
+    cat.controls.rendererWrap.append("span").text("Library: ");
 
-    rendererSection.append("h3").text("1. Choose a Charting Library");
-    rendererSection.append("span").text("Library: ");
-
-    cat.controls.rendererSelect = rendererSection.append("select");
+    cat.controls.rendererSelect = cat.controls.rendererWrap.append("select");
     cat.controls.rendererSelect
       .selectAll("option")
       .data(cat.config.renderers)
@@ -47,9 +67,6 @@
       .text(function(d) {
         return d.name;
       });
-    var rendererSection = cat.controls.wrap
-      .append("div")
-      .attr("class", "control-section section2");
 
     cat.controls.rendererSelect.on("change", function(d) {
       cat.current = d3
@@ -82,9 +99,9 @@
           cat.controls.submitButton.node().click();
         }
       });
-
-    rendererSection.append("span").text("Version: ");
-    cat.controls.versionSelect = rendererSection.append("input");
+    cat.controls.rendererWrap.append("br");
+    cat.controls.rendererWrap.append("span").text("Version: ");
+    cat.controls.versionSelect = cat.controls.rendererWrap.append("input");
     cat.controls.versionSelect.node().value = "master";
     cat.controls.versionSelect.on("change", function() {
       //checkVersion()
@@ -97,9 +114,9 @@
         cat.controls.submitButton.node().click();
       }
     });
-    rendererSection.append("br");
+    cat.controls.rendererWrap.append("br");
 
-    rendererSection
+    cat.controls.rendererWrap
       .append("a")
       .text("More Options")
       .style("text-decoration", "underline")
@@ -107,63 +124,59 @@
       .style("cursor", "pointer")
       .on("click", function() {
         d3.select(this).remove();
-        rendererSection.selectAll("*").classed("hidden", false);
+        cat.controls.rendererWrap.selectAll("*").classed("hidden", false);
       });
 
     //specify the code to create the chart
-    rendererSection
+    cat.controls.rendererWrap
       .append("span")
       .text(" Init: ")
       .classed("hidden", true);
-    cat.controls.mainFunction = rendererSection
+    cat.controls.mainFunction = cat.controls.rendererWrap
       .append("input")
       .classed("hidden", true);
     cat.controls.mainFunction.node().value = cat.current.main;
-    rendererSection
+    cat.controls.rendererWrap
       .append("span")
       .text(".")
       .classed("hidden", true);
-    cat.controls.subFunction = rendererSection
+    cat.controls.subFunction = cat.controls.rendererWrap
       .append("input")
       .classed("hidden", true);
     cat.controls.subFunction.node().value = cat.current.sub;
-    rendererSection.append("br").classed("hidden", true);
+    cat.controls.rendererWrap.append("br").classed("hidden", true);
     //Webcharts versionSelect
-    rendererSection
+    cat.controls.rendererWrap
       .append("span")
       .text("Webcharts Version: ")
       .classed("hidden", true);
-    cat.controls.libraryVersion = rendererSection
+    cat.controls.libraryVersion = cat.controls.rendererWrap
       .append("input")
       .classed("hidden", true);
     cat.controls.libraryVersion.node().value = "master";
-    rendererSection.append("br").classed("hidden", true);
+    cat.controls.rendererWrap.append("br").classed("hidden", true);
 
-    rendererSection
+    cat.controls.rendererWrap
       .append("span")
       .text("Schema: ")
       .classed("hidden", true);
-    cat.controls.schema = rendererSection
+    cat.controls.schema = cat.controls.rendererWrap
       .append("input")
       .classed("hidden", true);
     cat.controls.schema.node().value = cat.current.schema;
-    rendererSection.append("br").classed("hidden", true);
+    cat.controls.rendererWrap.append("br").classed("hidden", true);
   }
 
   function initDataSelect(cat) {
-    var dataSection = cat.controls.wrap
-      .append("div")
-      .attr("class", "control-section");
-    dataSection.append("h3").text("2. Choose a data Set");
-
-    cat.controls.dataFileSelect = dataSection.append("select");
+    cat.controls.dataWrap.append("h3").text("2. Choose a data Set");
+    cat.controls.dataFileSelect = cat.controls.dataWrap.append("select");
     cat.controls.dataFileSelect
       .selectAll("option")
       .data(cat.config.dataFiles)
       .enter()
       .append("option")
       .text(function(d) {
-        return d;
+        return d.label;
       });
     cat.controls.dataFileSelect
       .node()
@@ -176,15 +189,99 @@
       });
   }
 
+  function initFileLoad() {
+    var cat = this;
+    //draw the control
+    var loadLabel = cat.controls.dataWrap.append("p").style("margin", 0);
+
+    loadLabel
+      .append("small")
+      .text("Use local .csv file:")
+      .append("sup")
+      .html("&#9432;")
+      .property(
+        "title",
+        "Render a chart using a local file. File is added to the data set list, and is only available for a single session and is not saved."
+      )
+      .style("cursor", "help");
+
+    var loadStatus = loadLabel
+      .append("small")
+      .attr("class", "loadStatus")
+      .style("float", "right")
+      .text("Select a csv to load");
+
+    cat.controls.dataFileLoad = cat.controls.dataWrap
+      .append("input")
+      .attr("type", "file")
+      .attr("class", "file-load-input")
+      .on("change", function() {
+        if (this.value.slice(-4) == ".csv") {
+          loadStatus
+            .text(this.files[0].name + " ready to load")
+            .style("color", "green");
+          cat.controls.dataFileLoadButton.attr("disabled", null);
+        } else {
+          loadStatus
+            .text(this.files[0].name + " is not a csv")
+            .style("color", "red");
+          cat.controls.dataFileLoadButton.attr("disabled", true);
+        }
+      });
+
+    cat.controls.dataFileLoadButton = cat.controls.dataWrap
+      .append("button")
+      .text("Load")
+      .attr("class", "file-load-button")
+      .attr("disabled", true)
+      .on("click", function(d) {
+        //credit to https://jsfiddle.net/Ln37kqc0/
+        var files = cat.controls.dataFileLoad.node().files;
+
+        if (files.length <= 0) {
+          //shouldn't happen since button is disabled when no file is present, but ...
+          console.log("No file selected ...");
+          return false;
+        }
+
+        var fr = new FileReader();
+        fr.onload = function(e) {
+          //make sure the file is a csv
+
+          //make an object for the file
+          var dataObject = {
+            label: files[0].name + " (loaded by user)",
+            user_loaded: true,
+            csv_raw: e.target.result
+          };
+          cat.config.dataFiles.push(dataObject);
+
+          //add it to the select dropdown
+          cat.controls.dataFileSelect
+            .append("option")
+            .datum(dataObject)
+            .text(function(d) {
+              return d.label;
+            })
+            .attr("selected", true);
+
+          //clear the file input & disable the load button
+          loadStatus.text(files[0].name + " loaded").style("color", "green");
+
+          cat.controls.dataFileLoadButton.attr("disabled", true);
+          cat.controls.dataFileLoad.property("value", "");
+        };
+
+        fr.readAsText(files.item(0));
+      });
+  }
+
   function initChartConfig(cat) {
-    var settingsSection = cat.controls.wrap
-      .append("div")
-      .attr("class", "control-section");
-    var settingsHeading = settingsSection
+    var settingsHeading = cat.controls.settingsWrap
       .append("h3")
       .html("3. Customize the Chart ");
 
-    settingsSection.append("span").text("Settings: ");
+    cat.controls.settingsWrap.append("span").text("Settings: ");
 
     /*
   //////////////////////////////////////
@@ -201,21 +298,21 @@
     //////////////////////////////////////////////////////////////////////
     //radio buttons to toggle between "text" and "form" based settings
     /////////////////////////////////////////////////////////////////////
-    cat.controls.settingsTypeText = settingsSection
+    cat.controls.settingsTypeText = cat.controls.settingsWrap
       .append("input")
       .attr("class", "radio")
       .property("type", "radio")
       .property("name", "settingsType")
       .property("value", "text");
-    settingsSection.append("span").text("text");
-    cat.controls.settingsTypeForm = settingsSection
+    cat.controls.settingsWrap.append("span").text("text");
+    cat.controls.settingsTypeForm = cat.controls.settingsWrap
       .append("input")
       .attr("class", "radio")
       .property("type", "radio")
       .property("name", "settingsType")
       .property("value", "form");
-    settingsSection.append("span").text("form");
-    cat.controls.settingsType = settingsSection.selectAll(
+    cat.controls.settingsWrap.append("span").text("form");
+    cat.controls.settingsType = cat.controls.settingsWrap.selectAll(
       'input[type="radio"]'
     );
 
@@ -232,12 +329,12 @@
         cat.controls.settingsForm.classed("hidden", false);
       }
     });
-    settingsSection.append("br");
+    cat.controls.settingsWrap.append("br");
 
     //////////////////////////////////////////////////////////////////////
     //text input section
     /////////////////////////////////////////////////////////////////////
-    cat.controls.settingsInput = settingsSection
+    cat.controls.settingsInput = cat.controls.settingsWrap
       .append("textarea")
       .attr("rows", 10)
       .style("width", "90%")
@@ -253,7 +350,7 @@
     //////////////////////////////////////////////////////////////////////
     //wrapper for the form
     /////////////////////////////////////////////////////////////////////
-    cat.controls.settingsForm = settingsSection
+    cat.controls.settingsForm = cat.controls.settingsWrap
       .append("div")
       .attr("class", "settingsForm")
       .append("form");
@@ -562,12 +659,14 @@
     cat.settings.sync(cat);
     //render the new chart with the current settings
     var dataFile = cat.controls.dataFileSelect.node().value;
-    var dataFilePath = cat.config.dataURL + dataFile;
+    var dataObject = cat.config.dataFiles.find(function(f) {
+      return f.label == dataFile;
+    });
     var version = cat.controls.versionSelect.node().value;
     cat.current.main = cat.controls.mainFunction.node().value;
     cat.current.sub = cat.controls.subFunction.node().value;
 
-    d3.csv(dataFilePath, function(error, data) {
+    function render(error, data) {
       if (error) {
         cat.status.loadStatus(cat.statusDiv, false, dataFilePath);
       } else {
@@ -613,7 +712,17 @@
           cat.printStatus = false;
         }
       }
-    });
+    }
+
+    if (dataObject.user_loaded) {
+      dataObject.json = d3.csv.parse(dataObject.csv_raw);
+      render(false, dataObject.json);
+    } else {
+      var dataFilePath = dataObject.path + dataFile;
+      d3.csv(dataFilePath, function(error, data) {
+        render(error, data);
+      });
+    }
   }
 
   function loadRenderer(cat) {
@@ -701,18 +810,18 @@
   }
 
   function initBootstrapConfig(cat) {
-    var settingsSection = cat.controls.wrap
-      .append("div")
-      .attr("class", "control-section");
-    var settingsHeading = settingsSection.append("h3").html("4. Styling ");
+    var settingsHeading = cat.controls.environmentWrap
+      .append("h3")
+      .html("4. Environment ");
 
-    cat.controls.bootstrapButton = settingsSection
+    cat.controls.bootstrapButton = cat.controls.environmentWrap
       .append("button")
       .text("Load Bootstrap")
       .on("click", function() {
         loadBootstrap(cat);
       });
-    settingsSection
+
+    cat.controls.environmentWrap
       .append("div")
       .append("small")
       .text(
@@ -774,11 +883,7 @@
   }
 
   function initSubmit(cat) {
-    var submitSection = cat.controls.wrap
-      .append("div")
-      .attr("class", "control-section");
-
-    cat.controls.submitButton = submitSection
+    cat.controls.submitButton = cat.controls.submitWrap
       .append("button")
       .attr("class", "submit")
       .text("Render Chart")
@@ -810,11 +915,12 @@
   }
 
   function init$1(cat) {
+    console.log("initializing controls");
     cat.current = cat.config.renderers[0];
-    cat.controls.wrap.append("h2").text("Charting Application Tester 😼");
     initSubmit(cat);
     initRendererSelect(cat);
     initDataSelect(cat);
+    initFileLoad.call(cat);
     initChartConfig(cat);
     initBootstrapConfig(cat);
 
@@ -961,6 +1067,13 @@
     cat.config.dataURL = cat.config.dataURL || defaultSettings.dataURL;
     cat.config.dataFiles = cat.config.dataFiles || defaultSettings.dataFiles;
     cat.config.renderers = cat.config.renderers || defaultSettings.renderers;
+
+    cat.config.dataFiles = cat.config.dataFiles.map(function(df) {
+      return typeof df == "string"
+        ? { label: df, path: cat.config.dataURL, user_loaded: false }
+        : df;
+    });
+    console.log(cat.config.dataFiles);
   }
 
   function makeForm(cat, obj) {

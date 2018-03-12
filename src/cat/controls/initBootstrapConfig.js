@@ -1,18 +1,18 @@
 import { loadBootstrap } from "../loadBootstrap";
 
 export function initBootstrapConfig(cat) {
-  var settingsSection = cat.controls.wrap
-    .append("div")
-    .attr("class", "control-section");
-  var settingsHeading = settingsSection.append("h3").html("4. Styling ");
+  var settingsHeading = cat.controls.environmentWrap
+    .append("h3")
+    .html("4. Environment ");
 
-  cat.controls.bootstrapButton = settingsSection
+  cat.controls.bootstrapButton = cat.controls.environmentWrap
     .append("button")
     .text("Load Bootstrap")
     .on("click", function() {
       loadBootstrap(cat);
     });
-  settingsSection
+
+  cat.controls.environmentWrap
     .append("div")
     .append("small")
     .text(

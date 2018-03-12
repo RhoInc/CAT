@@ -61,6 +61,15 @@
   color:white;
 }
 
+.cat-wrap .cat-controls .file-load-input{
+  width:75%
+}
+
+.cat-wrap .cat-controls .file-load-button{
+  width:25%
+}
+
+
 /* json-schema form formatting */
 .help-inline{
   font-size:0.7em;
