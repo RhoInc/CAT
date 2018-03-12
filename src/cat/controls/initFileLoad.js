@@ -55,11 +55,13 @@ export function initFileLoad() {
 
       var fr = new FileReader();
       fr.onload = function(e) {
-        //make sure the file is a csv
+        // get the current date/time
+        var d = new Date();
+        var n = d3.time.format("%X")(d);
 
         //make an object for the file
         var dataObject = {
-          label: files[0].name + " (loaded by user)",
+          label: files[0].name + " (added at " + n + ")",
           user_loaded: true,
           csv_raw: e.target.result
         };
