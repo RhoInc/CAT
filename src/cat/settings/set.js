@@ -29,7 +29,7 @@ export function set(cat) {
       // attempt to validate the schema
       console.log("Schema found ...");
       cat.current.hasValidSchema = validateSchema(schemaObj);
-      //cat.current.settingsView = cat.current.hasValidSchema ? "form" : "text";
+      cat.current.settingsView = cat.current.hasValidSchema ? "form" : "text";
       cat.current.schemaObj = cat.current.hasValidSchema ? schemaObj : null;
       //  cat.settings.setStatus(
       //    cat,
