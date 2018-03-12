@@ -955,110 +955,10 @@
 
   var defaultSettings = {
     useServer: false,
-    rootURL: "https://cdn.rawgit.com/RhoInc",
-    dataURL: "https://rhoinc.github.io/viz-library/data/",
-    dataFiles: [
-      "safetyData-queries/ADAE.csv",
-      "safetyData-queries/ADBDS.csv",
-      "safetyData/ADAE.csv",
-      "safetyData/ADBDS.csv",
-      "safetyData/ADTIMELINES.csv",
-      "safetyData/ADCM.csv",
-      "safetyData/SDTM/DM.csv",
-      "safetyData/SDTM/AE.csv",
-      "safetyData/SDTM/CM.csv",
-      "safetyData/SDTM/SV.csv",
-      "safetyData/SDTM/LB.csv",
-      "safetyData/SDTM/VS.csv",
-      "queries/queries.csv",
-      "cars.csv",
-      "climate_data.csv",
-      "discrete_score.csv",
-      "elements.csv",
-      "ChickWeight.csv"
-    ],
-    renderers: [
-      {
-        name: "aeexplorer",
-        main: "aeTable",
-        sub: "createChart",
-        css: "css/aeTable.css",
-        schema: "settings-schema.json",
-        defaultData: "safetyData/ADAE.csv"
-      },
-      {
-        name: "clinical-timelines",
-        main: "clinicalTimelines",
-        sub: null,
-        css: null,
-        schema: "settings-schema.json",
-        defaultData: "safetyData/ADTIMELINES.csv"
-      },
-      {
-        name: "web-codebook",
-        main: "webcodebook",
-        sub: "createChart",
-        css: "css/webcodebook.css",
-        schema: null,
-        defaultData: "safetyData/ADAE.csv"
-      },
-      {
-        name: "aetimelines",
-        main: "aeTimelines",
-        sub: null,
-        css: null,
-        schema: null,
-        defaultData: "safetyData/ADAE.csv"
-      },
-      {
-        name: "paneled-outlier-explorer",
-        main: "paneledOutlierExplorer",
-        sub: null,
-        css: null,
-        schema: "settings-schema.json",
-        defaultData: "safetyData/ADBDS.csv"
-      },
-      {
-        name: "safety-histogram",
-        main: "safetyHistogram",
-        sub: null,
-        css: null,
-        schema: null,
-        defaultData: "safetyData/ADBDS.csv"
-      },
-      {
-        name: "safety-outlier-explorer",
-        main: "safetyOutlierExplorer",
-        sub: null,
-        css: null,
-        schema: "settings-schema.json",
-        defaultData: "safetyData/ADBDS.csv"
-      },
-      {
-        name: "safety-results-over-time",
-        main: "safetyResultsOverTime",
-        sub: null,
-        css: null,
-        schema: "settings-schema.json",
-        defaultData: "safetyData/ADBDS.csv"
-      },
-      {
-        name: "safety-shift-plot",
-        main: "safetyShiftPlot",
-        sub: null,
-        css: null,
-        schema: null,
-        defaultData: "safetyData/ADBDS.csv"
-      },
-      {
-        name: "query-overview",
-        main: "queryOverview",
-        sub: null,
-        css: null,
-        schema: null,
-        defaultData: "queries/queries.csv"
-      }
-    ]
+    rootURL: null,
+    dataURL: null,
+    dataFiles: [],
+    renderers: []
   };
 
   function setDefaults(cat) {
@@ -1205,21 +1105,23 @@
       version +
       "/" +
       cat.current.schema;
+
+    cat.current.settingsView = "text";
+    cat.controls.settingsInput.value = "{}";
+    cat.current.config = {};
+
     d3.json(schemaPath, function(error, schemaObj) {
       //d3.json(testPath, function(error, schemaObj) {
       if (error) {
         console.log("No schema loaded.");
         cat.current.hasValidSchema = false;
-        cat.current.settingsView = "text";
         cat.current.schemaObj = null;
-        cat.controls.settingsInput.value = "{}";
-        cat.current.config = {};
         //cat.settings.setStatus(cat, "no schema");
       } else {
         // attempt to validate the schema
         console.log("Schema found ...");
         cat.current.hasValidSchema = validateSchema(schemaObj);
-        cat.current.settingsView = cat.current.hasValidSchema ? "form" : "text";
+        //cat.current.settingsView = cat.current.hasValidSchema ? "form" : "text";
         cat.current.schemaObj = cat.current.hasValidSchema ? schemaObj : null;
         //  cat.settings.setStatus(
         //    cat,
