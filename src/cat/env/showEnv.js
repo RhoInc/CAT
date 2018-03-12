@@ -1,6 +1,4 @@
 export function showEnv(cat) {
-  console.log("showing the env");
-
   /*build list of loaded CSS */
   var current_css = [];
   d3.selectAll("link").each(function() {
@@ -12,7 +10,6 @@ export function showEnv(cat) {
     current_css.push(obj);
   });
 
-  console.log(current_css);
   var cssItems = cat.controls.cssList.selectAll("li").data(current_css);
 
   var newItems = cssItems.enter().append("li");
