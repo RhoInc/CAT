@@ -1,4 +1,5 @@
 import { createChartExport } from "./export/createChartExport";
+import { showEnv } from "./env/showEnv";
 
 export function renderChart(cat) {
   var rendererObj = cat.controls.rendererSelect
@@ -7,12 +8,12 @@ export function renderChart(cat) {
   cat.settings.sync(cat);
   //render the new chart with the current settings
   var dataFile = cat.controls.dataFileSelect.node().value;
-  var dataFilePath = cat.config.dataURL + dataFile;
+  var dataObject = cat.config.dataFiles.find(f => f.label == dataFile);
   var version = cat.controls.versionSelect.node().value;
   cat.current.main = cat.controls.mainFunction.node().value;
   cat.current.sub = cat.controls.subFunction.node().value;
 
-  d3.csv(dataFilePath, function(error, data) {
+  function render(error, data) {
     if (error) {
       cat.status.loadStatus(cat.statusDiv, false, dataFilePath);
     } else {
@@ -53,10 +54,21 @@ export function renderChart(cat) {
         if (cat.config.useServer) {
           cat.status.saveToServer(cat);
         }
+        showEnv(cat);
 
         //don't print any new statuses until a new chart is rendered
         cat.printStatus = false;
       }
     }
-  });
+  }
+
+  if (dataObject.user_loaded) {
+    dataObject.json = d3.csv.parse(dataObject.csv_raw);
+    render(false, dataObject.json);
+  } else {
+    var dataFilePath = dataObject.path + dataFile;
+    d3.csv(dataFilePath, function(error, data) {
+      render(error, data);
+    });
+  }
 }

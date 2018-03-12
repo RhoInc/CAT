@@ -7,23 +7,125 @@
             content = 'text/html; charset = utf-8'>
 
         <title>Charting Application Tester (CAT) </title>
+
         <script type='text/javascript' src ='https://d3js.org/d3.v3.min.js'></script>
+        <script src="https://cdn.rawgit.com/RhoInc/webcharts/master/build/webcharts.js"></script>
         <script type="text/javascript" src="server/pages/deps/jquery.min.js"></script>
         <script type="text/javascript" src="server/pages/deps/underscore.js"></script>
         <script type="text/javascript" src="server/pages/deps/opt/jsv.js"></script>
         <script type="text/javascript" src="server/pages/deps/jsonform.js"></script>
         <script type="text/javascript" src="server/pages/deps/json5.js"></script>
+        <script type='text/javascript' src ='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js'></script>
+        <script type="text/javascript" src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+
         <script type='text/javascript' src ='./build/cat.js'></script>
+        <script type='text/javascript' src ='https://rawgit.com/RhoInc/viz-library/7783f26e/util/web/data/dataFiles.js'></script>
 
         <link type = 'text/css' rel = 'stylesheet' href = './css/cat.css'>
+        <link rel="stylesheet" href="https://cdn.rawgit.com/RhoInc/webcharts/master/css/webcharts.css">
+        <link type = 'text/css' rel = 'stylesheet' href = 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' disabled>
+        <link type = 'text/css' rel = 'stylesheet' href = '//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css' disabled>
     </head>
 
     <body>
     </body>
 
     <script>
+    var myCatConfig =
+    {
+      useServer: false,
+      rootURL: "https://cdn.rawgit.com/RhoInc",
+      dataURL: "https://rhoinc.github.io/viz-library/data/",
+      renderers: [
+        {
+          name: "aeexplorer",
+          main: "aeTable",
+          sub: "createChart",
+          css: "css/aeTable.css",
+          schema: "settings-schema.json",
+          defaultData: "safetyData/ADAE.csv"
+        },
+        {
+          name: "clinical-timelines",
+          main: "clinicalTimelines",
+          sub: null,
+          css: null,
+          schema: "settings-schema.json",
+          defaultData: "safetyData/ADTIMELINES.csv"
+        },
+        {
+          name: "web-codebook",
+          main: "webcodebook",
+          sub: "createChart",
+          css: "css/webcodebook.css",
+          schema: null,
+          defaultData: "safetyData/ADAE.csv"
+        },
+        {
+          name: "aetimelines",
+          main: "aeTimelines",
+          sub: null,
+          css: null,
+          schema: null,
+          defaultData: "safetyData/ADAE.csv"
+        },
+        {
+          name: "paneled-outlier-explorer",
+          main: "paneledOutlierExplorer",
+          sub: null,
+          css: null,
+          schema: "settings-schema.json",
+          defaultData: "safetyData/ADBDS.csv"
+        },
+        {
+          name: "safety-histogram",
+          main: "safetyHistogram",
+          sub: null,
+          css: null,
+          schema: null,
+          defaultData: "safetyData/ADBDS.csv"
+        },
+        {
+          name: "safety-outlier-explorer",
+          main: "safetyOutlierExplorer",
+          sub: null,
+          css: null,
+          schema: "settings-schema.json",
+          defaultData: "safetyData/ADBDS.csv"
+        },
+        {
+          name: "safety-results-over-time",
+          main: "safetyResultsOverTime",
+          sub: null,
+          css: null,
+          schema: "settings-schema.json",
+          defaultData: "safetyData/ADBDS.csv"
+        },
+        {
+          name: "safety-shift-plot",
+          main: "safetyShiftPlot",
+          sub: null,
+          css: null,
+          schema: null,
+          defaultData: "safetyData/ADBDS.csv"
+        },
+        {
+          name: "query-overview",
+          main: "queryOverview",
+          sub: null,
+          css: null,
+          schema: null,
+          defaultData: "queries/queries.csv"
+        }
+      ]
+    }
 
-    var myCat = cat.createCat('body',{})
+    myCatConfig.dataFiles = dataFiles.map(function(m){
+      return m.rel_path.slice(7)
+    })
+
+    var myCat = cat.createCat('body',myCatConfig)
+
     myCat.init()
 
 
