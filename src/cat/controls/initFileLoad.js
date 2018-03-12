@@ -25,7 +25,7 @@ export function initFileLoad() {
     .attr("type", "file")
     .attr("class", "file-load-input")
     .on("change", function() {
-      if (this.value.slice(-4) == ".csv") {
+      if (this.value.slice(-4).toLowerCase() == ".csv") {
         loadStatus
           .text(this.files[0].name + " ready to load")
           .style("color", "green");
