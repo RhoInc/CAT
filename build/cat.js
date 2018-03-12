@@ -7,6 +7,50 @@
 })(this, function() {
   "use strict";
 
+  if (!Array.prototype.find) {
+    Object.defineProperty(Array.prototype, "find", {
+      value: function value(predicate) {
+        // 1. Let O be ? ToObject(this value).
+        if (this == null) {
+          throw new TypeError('"this" is null or not defined');
+        }
+
+        var o = Object(this);
+
+        // 2. Let len be ? ToLength(? Get(O, 'length')).
+        var len = o.length >>> 0;
+
+        // 3. If IsCallable(predicate) is false, throw a TypeError exception.
+        if (typeof predicate !== "function") {
+          throw new TypeError("predicate must be a function");
+        }
+
+        // 4. If thisArg was supplied, let T be thisArg; else let T be undefined.
+        var thisArg = arguments[1];
+
+        // 5. Let k be 0.
+        var k = 0;
+
+        // 6. Repeat, while k < len
+        while (k < len) {
+          // a. Let Pk be ! ToString(k).
+          // b. Let kValue be ? Get(O, Pk).
+          // c. Let testResult be ToBoolean(? Call(predicate, T, � kValue, k, O �)).
+          // d. If testResult is true, return kValue.
+          var kValue = o[k];
+          if (predicate.call(thisArg, kValue, k, o)) {
+            return kValue;
+          }
+          // e. Increase k by 1.
+          k++;
+        }
+
+        // 7. Return undefined.
+        return undefined;
+      }
+    });
+  }
+
   function init() {
     //layout the cat
     this.wrap = d3
@@ -17,6 +61,8 @@
 
     //initialize the settings
     this.setDefaults(this);
+
+    //add others here!
 
     //create the controls
     this.controls.init(this);
@@ -357,6 +403,111 @@
 
     //set the text/form settings for the first renderer
     cat.settings.set(cat);
+  }
+
+  function showEnv(cat) {
+    /*build list of loaded CSS */
+    var current_css = [];
+    d3.selectAll("link").each(function() {
+      var obj = {};
+      obj.link = d3.select(this).property("href");
+      obj.disabled = d3.select(this).property("disabled");
+      obj.filename = obj.link.substring(obj.link.lastIndexOf("/") + 1);
+      obj.wrap = d3.select(this);
+      current_css.push(obj);
+    });
+
+    var cssItems = cat.controls.cssList.selectAll("li").data(current_css);
+
+    var newItems = cssItems.enter().append("li");
+
+    var itemContents = newItems.append("span").property("title", function(d) {
+      return d.link;
+    });
+
+    itemContents
+      .append("a")
+      .text(function(d) {
+        return d.filename;
+      })
+      .attr("href", function(d) {
+        return d.link;
+      })
+      .property("target", "_blank");
+
+    var switchWrap = itemContents
+      .append("label")
+      .attr("class", "switch")
+      .classed("hidden", function(d) {
+        return d.filename == "cat.css";
+      });
+
+    var switchCheck = switchWrap
+      .append("input")
+      .property("type", "checkbox")
+      .property("checked", function(d) {
+        return !d.disabled;
+      });
+    switchWrap.append("span").attr("class", "slider round");
+
+    switchCheck.on("click", function(d) {
+      //load or unload css
+      d.disabled = !d.disabled;
+      d.wrap.property("disabled", d.disabled);
+
+      //update toggle mark
+      this.checked = !d.disabled;
+    });
+
+    cssItems.exit().remove();
+
+    /*build list of loaded JS */
+    var current_js = [];
+    d3.selectAll("script").each(function() {
+      var obj = {};
+      obj.link = d3.select(this).property("src");
+      obj.filename = obj.link.substring(obj.link.lastIndexOf("/") + 1);
+      if (obj.link) {
+        current_js.push(obj);
+      }
+    });
+
+    var jsItems = cat.controls.jsList.selectAll("li").data(current_js);
+
+    jsItems
+      .enter()
+      .append("li")
+      .append("a")
+      .text(function(d) {
+        return d.filename;
+      })
+      .property("title", function(d) {
+        return d.link;
+      })
+      .attr("href", function(d) {
+        return d.link;
+      })
+      .property("target", "_blank");
+
+    jsItems.exit().remove();
+  }
+
+  function initEnvConfig(cat) {
+    var settingsHeading = cat.controls.environmentWrap
+      .append("h3")
+      .html("4. Environment ");
+
+    cat.controls.cssList = cat.controls.environmentWrap
+      .append("ul")
+      .attr("class", "cssList");
+    cat.controls.cssList.append("h5").text("Loaded Stylesheets");
+
+    cat.controls.jsList = cat.controls.environmentWrap
+      .append("ul")
+      .attr("class", "jsList");
+    cat.controls.jsList.append("h5").text("Loaded javascript");
+
+    showEnv(cat);
   }
 
   var _typeof =
@@ -707,6 +858,7 @@
           if (cat.config.useServer) {
             cat.status.saveToServer(cat);
           }
+          showEnv(cat);
 
           //don't print any new statuses until a new chart is rendered
           cat.printStatus = false;
@@ -778,55 +930,6 @@
         );
       }
     });
-  }
-
-  function loadBootstrap(cat) {
-    var bootstrapPath_css =
-      "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css";
-    var bootstrapPath_js =
-      "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js";
-
-    var link = document.createElement("link");
-    link.href = bootstrapPath_css;
-    link.type = "text/css";
-    link.rel = "stylesheet";
-    document.getElementsByTagName("head")[0].appendChild(link);
-
-    var bootstrapLoader = new scriptLoader();
-    bootstrapLoader.require(bootstrapPath_js, {
-      async: true,
-      success: function success() {
-        cat.statusDiv.append("div").html("Loaded bootstrap.");
-
-        loadRenderer(cat);
-      },
-      failure: function failure() {
-        cat.statusDiv
-          .append("div")
-          .html("The " + version + "Couldn't load bootstrap. Aborting.")
-          .classed("error", true);
-      }
-    });
-  }
-
-  function initBootstrapConfig(cat) {
-    var settingsHeading = cat.controls.environmentWrap
-      .append("h3")
-      .html("4. Environment ");
-
-    cat.controls.bootstrapButton = cat.controls.environmentWrap
-      .append("button")
-      .text("Load Bootstrap")
-      .on("click", function() {
-        loadBootstrap(cat);
-      });
-
-    cat.controls.environmentWrap
-      .append("div")
-      .append("small")
-      .text(
-        "Load bootstrap with the button above. Refresh the page if you want to remove bootstrap."
-      );
   }
 
   function loadLibrary(cat) {
@@ -915,14 +1018,13 @@
   }
 
   function init$1(cat) {
-    console.log("initializing controls");
     cat.current = cat.config.renderers[0];
     initSubmit(cat);
     initRendererSelect(cat);
     initDataSelect(cat);
     initFileLoad.call(cat);
     initChartConfig(cat);
-    initBootstrapConfig(cat);
+    initEnvConfig(cat);
 
     // minimize controls - for later?
     /*
@@ -973,7 +1075,6 @@
         ? { label: df, path: cat.config.dataURL, user_loaded: false }
         : df;
     });
-    console.log(cat.config.dataFiles);
   }
 
   function makeForm(cat, obj) {

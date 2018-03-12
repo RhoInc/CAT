@@ -12,5 +12,4 @@ export function setDefaults(cat) {
       ? { label: df, path: cat.config.dataURL, user_loaded: false }
       : df;
   });
-  console.log(cat.config.dataFiles);
 }

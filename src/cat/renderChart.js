@@ -1,4 +1,5 @@
 import { createChartExport } from "./export/createChartExport";
+import { showEnv } from "./env/showEnv";
 
 export function renderChart(cat) {
   var rendererObj = cat.controls.rendererSelect
@@ -53,6 +54,7 @@ export function renderChart(cat) {
         if (cat.config.useServer) {
           cat.status.saveToServer(cat);
         }
+        showEnv(cat);
 
         //don't print any new statuses until a new chart is rendered
         cat.printStatus = false;
