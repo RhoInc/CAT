@@ -6,6 +6,9 @@ export function initSubmit(cat) {
     .attr("class", "submit")
     .text("Render Chart")
     .on("click", function() {
+      cat.dataWrap.classed("hidden", true);
+      cat.chartWrap.classed("hidden", false);
+
       //Disable and/or remove previously loaded stylesheets.
       d3
         .selectAll("link")
@@ -14,6 +17,7 @@ export function initSubmit(cat) {
         })
         .property("disabled", true)
         .remove();
+
       d3
         .selectAll("style")
         .property("disabled", true)
