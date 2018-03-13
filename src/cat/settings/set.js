@@ -13,21 +13,23 @@ export function set(cat) {
     version +
     "/" +
     cat.current.schema;
+
+  cat.current.settingsView = "text";
+  cat.controls.settingsInput.value = "{}";
+  cat.current.config = {};
+
   d3.json(schemaPath, function(error, schemaObj) {
     //d3.json(testPath, function(error, schemaObj) {
     if (error) {
       console.log("No schema loaded.");
       cat.current.hasValidSchema = false;
-      cat.current.settingsView = "text";
       cat.current.schemaObj = null;
-      cat.controls.settingsInput.value = "{}";
-      cat.current.config = {};
       //cat.settings.setStatus(cat, "no schema");
     } else {
       // attempt to validate the schema
       console.log("Schema found ...");
       cat.current.hasValidSchema = validateSchema(schemaObj);
-      cat.current.settingsView = cat.current.hasValidSchema ? "form" : "text";
+      //cat.current.settingsView = cat.current.hasValidSchema ? "form" : "text";
       cat.current.schemaObj = cat.current.hasValidSchema ? schemaObj : null;
       //  cat.settings.setStatus(
       //    cat,

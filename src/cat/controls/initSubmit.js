@@ -1,15 +1,14 @@
 import { loadLibrary } from "../loadLibrary";
 
 export function initSubmit(cat) {
-  var submitSection = cat.controls.wrap
-    .append("div")
-    .attr("class", "control-section");
-
-  cat.controls.submitButton = submitSection
+  cat.controls.submitButton = cat.controls.submitWrap
     .append("button")
     .attr("class", "submit")
     .text("Render Chart")
     .on("click", function() {
+      cat.dataWrap.classed("hidden", true);
+      cat.chartWrap.classed("hidden", false);
+
       //Disable and/or remove previously loaded stylesheets.
       d3
         .selectAll("link")
@@ -18,6 +17,7 @@ export function initSubmit(cat) {
         })
         .property("disabled", true)
         .remove();
+
       d3
         .selectAll("style")
         .property("disabled", true)
