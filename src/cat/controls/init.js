@@ -4,9 +4,9 @@ import { initFileLoad } from "./initFileLoad";
 import { initChartConfig } from "./initChartConfig";
 import { initEnvConfig } from "./initEnvConfig";
 import { initSubmit } from "./initSubmit";
+import addEnterEventListener from '../addEnterEventListener';
 
 export function init(cat) {
-  console.log("initializing controls");
   cat.current = cat.config.renderers[0];
   initSubmit(cat);
   initRendererSelect(cat);
@@ -14,6 +14,7 @@ export function init(cat) {
   initFileLoad.call(cat);
   initChartConfig(cat);
   initEnvConfig(cat);
+  addEnterEventListener(cat);
 
   // minimize controls - for later?
   /*

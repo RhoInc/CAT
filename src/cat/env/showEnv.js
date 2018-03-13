@@ -2,8 +2,6 @@ import { getCSS } from "./getCSS";
 import { getJS } from "./getJS";
 
 export function showEnv(cat) {
-  console.log("showing the env");
-
   /*build list of loaded CSS */
   var current_css = getCSS();
   var cssItems = cat.controls.cssList.selectAll("li").data(current_css);

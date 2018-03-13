@@ -10,7 +10,6 @@ export function showDataPreview(cat) {
   var dataFile = cat.controls.dataFileSelect.node().value;
   var dataObject = cat.config.dataFiles.find(f => f.label == dataFile);
   var path = dataObject.path + dataObject.label;
-  console.log(dataObject);
 
   cat.dataWrap
     .append("button")
