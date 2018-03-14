@@ -1,5 +1,5 @@
 import { loadLibrary } from "../loadLibrary";
-import addEnterEventListener from '../addEnterEventListener';
+import addEnterEventListener from "../addEnterEventListener";
 
 export function makeForm(cat, obj) {
   var formLayout = [
@@ -59,6 +59,9 @@ export function makeForm(cat, obj) {
   d3.selectAll("i.icon-plus-sign").text("+");
   d3.selectAll("i.icon-minus-sign").text("-");
 
-  //Add Enter event listener to all controls.
-  addEnterEventListener(cat);
+  //add enter listener
+  cat.controls.addEnterEventListener(
+    cat.controls.wrap.select(".settingsForm"),
+    cat
+  );
 }

@@ -93,4 +93,7 @@ export function initRendererSelect(cat) {
     .classed("hidden", true);
   cat.controls.schema.node().value = cat.current.schema;
   cat.controls.rendererWrap.append("br").classed("hidden", true);
+
+  //add enter listener
+  cat.controls.addEnterEventListener(cat.controls.rendererWrap, cat);
 }

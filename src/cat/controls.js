@@ -3,7 +3,9 @@
 \------------------------------------------------------------------------------------------------*/
 
 import { init } from "./controls/init";
+import addEnterEventListener from "./addEnterEventListener";
 
 export const controls = {
-  init: init
+  init,
+  addEnterEventListener
 };

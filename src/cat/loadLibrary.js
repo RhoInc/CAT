@@ -50,7 +50,6 @@ export function loadLibrary(cat) {
     ".js";
 
   var current_js = getJS().filter(f => f.link == rendererPath);
-  console.log(current_js);
   var js_loaded = current_js.length > 0;
 
   if (!js_loaded) {
