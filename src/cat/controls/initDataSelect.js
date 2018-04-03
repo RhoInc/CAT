@@ -21,5 +21,4 @@ export function initDataSelect(cat) {
     .property("selected", function(d) {
       return cat.current.defaultData == d.label ? true : null;
     });
-
 }
