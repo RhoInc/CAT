@@ -10,16 +10,14 @@ export function initSubmit(cat) {
       cat.chartWrap.classed("hidden", false);
 
       //Disable and/or remove previously loaded stylesheets.
-      d3
-        .selectAll("link")
+      d3.selectAll("link")
         .filter(function() {
           return !this.href.indexOf("css/cat.css");
         })
         .property("disabled", true)
         .remove();
 
-      d3
-        .selectAll("style")
+      d3.selectAll("style")
         .property("disabled", true)
         .remove();
 

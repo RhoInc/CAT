@@ -4,12 +4,12 @@
 }
 
 .cat-wrap .cat-controls{
-  width:300px;
+  width:20%;
   top: 0;
   bottom:0;
   position:fixed;
   overflow-y:scroll;
-  overflow-x:hidden;
+  overflow-x:scroll;
   background:#99badd;
   padding:0.5em;
   margin:0;
@@ -18,7 +18,7 @@
 }
 
 .cat-wrap .cat-chart, .cat-wrap .cat-data{
-  margin-left:300px;
+  margin-left:20%;
   padding-left: 3em;
 }
 
@@ -71,17 +71,20 @@
 
 
 /* json-schema form formatting */
-.help-inline{
-  font-size:0.7em;
-  color:#fff;
-  display:block;
+.cat-wrap .cat-controls .settings-section .prop-name{
+  text-align:right;
+  font-size:0.8em;
+  vertical-align: top;
+  color:#666;
+  padding-bottom:0.1em;
+}
+.cat-wrap .cat-controls .settings-section .prop-value{
+  vertical-align:top;
+  padding-bottom:0.1em;
 }
 
-.help-block{
-  color:red;
-  display:block;
 
-}
+
 
 /* status formatting */
 .cat-wrap .cat-chart .status div{

@@ -44,6 +44,12 @@ export function sync(cat, printStatus) {
     //this submits the form which:
     //- saves the current object
     //- updates the hidden text view
-    $(".settingsForm form").trigger("submit");
+    //$(".settingsForm form").trigger("submit");
+    //get settings object from form
+    cat.current.config = cat.current.form.getData();
+    //update settings text field to match form
+    cat.controls.settingsInput.node().value = JSON.stringify(
+      cat.current.config
+    );
   }
 }
