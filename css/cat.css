@@ -71,17 +71,20 @@
 
 
 /* json-schema form formatting */
-.help-inline{
-  font-size:0.7em;
-  color:#fff;
-  display:block;
+.cat-wrap .cat-controls .settings-section .prop-name{
+  text-align:right;
+  font-size:0.8em;
+  vertical-align: top;
+  color:#666;
+  padding-bottom:0.1em;
+}
+.cat-wrap .cat-controls .settings-section .prop-value{
+  vertical-align:top;
+  padding-bottom:0.1em;
 }
 
-.help-block{
-  color:red;
-  display:block;
 
-}
+
 
 /* status formatting */
 .cat-wrap .cat-chart .status div{
