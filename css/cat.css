@@ -4,12 +4,12 @@
 }
 
 .cat-wrap .cat-controls{
-  width:300px;
+  width:20%;
   top: 0;
   bottom:0;
   position:fixed;
   overflow-y:scroll;
-  overflow-x:hidden;
+  overflow-x:scroll;
   background:#99badd;
   padding:0.5em;
   margin:0;
@@ -18,7 +18,7 @@
 }
 
 .cat-wrap .cat-chart, .cat-wrap .cat-data{
-  margin-left:300px;
+  margin-left:20%;
   padding-left: 3em;
 }
 
