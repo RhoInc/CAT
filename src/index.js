@@ -1,6 +1,6 @@
-import "./polyfills/array-find.js";
-import { createCat } from "./createCat";
+import './polyfills/array-find.js';
+import { createCat } from './createCat';
 
 export default {
-  createCat: createCat
+    createCat: createCat
 };

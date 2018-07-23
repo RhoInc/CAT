@@ -71,12 +71,11 @@
 
 
 /* json-schema form formatting */
-.cat-wrap .cat-controls .settings-section .prop-name{
-  text-align:right;
-  font-size:0.8em;
-  vertical-align: top;
-  color:#666;
-  padding-bottom:0.1em;
+.cat-wrap .cat-controls .settings-section textarea {
+    white-space: pre;
+    font-family: courier;
+    rows: 10;
+    width: 100%;
 }
 .cat-wrap .cat-controls .settings-section .prop-value{
   vertical-align:top;

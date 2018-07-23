@@ -7,8 +7,8 @@
     "build": "npm run bundle && npm run format",
     "bundle": "rollup -c",
     "format": "npm run format-src && npm run format-bundle",
-    "format-bundle": "prettier --write \"build/CAT.js\"",
-    "format-src": "prettier --write \"src/**/*.js\"",
+    "format-src": "prettier --print-width=100 --tab-width=4 --single-quote --write \"./src/**/*.js\"",
+    "format-bundle": "prettier --print-width=100 --tab-width=4 --single-quote --write ./build/cat.js",
     "watch": "rollup -c -w",
     "start": "node server/app.js",
     "initServer": "node server/initServer.js"
