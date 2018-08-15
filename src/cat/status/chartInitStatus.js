@@ -44,7 +44,8 @@ export function chartInitStatus(statusDiv, success, err, htmlExport) {
         statusDiv.select('div.export.minimized').on('click', function() {
             d3.select(this).classed('minimized', false);
             d3.select(this).html('<strong>Source code for chart:</strong>');
-            d3.select(this)
+            d3
+                .select(this)
                 .append('code')
                 .html(
                     htmlExport
