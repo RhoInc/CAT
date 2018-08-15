@@ -89,7 +89,7 @@ var myCatConfig = {
       sub: null,
       css: null,
       schema: 'settings-schema.json',
-      defaultData: 'dataCleaning/rx_DataPage.csv'
+      defaultData: 'dataCleaning/dmc_DataPage.csv'
     }
   ]
 };
