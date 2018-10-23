@@ -912,7 +912,9 @@
             rendererObj.name +
             '/' +
             version +
-            '/build/' +
+            '/' +
+            rendererObj.folder +
+            '/' +
             rendererObj.main +
             '.js';
 
