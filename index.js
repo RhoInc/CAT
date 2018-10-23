@@ -27,7 +27,7 @@ var myCatConfig = {
                 sub: 'createChart',
                 css: 'css/aeTable.css',
                 schema: 'settings-schema.json',
-            folder: 'build',
+                folder: 'build',
                 defaultData: 'safetyData/ADAE.csv'
             },
             {
@@ -36,7 +36,7 @@ var myCatConfig = {
                 sub: null,
                 css: null,
                 schema: 'settings-schema.json',
-            folder: 'build',
+                folder: 'build',
                 defaultData: 'safetyData/ADAE.csv'
             },
 
@@ -50,7 +50,7 @@ var myCatConfig = {
                 sub: null,
                 css: null,
                 schema: 'settings-schema.json',
-            folder: 'build',
+                folder: 'build',
                 defaultData: 'safetyData/ADBDS.csv'
             },
             {
@@ -59,7 +59,7 @@ var myCatConfig = {
                 sub: null,
                 css: null,
                 schema: 'settings-schema.json',
-            folder: 'build',
+                folder: 'build',
                 defaultData: 'safetyData/ADBDS.csv'
             },
             {
@@ -68,7 +68,7 @@ var myCatConfig = {
                 sub: null,
                 css: null,
                 schema: 'settings-schema.json',
-            folder: 'build',
+                folder: 'build',
                 defaultData: 'safetyData/ADBDS.csv'
             },
             {
@@ -77,7 +77,7 @@ var myCatConfig = {
                 sub: null,
                 css: null,
                 schema: 'settings-schema.json',
-            folder: 'build',
+                folder: 'build',
                 defaultData: 'safetyData/ADBDS.csv'
             },
             {
@@ -86,7 +86,7 @@ var myCatConfig = {
                 sub: null,
                 css: null,
                 schema: 'settings-schema.json',
-            folder: 'build',
+                folder: 'build',
                 defaultData: 'safetyData/ADBDS.csv'
             },
 
