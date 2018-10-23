@@ -2,7 +2,8 @@ import { loadLibrary } from '../loadLibrary';
 import addEnterEventListener from '../addEnterEventListener';
 
 export function makeForm(cat, obj) {
-    d3.select('.settingsForm form')
+    d3
+        .select('.settingsForm form')
         .selectAll('*')
         .remove();
 
@@ -21,11 +22,12 @@ export function makeForm(cat, obj) {
         const json = JSON.stringify(cat.current.config, null, 4);
         cat.controls.settingsInput.attr('rows', json.split('\n').length);
         cat.controls.settingsInput.html(json);
-    }
-    //Render form with updated text settings.
-    else cat.current.form.render(d3.select('.settingsForm form').node(), cat.current.config);
+    } else
+        //Render form with updated text settings.
+        cat.current.form.render(d3.select('.settingsForm form').node(), cat.current.config);
 
-    d3.select('.settingsForm form')
+    d3
+        .select('.settingsForm form')
         .selectAll('.glyphicon-remove')
         .text('X');
 

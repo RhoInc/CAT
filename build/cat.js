@@ -1,9 +1,7 @@
 (function(global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined'
         ? (module.exports = factory())
-        : typeof define === 'function' && define.amd
-            ? define(factory)
-            : (global.cat = factory());
+        : typeof define === 'function' && define.amd ? define(factory) : (global.cat = factory());
 })(this, function() {
     'use strict';
 
@@ -914,7 +912,9 @@
             rendererObj.name +
             '/' +
             version +
-            '/build/' +
+            '/' +
+            rendererObj.folder +
+            '/' +
             rendererObj.main +
             '.js';
 
@@ -1029,14 +1029,16 @@
                 cat.chartWrap.classed('hidden', false);
 
                 //Disable and/or remove previously loaded stylesheets.
-                d3.selectAll('link')
+                d3
+                    .selectAll('link')
                     .filter(function() {
                         return !this.href.indexOf('css/cat.css');
                     })
                     .property('disabled', true)
                     .remove();
 
-                d3.selectAll('style')
+                d3
+                    .selectAll('style')
                     .property('disabled', true)
                     .remove();
 
@@ -1127,7 +1129,8 @@
     }
 
     function makeForm(cat, obj) {
-        d3.select('.settingsForm form')
+        d3
+            .select('.settingsForm form')
             .selectAll('*')
             .remove();
 
@@ -1146,11 +1149,12 @@
             var json = JSON.stringify(cat.current.config, null, 4);
             cat.controls.settingsInput.attr('rows', json.split('\n').length);
             cat.controls.settingsInput.html(json);
-        }
-        //Render form with updated text settings.
-        else cat.current.form.render(d3.select('.settingsForm form').node(), cat.current.config);
+        } else
+            //Render form with updated text settings.
+            cat.current.form.render(d3.select('.settingsForm form').node(), cat.current.config);
 
-        d3.select('.settingsForm form')
+        d3
+            .select('.settingsForm form')
             .selectAll('.glyphicon-remove')
             .text('X');
 
@@ -1379,7 +1383,8 @@
             statusDiv.select('div.export.minimized').on('click', function() {
                 d3.select(this).classed('minimized', false);
                 d3.select(this).html('<strong>Source code for chart:</strong>');
-                d3.select(this)
+                d3
+                    .select(this)
                     .append('code')
                     .html(
                         htmlExport
