@@ -1,7 +1,7 @@
 var myCatConfig = {
     useServer: false,
-    rootURL: 'https://cdn.rawgit.com/RhoInc',
-    dataURL: 'https://cdn.rawgit.com/RhoInc/viz-library/master/data/',
+    rootURL: 'https://cdn.jsdelivr.net/gh/RhoInc',
+    dataURL: 'https://raw.githubusercontent.com/RhoInc/viz-library/master/data/',
     renderers: [
         {
             name: 'web-codebook',
