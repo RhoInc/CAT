@@ -1,10 +1,11 @@
 {
   "name": "cat",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "description": "The Charting Application Tester (CAT) lets users make and adjust web graphics on the fly.",
-  "main": "./index.html",
+  "module": "./src/index.js",
+  "main": "./build/cat.js",
   "scripts": {
-    "build": "npm run bundle && npm run format",
+    "build": "npm audit fix && npm run bundle && npm run format",
     "bundle": "rollup -c",
     "format": "npm run format-src && npm run format-bundle",
     "format-src": "prettier --print-width=100 --tab-width=4 --single-quote --write \"./src/**/*.js\"",
@@ -17,21 +18,20 @@
   "license": "MIT",
   "dependencies": {
     "d3": "^3.5.14",
-    "webcharts":"~1",
+    "webcharts": "~1",
     "jquery": "~3",
     "json5": "^0.5.1",
     "express": "~4",
     "body-parser": "~1"
   },
   "devDependencies": {
-    "babel-cli": "^6.5.1",
-    "babel-preset-es2015-rollup": "^1.1.1",
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-preset-env": "^1.7.0",
     "jimp": "^0.2.27",
     "jsdom": "~7",
     "prettier": "^1.7.4",
-    "rollup": "^0.50.0",
-    "rollup-plugin-babel": "^2.3.9",
-    "rollup-watch": "^4.3.1",
+    "rollup": "^0.66.6",
+    "rollup-plugin-babel": "^2.7.1",
     "showdown": "~1"
   }
 }
