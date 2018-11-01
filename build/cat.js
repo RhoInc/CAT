@@ -859,12 +859,10 @@
         var library = 'webcharts'; //hardcode to webcharts for now - could generalize later
 
         // --- load css --- //
-        console.log(version);
         var cssPath =
             version !== 'master'
                 ? cat.config.rootURL + '/Webcharts@' + version + '/css/webcharts.css'
                 : cat.config.rootURL + '/Webcharts/css/webcharts.css';
-        console.log(cssPath);
 
         var current_css = getCSS().filter(function(f) {
             return f.link == cssPath;
