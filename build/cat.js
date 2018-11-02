@@ -765,7 +765,15 @@
 
         if (rendererObj.css) {
             var cssPath =
-                cat.config.rootURL + '/' + rendererObj.name + '/' + version + '/' + rendererObj.css;
+                version !== 'master'
+                    ? cat.config.rootURL +
+                      '/' +
+                      rendererObj.name +
+                      '@' +
+                      version +
+                      '/' +
+                      rendererObj.css
+                    : cat.config.rootURL + '/' + rendererObj.name + '/' + rendererObj.css;
             var current_css = getCSS().filter(function(f) {
                 return f.link == cssPath;
             });
@@ -791,16 +799,25 @@
         }
 
         var rendererPath =
-            cat.config.rootURL +
-            '/' +
-            rendererObj.name +
-            '/' +
-            version +
-            '/' +
-            rendererObj.folder +
-            '/' +
-            rendererObj.main +
-            '.js';
+            version !== 'master'
+                ? cat.config.rootURL +
+                  '/' +
+                  rendererObj.name +
+                  '@' +
+                  version +
+                  '/' +
+                  rendererObj.folder +
+                  '/' +
+                  rendererObj.main +
+                  '.js'
+                : cat.config.rootURL +
+                  '/' +
+                  rendererObj.name +
+                  '/' +
+                  rendererObj.folder +
+                  '/' +
+                  rendererObj.main +
+                  '.js';
 
         var current_js = getJS().filter(function(f) {
             return f.link == rendererPath;
@@ -843,15 +860,9 @@
 
         // --- load css --- //
         var cssPath =
-            cat.config.rootURL +
-            '/' +
-            'webcharts' +
-            '/' +
-            version +
-            '/' +
-            'css' +
-            '/' +
-            'webcharts.css';
+            version !== 'master'
+                ? cat.config.rootURL + '/Webcharts@' + version + '/css/webcharts.css'
+                : cat.config.rootURL + '/Webcharts/css/webcharts.css';
 
         var current_css = getCSS().filter(function(f) {
             return f.link == cssPath;
@@ -878,7 +889,9 @@
 
         // --- load js --- //
         var rendererPath =
-            cat.config.rootURL + '/' + library + '/' + version + '/build/' + 'webcharts' + '.js';
+            version !== 'master'
+                ? cat.config.rootURL + '/' + library + '@' + version + '/build/webcharts.js'
+                : cat.config.rootURL + '/Webcharts/build/webcharts.js';
 
         var current_js = getJS().filter(function(f) {
             return f.link == rendererPath;

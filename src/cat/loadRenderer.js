@@ -10,7 +10,15 @@ export function loadRenderer(cat) {
 
     if (rendererObj.css) {
         const cssPath =
-            cat.config.rootURL + '/' + rendererObj.name + '/' + version + '/' + rendererObj.css;
+            version !== 'master'
+                ? cat.config.rootURL +
+                  '/' +
+                  rendererObj.name +
+                  '@' +
+                  version +
+                  '/' +
+                  rendererObj.css
+                : cat.config.rootURL + '/' + rendererObj.name + '/' + rendererObj.css;
         var current_css = getCSS().filter(f => f.link == cssPath);
         var css_loaded = current_css.length > 0;
         if (!css_loaded) {
@@ -32,16 +40,25 @@ export function loadRenderer(cat) {
     }
 
     var rendererPath =
-        cat.config.rootURL +
-        '/' +
-        rendererObj.name +
-        '/' +
-        version +
-        '/' +
-        rendererObj.folder +
-        '/' +
-        rendererObj.main +
-        '.js';
+        version !== 'master'
+            ? cat.config.rootURL +
+              '/' +
+              rendererObj.name +
+              '@' +
+              version +
+              '/' +
+              rendererObj.folder +
+              '/' +
+              rendererObj.main +
+              '.js'
+            : cat.config.rootURL +
+              '/' +
+              rendererObj.name +
+              '/' +
+              rendererObj.folder +
+              '/' +
+              rendererObj.main +
+              '.js';
 
     var current_js = getJS().filter(f => f.link == rendererPath);
     var js_loaded = current_js.length > 0;

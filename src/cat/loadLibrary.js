@@ -9,15 +9,9 @@ export function loadLibrary(cat) {
 
     // --- load css --- //
     var cssPath =
-        cat.config.rootURL +
-        '/' +
-        'webcharts' +
-        '/' +
-        version +
-        '/' +
-        'css' +
-        '/' +
-        'webcharts.css';
+        version !== 'master'
+            ? cat.config.rootURL + '/Webcharts@' + version + '/css/webcharts.css'
+            : cat.config.rootURL + '/Webcharts/css/webcharts.css';
 
     var current_css = getCSS().filter(f => f.link == cssPath);
     var css_loaded = current_css.length > 0;
@@ -40,7 +34,9 @@ export function loadLibrary(cat) {
 
     // --- load js --- //
     var rendererPath =
-        cat.config.rootURL + '/' + library + '/' + version + '/build/' + 'webcharts' + '.js';
+        version !== 'master'
+            ? cat.config.rootURL + '/' + library + '@' + version + '/build/webcharts.js'
+            : cat.config.rootURL + '/Webcharts/build/webcharts.js';
 
     var current_js = getJS().filter(f => f.link == rendererPath);
     var js_loaded = current_js.length > 0;
