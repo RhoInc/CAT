@@ -806,16 +806,14 @@
                   '@' +
                   version +
                   '/' +
-                  rendererObj.folder +
-                  '/' +
+                  (rendererObj.folder !== '' ? renderObject.folder + '/' : '') +
                   rendererObj.main +
                   '.js'
                 : cat.config.rootURL +
                   '/' +
                   rendererObj.name +
                   '/' +
-                  rendererObj.folder +
-                  '/' +
+                  (rendererObj.folder !== '' ? renderObject.folder + '/' : '') +
                   rendererObj.main +
                   '.js';
 
