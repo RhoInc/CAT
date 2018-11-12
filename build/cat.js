@@ -806,14 +806,14 @@
                   '@' +
                   version +
                   '/' +
-                  (rendererObj.folder !== '' ? renderObject.folder + '/' : '') +
+                  (rendererObj.folder !== '' ? rendererObj.folder + '/' : '') +
                   rendererObj.main +
                   '.js'
                 : cat.config.rootURL +
                   '/' +
                   rendererObj.name +
                   '/' +
-                  (rendererObj.folder !== '' ? renderObject.folder + '/' : '') +
+                  (rendererObj.folder !== '' ? rendererObj.folder + '/' : '') +
                   rendererObj.main +
                   '.js';
 
@@ -1116,8 +1116,11 @@
     function set$1(cat) {
         // load the schema (if any) and see if it is validate
         var version = cat.controls.versionSelect.node().value;
-        var schemaPath =
-            cat.config.rootURL + '/' + cat.current.name + '/' + version + '/' + cat.current.schema;
+        var schemaPath = [
+            cat.config.rootURL,
+            version !== 'master' ? cat.current.name + '@' + version : cat.current.name,
+            cat.current.schema
+        ].join('/');
 
         cat.current.settingsView = 'text';
         cat.controls.settingsInput.value = '{}';

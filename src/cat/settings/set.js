@@ -5,8 +5,11 @@ import { validateSchema } from './validateSchema';
 export function set(cat) {
     // load the schema (if any) and see if it is validate
     var version = cat.controls.versionSelect.node().value;
-    var schemaPath =
-        cat.config.rootURL + '/' + cat.current.name + '/' + version + '/' + cat.current.schema;
+    var schemaPath = [
+        cat.config.rootURL,
+        version !== 'master' ? cat.current.name + '@' + version : cat.current.name,
+        cat.current.schema
+    ].join('/');
 
     cat.current.settingsView = 'text';
     cat.controls.settingsInput.value = '{}';

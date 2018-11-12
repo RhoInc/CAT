@@ -47,14 +47,14 @@ export function loadRenderer(cat) {
               '@' +
               version +
               '/' +
-              (rendererObj.folder !== '' ? renderObject.folder + '/' : '') +
+              (rendererObj.folder !== '' ? rendererObj.folder + '/' : '') +
               rendererObj.main +
               '.js'
             : cat.config.rootURL +
               '/' +
               rendererObj.name +
               '/' +
-              (rendererObj.folder !== '' ? renderObject.folder + '/' : '') +
+              (rendererObj.folder !== '' ? rendererObj.folder + '/' : '') +
               rendererObj.main +
               '.js';
 
