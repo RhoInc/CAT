@@ -1,32 +1,33 @@
 import { loadLibrary } from '../loadLibrary';
 
 export function initSubmit(cat) {
+    cat.controls.minimize = cat.controls.submitWrap
+        .append('div')
+        .classed('cat-button cat-button--minimize hidden', true)
+        .attr('title', 'Hide controls')
+        .text('<<')
+        .on('click', () => {
+            cat.controls.wrap.classed('hidden', true);
+            cat.chartWrap.style('margin-left', 0);
+            cat.dataWrap.style('margin-left', 0);
+            cat.controls.maximize = cat.wrap
+                .insert('div', ':first-child')
+                .classed('cat-button cat-button--maximize', true)
+                .text('>>')
+                .attr('title', 'Show controls')
+                .on('click', function() {
+                    cat.controls.wrap.classed('hidden', false);
+                    cat.chartWrap.style('margin-left', '20%');
+                    cat.dataWrap.style('margin-left', '20%');
+                    d3.select(this).remove();
+                });
+        });
     cat.controls.submitButton = cat.controls.submitWrap
         .append('button')
         .attr('class', 'submit')
         .text('Render Chart')
         .on('click', function() {
-            cat.controls.minimize = cat.controls.submitWrap
-                .append('div')
-                .classed('cat-button cat-button--minimize', true)
-                .attr('title', 'Hide controls')
-                .text('<<')
-                .on('click', () => {
-                    cat.controls.wrap.classed('hidden', true);
-                    cat.chartWrap.style('margin-left', 0);
-                    cat.dataWrap.style('margin-left', 0);
-                    cat.wrap
-                        .insert('div', ':first-child')
-                        .classed('cat-button cat-button--maximize', true)
-                        .text('>>')
-                        .attr('title', 'Show controls')
-                        .on('click', function() {
-                            cat.controls.wrap.classed('hidden', false);
-                            cat.chartWrap.style('margin-left', '20%');
-                            cat.dataWrap.style('margin-left', '20%');
-                            d3.select(this).remove();
-                        });
-                });
+            cat.controls.minimize.classed('hidden', false);
             cat.dataWrap.classed('hidden', true);
             cat.chartWrap.classed('hidden', false);
 
