@@ -7,18 +7,23 @@ export function loadRenderer(cat) {
     var rendererObj = cat.controls.rendererSelect.selectAll('option:checked').data()[0];
 
     var version = cat.controls.versionSelect.node().value;
+    console.log(rendererObj);
 
     if (rendererObj.css) {
         const cssPath =
             version !== 'master'
-                ? cat.config.rootURL +
+                ? (rendererObj.rootURL || cat.config.rootURL) +
                   '/' +
                   rendererObj.name +
                   '@' +
                   version +
                   '/' +
                   rendererObj.css
-                : cat.config.rootURL + '/' + rendererObj.name + '/' + rendererObj.css;
+                : (rendererObj.rootURL || cat.config.rootURL) +
+                  '/' +
+                  rendererObj.name +
+                  '/' +
+                  rendererObj.css;
         var current_css = getCSS().filter(f => f.link == cssPath);
         var css_loaded = current_css.length > 0;
         if (!css_loaded) {
@@ -41,7 +46,7 @@ export function loadRenderer(cat) {
 
     var rendererPath =
         version !== 'master'
-            ? cat.config.rootURL +
+            ? (rendererObj.rootURL || cat.config.rootURL) +
               '/' +
               rendererObj.name +
               '@' +
@@ -50,7 +55,7 @@ export function loadRenderer(cat) {
               (rendererObj.folder !== '' ? rendererObj.folder + '/' : '') +
               rendererObj.main +
               '.js'
-            : cat.config.rootURL +
+            : (rendererObj.rootURL || cat.config.rootURL) +
               '/' +
               rendererObj.name +
               '/' +

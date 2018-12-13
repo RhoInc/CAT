@@ -1,32 +1,35 @@
 export function layout(cat) {
     /* Layout primary sections */
-    cat.controls.wrap = cat.wrap.append('div').attr('class', 'cat-controls section');
-    cat.chartWrap = cat.wrap.append('div').attr('class', 'cat-chart section');
+    cat.controls.wrap = cat.wrap.append('div').classed('cat-controls section', true);
+    cat.chartWrap = cat.wrap.append('div').classed('cat-chart section', true);
     cat.dataWrap = cat.wrap
         .append('div')
-        .attr('class', 'cat-data section')
+        .classed('cat-data section', true)
         .classed('hidden', true);
 
     /* Layout CAT Controls Divs */
-    cat.controls.wrap.append('h2').text('Charting Application Tester 😼');
+    cat.controls.wrap
+        .append('h2')
+        .classed('cat-controls-header', true)
+        .text('Charting Application Tester 😼');
 
     cat.controls.submitWrap = cat.controls.wrap
         .append('div')
-        .attr('class', 'control-section submit-section');
+        .classed('control-section submit-section', true);
 
     cat.controls.rendererWrap = cat.controls.wrap
         .append('div')
-        .attr('class', 'control-section renderer-section');
+        .classed('control-section renderer-section', true);
 
     cat.controls.dataWrap = cat.controls.wrap
         .append('div')
-        .attr('class', 'control-section data-section');
+        .classed('control-section data-section', true);
 
     cat.controls.settingsWrap = cat.controls.wrap
         .append('div')
-        .attr('class', 'control-section settings-section');
+        .classed('control-section settings-section', true);
 
     cat.controls.environmentWrap = cat.controls.wrap
         .append('div')
-        .attr('class', 'control-section environment-section');
+        .classed('control-section environment-section', true);
 }

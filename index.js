@@ -89,6 +89,16 @@ var myCatConfig = {
                 folder: 'build',
                 defaultData: 'safetyData/ADBDS.csv'
             },
+            {
+                name: 'safety-eDISH',
+                main: 'safetyedish',
+                sub: null,
+                css: null,
+                schema: 'settings-schema.json',
+                folder: 'build',
+                defaultData: 'safetyData/ADBDS.csv',
+                rootURL: 'https://cdn.jsdelivr.net/gh/ASA-DIA-InteractiveSafetyGraphics',
+            },
 
     /**-------------------------------------------------------------------------------------------\
         Data Cleaning

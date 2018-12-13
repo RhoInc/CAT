@@ -68,35 +68,584 @@
 
     function layout(cat) {
         /* Layout primary sections */
-        cat.controls.wrap = cat.wrap.append('div').attr('class', 'cat-controls section');
-        cat.chartWrap = cat.wrap.append('div').attr('class', 'cat-chart section');
+        cat.controls.wrap = cat.wrap.append('div').classed('cat-controls section', true);
+        cat.chartWrap = cat.wrap.append('div').classed('cat-chart section', true);
         cat.dataWrap = cat.wrap
             .append('div')
-            .attr('class', 'cat-data section')
+            .classed('cat-data section', true)
             .classed('hidden', true);
 
         /* Layout CAT Controls Divs */
-        cat.controls.wrap.append('h2').text('Charting Application Tester 😼');
+        cat.controls.wrap
+            .append('h2')
+            .classed('cat-controls-header', true)
+            .text('Charting Application Tester 😼');
 
         cat.controls.submitWrap = cat.controls.wrap
             .append('div')
-            .attr('class', 'control-section submit-section');
+            .classed('control-section submit-section', true);
 
         cat.controls.rendererWrap = cat.controls.wrap
             .append('div')
-            .attr('class', 'control-section renderer-section');
+            .classed('control-section renderer-section', true);
 
         cat.controls.dataWrap = cat.controls.wrap
             .append('div')
-            .attr('class', 'control-section data-section');
+            .classed('control-section data-section', true);
 
         cat.controls.settingsWrap = cat.controls.wrap
             .append('div')
-            .attr('class', 'control-section settings-section');
+            .classed('control-section settings-section', true);
 
         cat.controls.environmentWrap = cat.controls.wrap
             .append('div')
-            .attr('class', 'control-section environment-section');
+            .classed('control-section environment-section', true);
+    }
+
+    var _typeof =
+        typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol'
+            ? function(obj) {
+                  return typeof obj;
+              }
+            : function(obj) {
+                  return obj &&
+                      typeof Symbol === 'function' &&
+                      obj.constructor === Symbol &&
+                      obj !== Symbol.prototype
+                      ? 'symbol'
+                      : typeof obj;
+              };
+
+    // Nice script loader from here: https://stackoverflow.com/questions/538745/how-to-tell-if-a-script-tag-failed-to-load
+
+    function scriptLoader() {}
+
+    scriptLoader.prototype = {
+        timer: function timer(
+            times, // number of times to try
+            delay, // delay per try
+            delayMore, // extra delay per try (additional to delay)
+            test, // called each try, timer stops if this returns true
+            failure, // called on failure
+            result // used internally, shouldn't be passed
+        ) {
+            var me = this;
+            if (times == -1 || times > 0) {
+                setTimeout(function() {
+                    result = test() ? 1 : 0;
+                    me.timer(
+                        result ? 0 : times > 0 ? --times : times,
+                        delay + (delayMore ? delayMore : 0),
+                        delayMore,
+                        test,
+                        failure,
+                        result
+                    );
+                }, result || delay < 0 ? 0.1 : delay);
+            } else if (typeof failure == 'function') {
+                setTimeout(failure, 1);
+            }
+        },
+
+        addEvent: function addEvent(el, eventName, eventFunc) {
+            if ((typeof el === 'undefined' ? 'undefined' : _typeof(el)) != 'object') {
+                return false;
+            }
+
+            if (el.addEventListener) {
+                el.addEventListener(eventName, eventFunc, false);
+                return true;
+            }
+
+            if (el.attachEvent) {
+                el.attachEvent('on' + eventName, eventFunc);
+                return true;
+            }
+
+            return false;
+        },
+
+        // add script to dom
+        require: function require(url, args) {
+            var me = this;
+            args = args || {};
+
+            var scriptTag = document.createElement('script');
+            var headTag = document.getElementsByTagName('head')[0];
+            if (!headTag) {
+                return false;
+            }
+
+            setTimeout(function() {
+                var f = typeof args.success == 'function' ? args.success : function() {};
+                args.failure = typeof args.failure == 'function' ? args.failure : function() {};
+                var fail = function fail() {
+                    if (!scriptTag.__es) {
+                        scriptTag.__es = true;
+                        scriptTag.id = 'failed';
+                        args.failure(scriptTag);
+                    }
+                };
+                scriptTag.onload = function() {
+                    scriptTag.id = 'loaded';
+                    f(scriptTag);
+                };
+                scriptTag.type = 'text/javascript';
+                scriptTag.async = typeof args.async == 'boolean' ? args.async : false;
+                scriptTag.charset = 'utf-8';
+                me.__es = false;
+                me.addEvent(scriptTag, 'error', fail); // when supported
+                // when error event is not supported fall back to timer
+                me.timer(
+                    15,
+                    1000,
+                    0,
+                    function() {
+                        return scriptTag.id == 'loaded';
+                    },
+                    function() {
+                        if (scriptTag.id != 'loaded') {
+                            fail();
+                        }
+                    }
+                );
+                scriptTag.src = url;
+                setTimeout(function() {
+                    try {
+                        headTag.appendChild(scriptTag);
+                    } catch (e) {
+                        fail();
+                    }
+                }, 1);
+            }, typeof args.delay == 'number' ? args.delay : 1);
+            return true;
+        }
+    };
+
+    function createChartExport(cat) {
+        /* Get settings from current controls */
+        var webcharts_version = cat.controls.libraryVersion.node().value;
+        var renderer_version = cat.controls.versionSelect.node().value;
+        var data_file = cat.controls.dataFileSelect.node().value;
+        var data_file_path = cat.config.dataURL + data_file;
+        var init_string = cat.current.sub
+            ? cat.current.main + '.' + cat.current.sub
+            : cat.current.main;
+
+        var chart_config = JSON.stringify(cat.current.config, null, ' ');
+        var renderer_css = '';
+        if (cat.current.css) {
+            var css_path =
+                cat.config.rootURL +
+                '/' +
+                cat.current.name +
+                '/' +
+                renderer_version +
+                '/' +
+                cat.current.css;
+            renderer_css = "<link type = 'text/css' rel = 'stylesheet' href = '" + css_path + "'>";
+        }
+
+        /* Return a html for a working chart */
+        var exampleTemplate =
+            '\n<!DOCTYPE html>\n\n    <html>\n\n    <head>\n        <title>' +
+            cat.current.name +
+            "</title>\n\n        <meta http-equiv = 'Content-Type' content = 'text/html; charset = utf-8'>\n\n        <script type = 'text/javascript' src = 'https://d3js.org/d3.v3.min.js'></script>\n        <script type = 'text/javascript' src = 'https://rawgit.com/RhoInc/Webcharts/" +
+            webcharts_version +
+            "/build/webcharts.js'></script>\n        <script type = 'text/javascript' src = 'https://rawgit.com/RhoInc/" +
+            cat.current.name +
+            '/' +
+            renderer_version +
+            '/build/' +
+            cat.current.main +
+            ".js'></script>\n\n        <link type = 'text/css' rel = 'stylesheet' href = 'https://rawgit.com/RhoInc/Webcharts/" +
+            webcharts_version +
+            "/css/webcharts.min.css'>\n        " +
+            renderer_css +
+            "\n    </head>\n\n    <body>\n        <h1 id = 'title'>" +
+            cat.current.name +
+            ' created for ' +
+            cat.current.defaultData +
+            "</h1>\n        <div id = 'container'>\n        </div>\n    </body>\n\n    <script type = 'text/javascript'>\n        let settings = " +
+            chart_config +
+            '\n        let chart = ' +
+            init_string +
+            "('#container', settings);\n        d3.csv('" +
+            data_file_path +
+            "', function(data) {\n            chart.init(data);\n        });\n\n    </script>\n</html>\n";
+        return exampleTemplate;
+    }
+
+    function getCSS() {
+        var current_css = [];
+        d3.selectAll('link').each(function() {
+            var obj = {};
+            obj.sel = this;
+            obj.link = d3.select(this).property('href');
+            obj.disabled = d3.select(this).property('disabled');
+            obj.filename = obj.link.substring(obj.link.lastIndexOf('/') + 1);
+            obj.wrap = d3.select(this);
+            current_css.push(obj);
+        });
+        return current_css;
+    }
+
+    function getJS() {
+        var current_js = [];
+        d3.selectAll('script').each(function() {
+            var obj = {};
+            obj.link = d3.select(this).property('src');
+            obj.filename = obj.link.substring(obj.link.lastIndexOf('/') + 1);
+            if (obj.link) {
+                current_js.push(obj);
+            }
+        });
+        return current_js;
+    }
+
+    function showEnv(cat) {
+        /*build list of loaded CSS */
+        var current_css = getCSS();
+        var cssItems = cat.controls.cssList.selectAll('li').data(current_css);
+        var newItems = cssItems.enter().append('li');
+        var itemContents = newItems.append('span').property('title', function(d) {
+            return d.link;
+        });
+
+        itemContents
+            .append('a')
+            .text(function(d) {
+                return d.filename;
+            })
+            .attr('href', function(d) {
+                return d.link;
+            })
+            .property('target', '_blank');
+
+        var switchWrap = itemContents
+            .append('label')
+            .attr('class', 'switch')
+            .classed('hidden', function(d) {
+                return d.filename == 'cat.css';
+            });
+
+        var switchCheck = switchWrap
+            .append('input')
+            .property('type', 'checkbox')
+            .property('checked', function(d) {
+                return !d.disabled;
+            });
+        switchWrap.append('span').attr('class', 'slider round');
+
+        switchCheck.on('click', function(d) {
+            //load or unload css
+            d.disabled = !d.disabled;
+            d.wrap.property('disabled', d.disabled);
+
+            //update toggle mark
+            this.checked = !d.disabled;
+        });
+
+        cssItems.exit().remove();
+
+        /*build list of loaded JS */
+        var current_js = getJS();
+        var jsItems = cat.controls.jsList.selectAll('li').data(current_js);
+
+        jsItems
+            .enter()
+            .append('li')
+            .append('a')
+            .text(function(d) {
+                return d.filename;
+            })
+            .property('title', function(d) {
+                return d.link;
+            })
+            .attr('href', function(d) {
+                return d.link;
+            })
+            .property('target', '_blank');
+
+        jsItems.exit().remove();
+    }
+
+    function renderChart(cat) {
+        var rendererObj = cat.controls.rendererSelect.selectAll('option:checked').data()[0];
+        cat.settings.sync(cat);
+        //render the new chart with the current settings
+        var dataFile = cat.controls.dataFileSelect.node().value;
+        var dataObject = cat.config.dataFiles.find(function(f) {
+            return f.label == dataFile;
+        });
+        var version = cat.controls.versionSelect.node().value;
+        cat.current.main = cat.controls.mainFunction.node().value;
+        cat.current.sub = cat.controls.subFunction.node().value;
+
+        function render(error, data) {
+            if (error) {
+                cat.status.loadStatus(cat.statusDiv, false, dataFilePath);
+            } else {
+                cat.status.loadStatus(cat.statusDiv, true, dataFilePath);
+                if (cat.current.sub) {
+                    var myChart = window[cat.current.main][cat.current.sub](
+                        '.cat-chart',
+                        cat.current.config
+                    );
+                    cat.status.chartCreateStatus(cat.statusDiv, cat.current.main, cat.current.sub);
+                } else {
+                    var myChart = window[cat.current.main]('.cat-chart .chart', cat.current.config);
+                    cat.status.chartCreateStatus(cat.statusDiv, cat.current.main);
+                }
+
+                cat.current.htmlExport = createChartExport(cat); // save the source code before init
+
+                try {
+                    myChart.init(data);
+                } catch (err) {
+                    cat.status.chartInitStatus(cat.statusDiv, false, err);
+                } finally {
+                    cat.status.chartInitStatus(cat.statusDiv, true, null, cat.current.htmlExport);
+
+                    // save to server button
+                    if (cat.config.useServer) {
+                        cat.status.saveToServer(cat);
+                    }
+                    showEnv(cat);
+
+                    //don't print any new statuses until a new chart is rendered
+                    cat.printStatus = false;
+                }
+            }
+        }
+
+        if (dataObject.user_loaded) {
+            dataObject.json = d3.csv.parse(dataObject.csv_raw);
+            render(false, dataObject.json);
+        } else {
+            var dataFilePath = dataObject.path + dataFile;
+            d3.csv(dataFilePath, function(error, data) {
+                render(error, data);
+            });
+        }
+    }
+
+    function loadRenderer(cat) {
+        var rendererObj = cat.controls.rendererSelect.selectAll('option:checked').data()[0];
+
+        var version = cat.controls.versionSelect.node().value;
+        console.log(rendererObj);
+
+        if (rendererObj.css) {
+            var cssPath =
+                version !== 'master'
+                    ? (rendererObj.rootURL || cat.config.rootURL) +
+                      '/' +
+                      rendererObj.name +
+                      '@' +
+                      version +
+                      '/' +
+                      rendererObj.css
+                    : (rendererObj.rootURL || cat.config.rootURL) +
+                      '/' +
+                      rendererObj.name +
+                      '/' +
+                      rendererObj.css;
+            var current_css = getCSS().filter(function(f) {
+                return f.link == cssPath;
+            });
+            var css_loaded = current_css.length > 0;
+            if (!css_loaded) {
+                var link = document.createElement('link');
+                link.href = cssPath;
+
+                link.type = 'text/css';
+                link.rel = 'stylesheet';
+                document.getElementsByTagName('head')[0].appendChild(link);
+            } else if (current_css[0].disabled) {
+                //enable the css if it's disabled
+                d3.select(current_css[0].sel).property('disabled', false);
+                cat.controls.cssList
+                    .selectAll('li')
+                    .filter(function(d) {
+                        return d.link == cssPath;
+                    })
+                    .select('input')
+                    .property('checked', true);
+            }
+        }
+
+        var rendererPath =
+            version !== 'master'
+                ? (rendererObj.rootURL || cat.config.rootURL) +
+                  '/' +
+                  rendererObj.name +
+                  '@' +
+                  version +
+                  '/' +
+                  (rendererObj.folder !== '' ? rendererObj.folder + '/' : '') +
+                  rendererObj.main +
+                  '.js'
+                : (rendererObj.rootURL || cat.config.rootURL) +
+                  '/' +
+                  rendererObj.name +
+                  '/' +
+                  (rendererObj.folder !== '' ? rendererObj.folder + '/' : '') +
+                  rendererObj.main +
+                  '.js';
+
+        var current_js = getJS().filter(function(f) {
+            return f.link == rendererPath;
+        });
+        var js_loaded = current_js.length > 0;
+
+        if (!js_loaded) {
+            var loader = new scriptLoader();
+            loader.require(rendererPath, {
+                async: true,
+                success: function success() {
+                    cat.status.loadStatus(
+                        cat.statusDiv,
+                        true,
+                        rendererPath,
+                        rendererObj.name,
+                        version
+                    );
+                    renderChart(cat);
+                },
+                failure: function failure() {
+                    cat.status.loadStatus(
+                        cat.statusDiv,
+                        false,
+                        rendererPath,
+                        rendererObj.name,
+                        version
+                    );
+                }
+            });
+        } else {
+            cat.status.loadStatus(cat.statusDiv, true, rendererPath, rendererObj.name, version);
+            renderChart(cat);
+        }
+    }
+
+    function loadLibrary(cat) {
+        var version = cat.controls.libraryVersion.node().value;
+        var library = 'webcharts'; //hardcode to webcharts for now - could generalize later
+
+        // --- load css --- //
+        var cssPath =
+            version !== 'master'
+                ? cat.config.rootURL + '/Webcharts@' + version + '/css/webcharts.css'
+                : cat.config.rootURL + '/Webcharts/css/webcharts.css';
+
+        var current_css = getCSS().filter(function(f) {
+            return f.link == cssPath;
+        });
+        var css_loaded = current_css.length > 0;
+        if (!css_loaded) {
+            //load the css if it isn't already loaded
+            var link = document.createElement('link');
+            link.href = cssPath;
+            link.type = 'text/css';
+            link.rel = 'stylesheet';
+            document.getElementsByTagName('head')[0].appendChild(link);
+        } else if (current_css[0].disabled) {
+            //enable the css if it's disabled
+            d3.select(current_css[0].sel).property('disabled', false);
+            cat.controls.cssList
+                .selectAll('li')
+                .filter(function(d) {
+                    return d.link == cssPath;
+                })
+                .select('input')
+                .property('checked', true);
+        }
+
+        // --- load js --- //
+        var rendererPath =
+            version !== 'master'
+                ? cat.config.rootURL + '/' + library + '@' + version + '/build/webcharts.js'
+                : cat.config.rootURL + '/Webcharts/build/webcharts.js';
+
+        var current_js = getJS().filter(function(f) {
+            return f.link == rendererPath;
+        });
+        var js_loaded = current_js.length > 0;
+
+        if (!js_loaded) {
+            var loader = new scriptLoader();
+            loader.require(rendererPath, {
+                async: true,
+                success: function success() {
+                    cat.status.loadStatus(cat.statusDiv, true, rendererPath, library, version);
+                    loadRenderer(cat);
+                },
+                failure: function failure() {
+                    cat.status.loadStatus(cat.statusDiv, false, rendererPath, library, version);
+                }
+            });
+        } else {
+            cat.status.loadStatus(cat.statusDiv, true, rendererPath, library, version);
+            loadRenderer(cat);
+        }
+    }
+
+    function initSubmit(cat) {
+        cat.controls.submitButton = cat.controls.submitWrap
+            .append('button')
+            .attr('class', 'submit')
+            .text('Render Chart')
+            .on('click', function() {
+                cat.controls.minimize = cat.controls.submitWrap
+                    .append('div')
+                    .classed('cat-button cat-button--minimize', true)
+                    .attr('title', 'Hide controls')
+                    .text('<<')
+                    .on('click', function() {
+                        cat.controls.wrap.classed('hidden', true);
+                        cat.chartWrap.style('margin-left', 0);
+                        cat.dataWrap.style('margin-left', 0);
+                        cat.wrap
+                            .insert('div', ':first-child')
+                            .classed('cat-button cat-button--maximize', true)
+                            .text('>>')
+                            .attr('title', 'Show controls')
+                            .on('click', function() {
+                                cat.controls.wrap.classed('hidden', false);
+                                cat.chartWrap.style('margin-left', '20%');
+                                cat.dataWrap.style('margin-left', '20%');
+                                d3.select(this).remove();
+                            });
+                    });
+                cat.dataWrap.classed('hidden', true);
+                cat.chartWrap.classed('hidden', false);
+
+                //Disable and/or remove previously loaded stylesheets.
+                d3
+                    .selectAll('link')
+                    .filter(function() {
+                        return !this.href.indexOf('css/cat.css');
+                    })
+                    .property('disabled', true)
+                    .remove();
+
+                d3
+                    .selectAll('style')
+                    .property('disabled', true)
+                    .remove();
+
+                cat.chartWrap.selectAll('*').remove();
+                cat.printStatus = true;
+                cat.statusDiv = cat.chartWrap.append('div').attr('class', 'status');
+                cat.statusDiv
+                    .append('div')
+                    .text('Starting to render the chart ... ')
+                    .classed('info', true);
+
+                cat.chartWrap.append('div').attr('class', 'chart');
+                loadLibrary(cat);
+            });
     }
 
     function initRendererSelect(cat) {
@@ -418,100 +967,6 @@
         cat.settings.set(cat);
     }
 
-    function getCSS() {
-        var current_css = [];
-        d3.selectAll('link').each(function() {
-            var obj = {};
-            obj.sel = this;
-            obj.link = d3.select(this).property('href');
-            obj.disabled = d3.select(this).property('disabled');
-            obj.filename = obj.link.substring(obj.link.lastIndexOf('/') + 1);
-            obj.wrap = d3.select(this);
-            current_css.push(obj);
-        });
-        return current_css;
-    }
-
-    function getJS() {
-        var current_js = [];
-        d3.selectAll('script').each(function() {
-            var obj = {};
-            obj.link = d3.select(this).property('src');
-            obj.filename = obj.link.substring(obj.link.lastIndexOf('/') + 1);
-            if (obj.link) {
-                current_js.push(obj);
-            }
-        });
-        return current_js;
-    }
-
-    function showEnv(cat) {
-        /*build list of loaded CSS */
-        var current_css = getCSS();
-        var cssItems = cat.controls.cssList.selectAll('li').data(current_css);
-        var newItems = cssItems.enter().append('li');
-        var itemContents = newItems.append('span').property('title', function(d) {
-            return d.link;
-        });
-
-        itemContents
-            .append('a')
-            .text(function(d) {
-                return d.filename;
-            })
-            .attr('href', function(d) {
-                return d.link;
-            })
-            .property('target', '_blank');
-
-        var switchWrap = itemContents
-            .append('label')
-            .attr('class', 'switch')
-            .classed('hidden', function(d) {
-                return d.filename == 'cat.css';
-            });
-
-        var switchCheck = switchWrap
-            .append('input')
-            .property('type', 'checkbox')
-            .property('checked', function(d) {
-                return !d.disabled;
-            });
-        switchWrap.append('span').attr('class', 'slider round');
-
-        switchCheck.on('click', function(d) {
-            //load or unload css
-            d.disabled = !d.disabled;
-            d.wrap.property('disabled', d.disabled);
-
-            //update toggle mark
-            this.checked = !d.disabled;
-        });
-
-        cssItems.exit().remove();
-
-        /*build list of loaded JS */
-        var current_js = getJS();
-        var jsItems = cat.controls.jsList.selectAll('li').data(current_js);
-
-        jsItems
-            .enter()
-            .append('li')
-            .append('a')
-            .text(function(d) {
-                return d.filename;
-            })
-            .property('title', function(d) {
-                return d.link;
-            })
-            .attr('href', function(d) {
-                return d.link;
-            })
-            .property('target', '_blank');
-
-        jsItems.exit().remove();
-    }
-
     function initEnvConfig(cat) {
         var settingsHeading = cat.controls.environmentWrap.append('h3').html('4. Environment ');
 
@@ -524,430 +979,14 @@
         showEnv(cat);
     }
 
-    var _typeof =
-        typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol'
-            ? function(obj) {
-                  return typeof obj;
-              }
-            : function(obj) {
-                  return obj &&
-                      typeof Symbol === 'function' &&
-                      obj.constructor === Symbol &&
-                      obj !== Symbol.prototype
-                      ? 'symbol'
-                      : typeof obj;
-              };
-
-    // Nice script loader from here: https://stackoverflow.com/questions/538745/how-to-tell-if-a-script-tag-failed-to-load
-
-    function scriptLoader() {}
-
-    scriptLoader.prototype = {
-        timer: function timer(
-            times, // number of times to try
-            delay, // delay per try
-            delayMore, // extra delay per try (additional to delay)
-            test, // called each try, timer stops if this returns true
-            failure, // called on failure
-            result // used internally, shouldn't be passed
-        ) {
-            var me = this;
-            if (times == -1 || times > 0) {
-                setTimeout(function() {
-                    result = test() ? 1 : 0;
-                    me.timer(
-                        result ? 0 : times > 0 ? --times : times,
-                        delay + (delayMore ? delayMore : 0),
-                        delayMore,
-                        test,
-                        failure,
-                        result
-                    );
-                }, result || delay < 0 ? 0.1 : delay);
-            } else if (typeof failure == 'function') {
-                setTimeout(failure, 1);
-            }
-        },
-
-        addEvent: function addEvent(el, eventName, eventFunc) {
-            if ((typeof el === 'undefined' ? 'undefined' : _typeof(el)) != 'object') {
-                return false;
-            }
-
-            if (el.addEventListener) {
-                el.addEventListener(eventName, eventFunc, false);
-                return true;
-            }
-
-            if (el.attachEvent) {
-                el.attachEvent('on' + eventName, eventFunc);
-                return true;
-            }
-
-            return false;
-        },
-
-        // add script to dom
-        require: function require(url, args) {
-            var me = this;
-            args = args || {};
-
-            var scriptTag = document.createElement('script');
-            var headTag = document.getElementsByTagName('head')[0];
-            if (!headTag) {
-                return false;
-            }
-
-            setTimeout(function() {
-                var f = typeof args.success == 'function' ? args.success : function() {};
-                args.failure = typeof args.failure == 'function' ? args.failure : function() {};
-                var fail = function fail() {
-                    if (!scriptTag.__es) {
-                        scriptTag.__es = true;
-                        scriptTag.id = 'failed';
-                        args.failure(scriptTag);
-                    }
-                };
-                scriptTag.onload = function() {
-                    scriptTag.id = 'loaded';
-                    f(scriptTag);
-                };
-                scriptTag.type = 'text/javascript';
-                scriptTag.async = typeof args.async == 'boolean' ? args.async : false;
-                scriptTag.charset = 'utf-8';
-                me.__es = false;
-                me.addEvent(scriptTag, 'error', fail); // when supported
-                // when error event is not supported fall back to timer
-                me.timer(
-                    15,
-                    1000,
-                    0,
-                    function() {
-                        return scriptTag.id == 'loaded';
-                    },
-                    function() {
-                        if (scriptTag.id != 'loaded') {
-                            fail();
-                        }
-                    }
-                );
-                scriptTag.src = url;
-                setTimeout(function() {
-                    try {
-                        headTag.appendChild(scriptTag);
-                    } catch (e) {
-                        fail();
-                    }
-                }, 1);
-            }, typeof args.delay == 'number' ? args.delay : 1);
-            return true;
-        }
-    };
-
-    function createChartExport(cat) {
-        /* Get settings from current controls */
-        var webcharts_version = cat.controls.libraryVersion.node().value;
-        var renderer_version = cat.controls.versionSelect.node().value;
-        var data_file = cat.controls.dataFileSelect.node().value;
-        var data_file_path = cat.config.dataURL + data_file;
-        var init_string = cat.current.sub
-            ? cat.current.main + '.' + cat.current.sub
-            : cat.current.main;
-
-        var chart_config = JSON.stringify(cat.current.config, null, ' ');
-        var renderer_css = '';
-        if (cat.current.css) {
-            var css_path =
-                cat.config.rootURL +
-                '/' +
-                cat.current.name +
-                '/' +
-                renderer_version +
-                '/' +
-                cat.current.css;
-            renderer_css = "<link type = 'text/css' rel = 'stylesheet' href = '" + css_path + "'>";
-        }
-
-        /* Return a html for a working chart */
-        var exampleTemplate =
-            '\n<!DOCTYPE html>\n\n    <html>\n\n    <head>\n        <title>' +
-            cat.current.name +
-            "</title>\n\n        <meta http-equiv = 'Content-Type' content = 'text/html; charset = utf-8'>\n\n        <script type = 'text/javascript' src = 'https://d3js.org/d3.v3.min.js'></script>\n        <script type = 'text/javascript' src = 'https://rawgit.com/RhoInc/Webcharts/" +
-            webcharts_version +
-            "/build/webcharts.js'></script>\n        <script type = 'text/javascript' src = 'https://rawgit.com/RhoInc/" +
-            cat.current.name +
-            '/' +
-            renderer_version +
-            '/build/' +
-            cat.current.main +
-            ".js'></script>\n\n        <link type = 'text/css' rel = 'stylesheet' href = 'https://rawgit.com/RhoInc/Webcharts/" +
-            webcharts_version +
-            "/css/webcharts.min.css'>\n        " +
-            renderer_css +
-            "\n    </head>\n\n    <body>\n        <h1 id = 'title'>" +
-            cat.current.name +
-            ' created for ' +
-            cat.current.defaultData +
-            "</h1>\n        <div id = 'container'>\n        </div>\n    </body>\n\n    <script type = 'text/javascript'>\n        let settings = " +
-            chart_config +
-            '\n        let chart = ' +
-            init_string +
-            "('#container', settings);\n        d3.csv('" +
-            data_file_path +
-            "', function(data) {\n            chart.init(data);\n        });\n\n    </script>\n</html>\n";
-        return exampleTemplate;
-    }
-
-    function renderChart(cat) {
-        var rendererObj = cat.controls.rendererSelect.selectAll('option:checked').data()[0];
-        cat.settings.sync(cat);
-        //render the new chart with the current settings
-        var dataFile = cat.controls.dataFileSelect.node().value;
-        var dataObject = cat.config.dataFiles.find(function(f) {
-            return f.label == dataFile;
-        });
-        var version = cat.controls.versionSelect.node().value;
-        cat.current.main = cat.controls.mainFunction.node().value;
-        cat.current.sub = cat.controls.subFunction.node().value;
-
-        function render(error, data) {
-            if (error) {
-                cat.status.loadStatus(cat.statusDiv, false, dataFilePath);
-            } else {
-                cat.status.loadStatus(cat.statusDiv, true, dataFilePath);
-                if (cat.current.sub) {
-                    var myChart = window[cat.current.main][cat.current.sub](
-                        '.cat-chart',
-                        cat.current.config
-                    );
-                    cat.status.chartCreateStatus(cat.statusDiv, cat.current.main, cat.current.sub);
-                } else {
-                    var myChart = window[cat.current.main]('.cat-chart .chart', cat.current.config);
-                    cat.status.chartCreateStatus(cat.statusDiv, cat.current.main);
-                }
-
-                cat.current.htmlExport = createChartExport(cat); // save the source code before init
-
-                try {
-                    myChart.init(data);
-                } catch (err) {
-                    cat.status.chartInitStatus(cat.statusDiv, false, err);
-                } finally {
-                    cat.status.chartInitStatus(cat.statusDiv, true, null, cat.current.htmlExport);
-
-                    // save to server button
-                    if (cat.config.useServer) {
-                        cat.status.saveToServer(cat);
-                    }
-                    showEnv(cat);
-
-                    //don't print any new statuses until a new chart is rendered
-                    cat.printStatus = false;
-                }
-            }
-        }
-
-        if (dataObject.user_loaded) {
-            dataObject.json = d3.csv.parse(dataObject.csv_raw);
-            render(false, dataObject.json);
-        } else {
-            var dataFilePath = dataObject.path + dataFile;
-            d3.csv(dataFilePath, function(error, data) {
-                render(error, data);
-            });
-        }
-    }
-
-    function loadRenderer(cat) {
-        var rendererObj = cat.controls.rendererSelect.selectAll('option:checked').data()[0];
-
-        var version = cat.controls.versionSelect.node().value;
-
-        if (rendererObj.css) {
-            var cssPath =
-                version !== 'master'
-                    ? cat.config.rootURL +
-                      '/' +
-                      rendererObj.name +
-                      '@' +
-                      version +
-                      '/' +
-                      rendererObj.css
-                    : cat.config.rootURL + '/' + rendererObj.name + '/' + rendererObj.css;
-            var current_css = getCSS().filter(function(f) {
-                return f.link == cssPath;
-            });
-            var css_loaded = current_css.length > 0;
-            if (!css_loaded) {
-                var link = document.createElement('link');
-                link.href = cssPath;
-
-                link.type = 'text/css';
-                link.rel = 'stylesheet';
-                document.getElementsByTagName('head')[0].appendChild(link);
-            } else if (current_css[0].disabled) {
-                //enable the css if it's disabled
-                d3.select(current_css[0].sel).property('disabled', false);
-                cat.controls.cssList
-                    .selectAll('li')
-                    .filter(function(d) {
-                        return d.link == cssPath;
-                    })
-                    .select('input')
-                    .property('checked', true);
-            }
-        }
-
-        var rendererPath =
-            version !== 'master'
-                ? cat.config.rootURL +
-                  '/' +
-                  rendererObj.name +
-                  '@' +
-                  version +
-                  '/' +
-                  (rendererObj.folder !== '' ? rendererObj.folder + '/' : '') +
-                  rendererObj.main +
-                  '.js'
-                : cat.config.rootURL +
-                  '/' +
-                  rendererObj.name +
-                  '/' +
-                  (rendererObj.folder !== '' ? rendererObj.folder + '/' : '') +
-                  rendererObj.main +
-                  '.js';
-
-        var current_js = getJS().filter(function(f) {
-            return f.link == rendererPath;
-        });
-        var js_loaded = current_js.length > 0;
-
-        if (!js_loaded) {
-            var loader = new scriptLoader();
-            loader.require(rendererPath, {
-                async: true,
-                success: function success() {
-                    cat.status.loadStatus(
-                        cat.statusDiv,
-                        true,
-                        rendererPath,
-                        rendererObj.name,
-                        version
-                    );
-                    renderChart(cat);
-                },
-                failure: function failure() {
-                    cat.status.loadStatus(
-                        cat.statusDiv,
-                        false,
-                        rendererPath,
-                        rendererObj.name,
-                        version
-                    );
-                }
-            });
-        } else {
-            cat.status.loadStatus(cat.statusDiv, true, rendererPath, rendererObj.name, version);
-            renderChart(cat);
-        }
-    }
-
-    function loadLibrary(cat) {
-        var version = cat.controls.libraryVersion.node().value;
-        var library = 'webcharts'; //hardcode to webcharts for now - could generalize later
-
-        // --- load css --- //
-        var cssPath =
-            version !== 'master'
-                ? cat.config.rootURL + '/Webcharts@' + version + '/css/webcharts.css'
-                : cat.config.rootURL + '/Webcharts/css/webcharts.css';
-
-        var current_css = getCSS().filter(function(f) {
-            return f.link == cssPath;
-        });
-        var css_loaded = current_css.length > 0;
-        if (!css_loaded) {
-            //load the css if it isn't already loaded
-            var link = document.createElement('link');
-            link.href = cssPath;
-            link.type = 'text/css';
-            link.rel = 'stylesheet';
-            document.getElementsByTagName('head')[0].appendChild(link);
-        } else if (current_css[0].disabled) {
-            //enable the css if it's disabled
-            d3.select(current_css[0].sel).property('disabled', false);
-            cat.controls.cssList
-                .selectAll('li')
-                .filter(function(d) {
-                    return d.link == cssPath;
-                })
-                .select('input')
-                .property('checked', true);
-        }
-
-        // --- load js --- //
-        var rendererPath =
-            version !== 'master'
-                ? cat.config.rootURL + '/' + library + '@' + version + '/build/webcharts.js'
-                : cat.config.rootURL + '/Webcharts/build/webcharts.js';
-
-        var current_js = getJS().filter(function(f) {
-            return f.link == rendererPath;
-        });
-        var js_loaded = current_js.length > 0;
-
-        if (!js_loaded) {
-            var loader = new scriptLoader();
-            loader.require(rendererPath, {
-                async: true,
-                success: function success() {
-                    cat.status.loadStatus(cat.statusDiv, true, rendererPath, library, version);
-                    loadRenderer(cat);
-                },
-                failure: function failure() {
-                    cat.status.loadStatus(cat.statusDiv, false, rendererPath, library, version);
-                }
-            });
-        } else {
-            cat.status.loadStatus(cat.statusDiv, true, rendererPath, library, version);
-            loadRenderer(cat);
-        }
-    }
-
-    function initSubmit(cat) {
-        cat.controls.submitButton = cat.controls.submitWrap
-            .append('button')
-            .attr('class', 'submit')
-            .text('Render Chart')
-            .on('click', function() {
-                cat.dataWrap.classed('hidden', true);
-                cat.chartWrap.classed('hidden', false);
-
-                //Disable and/or remove previously loaded stylesheets.
-                d3
-                    .selectAll('link')
-                    .filter(function() {
-                        return !this.href.indexOf('css/cat.css');
-                    })
-                    .property('disabled', true)
-                    .remove();
-
-                d3
-                    .selectAll('style')
-                    .property('disabled', true)
-                    .remove();
-
-                cat.chartWrap.selectAll('*').remove();
-                cat.printStatus = true;
-                cat.statusDiv = cat.chartWrap.append('div').attr('class', 'status');
-                cat.statusDiv
-                    .append('div')
-                    .text('Starting to render the chart ... ')
-                    .classed('info', true);
-
-                cat.chartWrap.append('div').attr('class', 'chart');
-                loadLibrary(cat);
-            });
+    function init$1(cat) {
+        cat.current = cat.config.renderers[0];
+        initSubmit(cat);
+        initRendererSelect(cat);
+        initDataSelect(cat);
+        initFileLoad.call(cat);
+        initChartConfig(cat);
+        initEnvConfig(cat);
     }
 
     function addEnterEventListener(selection, cat) {
@@ -960,36 +999,6 @@
                 if (key === 13) cat.controls.submitButton.node().click();
             });
         });
-    }
-
-    function init$1(cat) {
-        cat.current = cat.config.renderers[0];
-        initSubmit(cat);
-        initRendererSelect(cat);
-        initDataSelect(cat);
-        initFileLoad.call(cat);
-        initChartConfig(cat);
-        initEnvConfig(cat);
-
-        // minimize controls - for later?
-        /*
-      cat.controls.minimize = controlWrap
-      .append("div")
-      .attr("class", "minimize")
-      .text("<<")
-      .style("float", "left")
-      .on("click", function() {
-        cat.controls.wrap.classed("hidden", true);
-        cat.wrap
-          .insert("div", ":first-child")
-          .attr("class", "maximize")
-          .text(">>")
-          .on("click", function() {
-            cat.controls.wrap.classed("hidden", false);
-            d3.select(this).remove();
-          });
-      });
-      */
     }
 
     /*------------------------------------------------------------------------------------------------\
