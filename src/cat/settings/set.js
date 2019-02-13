@@ -4,10 +4,12 @@ import { validateSchema } from './validateSchema';
 
 export function set(cat) {
     // load the schema (if any) and see if it is validate
-    var version = cat.controls.versionSelect.node().value;
-    var schemaPath = [
+    console.log(cat.current.version);
+    cat.current.schemaPath = [
         cat.config.rootURL,
-        version !== 'master' ? cat.current.name + '@' + version : cat.current.name,
+        cat.current.version !== 'master'
+            ? cat.current.name + '@' + cat.current.version
+            : cat.current.name,
         cat.current.schema
     ].join('/');
 
@@ -15,7 +17,7 @@ export function set(cat) {
     cat.controls.settingsInput.value = '{}';
     cat.current.config = {};
 
-    d3.json(schemaPath, function(error, schemaObj) {
+    d3.json(cat.current.schemaPath, function(error, schemaObj) {
         if (error) {
             console.log('No schema loaded.');
             cat.current.hasValidSchema = false;

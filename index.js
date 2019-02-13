@@ -1,7 +1,7 @@
 var myCatConfig = {
     useServer: false,
     rootURL: 'https://cdn.jsdelivr.net/gh/RhoInc',
-    dataURL: 'https://raw.githubusercontent.com/RhoInc/viz-library/master/data/',
+    dataURL: 'https://raw.githubusercontent.com/RhoInc/data-library/master/data/',
     renderers: [
         {
             name: 'web-codebook',
@@ -9,16 +9,15 @@ var myCatConfig = {
             sub: 'createChart',
             css: 'css/webcodebook.css',
             schema: 'settings-schema.json',
-            folder: 'build',
-            defaultData: 'iris.csv'
+            defaultData: 'miscellaneous/iris.csv'
         },
 
     /**-------------------------------------------------------------------------------------------\
-        Safety Explorer Suite
+      Safety Explorer Suite
     \-------------------------------------------------------------------------------------------**/
 
         /***--------------------------------------------------------------------------------------\
-            Adverse Events
+          Adverse Events
         \--------------------------------------------------------------------------------------***/
 
             {
@@ -27,8 +26,7 @@ var myCatConfig = {
                 sub: 'createChart',
                 css: 'css/aeTable.css',
                 schema: 'settings-schema.json',
-                folder: 'build',
-                defaultData: 'safetyData/ADAE.csv'
+                defaultData: 'clinical-trials/adam/adae.csv'
             },
             {
                 name: 'aetimelines',
@@ -36,12 +34,11 @@ var myCatConfig = {
                 sub: null,
                 css: null,
                 schema: 'settings-schema.json',
-                folder: 'build',
-                defaultData: 'safetyData/ADAE.csv'
+                defaultData: 'clinical-trials/adam/adae.csv'
             },
 
         /***--------------------------------------------------------------------------------------\
-            Medical Signs
+          Medical Signs
         \--------------------------------------------------------------------------------------***/
 
             {
@@ -50,8 +47,7 @@ var myCatConfig = {
                 sub: null,
                 css: null,
                 schema: 'settings-schema.json',
-                folder: 'build',
-                defaultData: 'safetyData/ADBDS.csv'
+                defaultData: 'clinical-trials/renderer-specific/adbds.csv'
             },
             {
                 name: 'safety-outlier-explorer',
@@ -59,8 +55,7 @@ var myCatConfig = {
                 sub: null,
                 css: null,
                 schema: 'settings-schema.json',
-                folder: 'build',
-                defaultData: 'safetyData/ADBDS.csv'
+                defaultData: 'clinical-trials/renderer-specific/adbds.csv'
             },
             {
                 name: 'paneled-outlier-explorer',
@@ -68,8 +63,7 @@ var myCatConfig = {
                 sub: null,
                 css: null,
                 schema: 'settings-schema.json',
-                folder: 'build',
-                defaultData: 'safetyData/ADBDS.csv'
+                defaultData: 'clinical-trials/renderer-specific/adbds.csv'
             },
             {
                 name: 'safety-results-over-time',
@@ -77,8 +71,7 @@ var myCatConfig = {
                 sub: null,
                 css: null,
                 schema: 'settings-schema.json',
-                folder: 'build',
-                defaultData: 'safetyData/ADBDS.csv'
+                defaultData: 'clinical-trials/renderer-specific/adbds.csv'
             },
             {
                 name: 'safety-shift-plot',
@@ -86,8 +79,7 @@ var myCatConfig = {
                 sub: null,
                 css: null,
                 schema: 'settings-schema.json',
-                folder: 'build',
-                defaultData: 'safetyData/ADBDS.csv'
+                defaultData: 'clinical-trials/renderer-specific/adbds.csv'
             },
             {
                 name: 'safety-eDISH',
@@ -95,13 +87,12 @@ var myCatConfig = {
                 sub: null,
                 css: null,
                 schema: 'settings-schema.json',
-                folder: 'build',
-                defaultData: 'safetyData/ADBDS.csv',
+                defaultData: 'clinical-trials/renderer-specific/adbds.csv',
                 rootURL: 'https://cdn.jsdelivr.net/gh/ASA-DIA-InteractiveSafetyGraphics',
             },
 
     /**-------------------------------------------------------------------------------------------\
-        Data Cleaning
+      Data Cleaning
     \-------------------------------------------------------------------------------------------**/
 
         {
@@ -110,7 +101,6 @@ var myCatConfig = {
             sub: null,
             css: null,
             schema: 'settings-schema.json',
-            folder: 'build',
             defaultData: 'dataCleaning/queries/queries.csv'
         },
         {
@@ -119,7 +109,6 @@ var myCatConfig = {
             sub: null,
             css: null,
             schema: 'settings-schema.json',
-            folder: 'build',
             defaultData: 'dataCleaning/forms/dmc_DataPage.csv'
         },
         {
@@ -128,12 +117,11 @@ var myCatConfig = {
             sub: null,
             css: null,
             schema: 'settings-schema.json',
-            folder: '',
             defaultData: 'dataCleaning/visits/dmv_Visits.csv'
         },
 
     /**-------------------------------------------------------------------------------------------\
-        Miscellaneous
+      Miscellaneous
     \-------------------------------------------------------------------------------------------**/
 
         {
@@ -142,8 +130,7 @@ var myCatConfig = {
             sub: null,
             css: null,
             schema: 'settings-schema.json',
-            folder: 'build',
-            defaultData: 'safetyData/ADTIMELINES.csv'
+            defaultData: 'clinical-trials/renderer-specific/ADTIMELINES.csv'
         }
     ]
 };

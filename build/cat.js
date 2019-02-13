@@ -102,6 +102,32 @@
             .classed('control-section environment-section', true);
     }
 
+    function toggleControls() {
+        var _this = this;
+
+        this.controls.minimize = this.controls.submitWrap
+            .append('div')
+            .classed('cat-button cat-button--minimize hidden', true)
+            .attr('title', 'Hide controls')
+            .text('<<')
+            .on('click', function() {
+                _this.controls.wrap.classed('hidden', true);
+                _this.chartWrap.style('margin-left', 0);
+                _this.dataWrap.style('margin-left', 0);
+                _this.controls.maximize = _this.wrap
+                    .insert('div', ':first-child')
+                    .classed('cat-button cat-button--maximize', true)
+                    .text('>>')
+                    .attr('title', 'Show controls')
+                    .on('click', function() {
+                        this.controls.wrap.classed('hidden', false);
+                        this.chartWrap.style('margin-left', '20%');
+                        this.dataWrap.style('margin-left', '20%');
+                        d3.select(this).remove();
+                    });
+            });
+    }
+
     var _typeof =
         typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol'
             ? function(obj) {
@@ -222,6 +248,65 @@
         }
     };
 
+    function loadPackageJson(cat) {
+        return new Promise(function(resolve, reject) {
+            cat.current.url =
+                cat.current.version === 'master'
+                    ? (cat.current.rootURL || cat.config.rootURL) + '/' + cat.current.name
+                    : (cat.current.rootURL || cat.config.rootURL) +
+                      '/' +
+                      cat.current.name +
+                      '@' +
+                      cat.current.version;
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', cat.current.url + '/package.json');
+            xhr.onload = function() {
+                if (this.status === 200) {
+                    resolve(xhr.response);
+                } else {
+                    reject({
+                        status: this.status,
+                        statusTxt: xhr.statusText
+                    });
+                }
+            };
+            xhr.onerror = function() {
+                reject({
+                    status: this.status,
+                    statusText: xhr.statusText
+                });
+            };
+            xhr.send();
+        });
+    }
+
+    function getCSS() {
+        var current_css = [];
+        d3.selectAll('link').each(function() {
+            var obj = {};
+            obj.sel = this;
+            obj.link = d3.select(this).property('href');
+            obj.disabled = d3.select(this).property('disabled');
+            obj.filename = obj.link.substring(obj.link.lastIndexOf('/') + 1);
+            obj.wrap = d3.select(this);
+            current_css.push(obj);
+        });
+        return current_css;
+    }
+
+    function getJS() {
+        var current_js = [];
+        d3.selectAll('script').each(function() {
+            var obj = {};
+            obj.link = d3.select(this).property('src');
+            obj.filename = obj.link.substring(obj.link.lastIndexOf('/') + 1);
+            if (obj.link) {
+                current_js.push(obj);
+            }
+        });
+        return current_js;
+    }
+
     function createChartExport(cat) {
         /* Get settings from current controls */
         var webcharts_version = cat.controls.libraryVersion.node().value;
@@ -274,33 +359,6 @@
             data_file_path +
             "', function(data) {\n            chart.init(data);\n        });\n\n    </script>\n</html>\n";
         return exampleTemplate;
-    }
-
-    function getCSS() {
-        var current_css = [];
-        d3.selectAll('link').each(function() {
-            var obj = {};
-            obj.sel = this;
-            obj.link = d3.select(this).property('href');
-            obj.disabled = d3.select(this).property('disabled');
-            obj.filename = obj.link.substring(obj.link.lastIndexOf('/') + 1);
-            obj.wrap = d3.select(this);
-            current_css.push(obj);
-        });
-        return current_css;
-    }
-
-    function getJS() {
-        var current_js = [];
-        d3.selectAll('script').each(function() {
-            var obj = {};
-            obj.link = d3.select(this).property('src');
-            obj.filename = obj.link.substring(obj.link.lastIndexOf('/') + 1);
-            if (obj.link) {
-                current_js.push(obj);
-            }
-        });
-        return current_js;
     }
 
     function showEnv(cat) {
@@ -431,102 +489,83 @@
     }
 
     function loadRenderer(cat) {
-        var rendererObj = cat.controls.rendererSelect.selectAll('option:checked').data()[0];
+        var promisedPackage = loadPackageJson(cat);
+        promisedPackage.then(function(response) {
+            cat.current.package = JSON.parse(response);
+            console.log(cat.current.package);
+            cat.current.js_url =
+                cat.current.url + '/' + cat.current.package.main.replace(/^\.?\/?/, '');
+            cat.current.css_url = cat.current.css ? cat.current.url + '/' + cat.current.css : null;
+            console.log(cat.current.js_url);
+            console.log(cat.current.css_url);
 
-        var version = cat.controls.versionSelect.node().value;
-        console.log(rendererObj);
+            if (cat.current.css) {
+                var current_css = getCSS().filter(function(f) {
+                    return f.link == cat.current.css_url;
+                });
+                var css_loaded = current_css.length > 0;
+                if (!css_loaded) {
+                    var link = document.createElement('link');
+                    link.href = cat.current.css_url;
 
-        if (rendererObj.css) {
-            var cssPath =
-                version !== 'master'
-                    ? (rendererObj.rootURL || cat.config.rootURL) +
-                      '/' +
-                      rendererObj.name +
-                      '@' +
-                      version +
-                      '/' +
-                      rendererObj.css
-                    : (rendererObj.rootURL || cat.config.rootURL) +
-                      '/' +
-                      rendererObj.name +
-                      '/' +
-                      rendererObj.css;
-            var current_css = getCSS().filter(function(f) {
-                return f.link == cssPath;
-            });
-            var css_loaded = current_css.length > 0;
-            if (!css_loaded) {
-                var link = document.createElement('link');
-                link.href = cssPath;
-
-                link.type = 'text/css';
-                link.rel = 'stylesheet';
-                document.getElementsByTagName('head')[0].appendChild(link);
-            } else if (current_css[0].disabled) {
-                //enable the css if it's disabled
-                d3.select(current_css[0].sel).property('disabled', false);
-                cat.controls.cssList
-                    .selectAll('li')
-                    .filter(function(d) {
-                        return d.link == cssPath;
-                    })
-                    .select('input')
-                    .property('checked', true);
-            }
-        }
-
-        var rendererPath =
-            version !== 'master'
-                ? (rendererObj.rootURL || cat.config.rootURL) +
-                  '/' +
-                  rendererObj.name +
-                  '@' +
-                  version +
-                  '/' +
-                  (rendererObj.folder !== '' ? rendererObj.folder + '/' : '') +
-                  rendererObj.main +
-                  '.js'
-                : (rendererObj.rootURL || cat.config.rootURL) +
-                  '/' +
-                  rendererObj.name +
-                  '/' +
-                  (rendererObj.folder !== '' ? rendererObj.folder + '/' : '') +
-                  rendererObj.main +
-                  '.js';
-
-        var current_js = getJS().filter(function(f) {
-            return f.link == rendererPath;
-        });
-        var js_loaded = current_js.length > 0;
-
-        if (!js_loaded) {
-            var loader = new scriptLoader();
-            loader.require(rendererPath, {
-                async: true,
-                success: function success() {
-                    cat.status.loadStatus(
-                        cat.statusDiv,
-                        true,
-                        rendererPath,
-                        rendererObj.name,
-                        version
-                    );
-                    renderChart(cat);
-                },
-                failure: function failure() {
-                    cat.status.loadStatus(
-                        cat.statusDiv,
-                        false,
-                        rendererPath,
-                        rendererObj.name,
-                        version
-                    );
+                    link.type = 'text/css';
+                    link.rel = 'stylesheet';
+                    document.getElementsByTagName('head')[0].appendChild(link);
+                } else if (current_css[0].disabled) {
+                    //enable the css if it's disabled
+                    d3.select(current_css[0].sel).property('disabled', false);
+                    cat.controls.cssList
+                        .selectAll('li')
+                        .filter(function(d) {
+                            return d.link == cat.current.css_url;
+                        })
+                        .select('input')
+                        .property('checked', true);
                 }
+            }
+
+            var current_js = getJS().filter(function(f) {
+                return f.link == cat.current.js_url;
             });
-        } else {
-            cat.status.loadStatus(cat.statusDiv, true, rendererPath, rendererObj.name, version);
-            renderChart(cat);
-        }
+            var js_loaded = current_js.length > 0;
+
+            if (!js_loaded) {
+                console.log('not loaded');
+                var loader = new scriptLoader();
+                loader.require(cat.current.js_url, {
+                    async: true,
+                    success: function success() {
+                        cat.status.loadStatus(
+                            cat.statusDiv,
+                            true,
+                            cat.current.js_url,
+                            cat.current.name,
+                            cat.current.version
+                        );
+                        renderChart(cat);
+                    },
+                    failure: function failure() {
+                        cat.status.loadStatus(
+                            cat.statusDiv,
+                            false,
+                            cat.current.js_url,
+                            cat.current.name,
+                            cat.current.version
+                        );
+                    }
+                });
+            } else {
+                console.log('loaded');
+                cat.status.loadStatus(
+                    cat.statusDiv,
+                    true,
+                    cat.current.js_url,
+                    cat.current.name,
+                    cat.current.version
+                );
+                renderChart(cat);
+            }
+        });
     }
 
     function loadLibrary(cat) {
@@ -591,36 +630,17 @@
         }
     }
 
-    function initSubmit(cat) {
-        cat.controls.minimize = cat.controls.submitWrap
-            .append('div')
-            .classed('cat-button cat-button--minimize hidden', true)
-            .attr('title', 'Hide controls')
-            .text('<<')
-            .on('click', function() {
-                cat.controls.wrap.classed('hidden', true);
-                cat.chartWrap.style('margin-left', 0);
-                cat.dataWrap.style('margin-left', 0);
-                cat.controls.maximize = cat.wrap
-                    .insert('div', ':first-child')
-                    .classed('cat-button cat-button--maximize', true)
-                    .text('>>')
-                    .attr('title', 'Show controls')
-                    .on('click', function() {
-                        cat.controls.wrap.classed('hidden', false);
-                        cat.chartWrap.style('margin-left', '20%');
-                        cat.dataWrap.style('margin-left', '20%');
-                        d3.select(this).remove();
-                    });
-            });
-        cat.controls.submitButton = cat.controls.submitWrap
+    function addSubmitButton() {
+        var _this = this;
+
+        this.controls.submitButton = this.controls.submitWrap
             .append('button')
             .attr('class', 'submit')
             .text('Render Chart')
             .on('click', function() {
-                cat.controls.minimize.classed('hidden', false);
-                cat.dataWrap.classed('hidden', true);
-                cat.chartWrap.classed('hidden', false);
+                _this.controls.minimize.classed('hidden', false);
+                _this.dataWrap.classed('hidden', true);
+                _this.chartWrap.classed('hidden', false);
 
                 //Disable and/or remove previously loaded stylesheets.
                 d3
@@ -636,17 +656,46 @@
                     .property('disabled', true)
                     .remove();
 
-                cat.chartWrap.selectAll('*').remove();
-                cat.printStatus = true;
-                cat.statusDiv = cat.chartWrap.append('div').attr('class', 'status');
-                cat.statusDiv
+                _this.chartWrap.selectAll('*').remove();
+                _this.printStatus = true;
+                _this.statusDiv = _this.chartWrap.append('div').attr('class', 'status');
+                _this.statusDiv
                     .append('div')
                     .text('Starting to render the chart ... ')
                     .classed('info', true);
 
-                cat.chartWrap.append('div').attr('class', 'chart');
-                loadLibrary(cat);
+                _this.chartWrap.append('div').attr('class', 'chart');
+                loadLibrary(_this);
             });
+    }
+
+    function initSubmit(cat) {
+        toggleControls.call(cat);
+        addSubmitButton.call(cat);
+    }
+
+    function updateRenderer(select) {
+        var _this = this;
+
+        this.current = d3
+            .select(select)
+            .select('option:checked')
+            .data()[0];
+        this.current.version = 'master';
+
+        //update the chart type configuration to the defaults for the selected renderer
+        this.controls.mainFunction.node().value = this.current.main;
+        this.controls.versionSelect.node().value = 'master';
+        this.controls.subFunction.node().value = this.current.sub;
+        this.controls.schema.node().value = this.current.schema;
+
+        //update the selected data set to the default for the new rendererSection
+        this.controls.dataFileSelect.selectAll('option').property('selected', function(d) {
+            return _this.current.defaultData === d.label;
+        });
+
+        //Re-initialize the chart config section
+        this.settings.set(this);
     }
 
     function initRendererSelect(cat) {
@@ -663,32 +712,17 @@
                 return d.name;
             });
 
-        cat.controls.rendererSelect.on('change', function(d) {
-            cat.current = d3
-                .select(this)
-                .select('option:checked')
-                .data()[0];
-
-            //update the chart type configuration to the defaults for the selected renderer
-            cat.controls.mainFunction.node().value = cat.current.main;
-            cat.controls.versionSelect.node().value = 'master';
-            cat.controls.subFunction.node().value = cat.current.sub;
-            cat.controls.schema.node().value = cat.current.schema;
-
-            //update the selected data set to the default for the new rendererSection
-            cat.controls.dataFileSelect.selectAll('option').property('selected', function(e) {
-                return cat.current.defaultData == e.label ? true : null;
-            });
-
-            //Re-initialize the chart config section
-            cat.settings.set(cat);
+        cat.controls.rendererSelect.on('change', function() {
+            updateRenderer.call(cat, this);
         });
         cat.controls.rendererWrap.append('br');
         cat.controls.rendererWrap.append('span').text('Version: ');
         cat.controls.versionSelect = cat.controls.rendererWrap.append('input');
         cat.controls.versionSelect.node().value = 'master';
+        cat.controls.versionSelect.on('input', function() {
+            cat.current.version = this.value;
+        });
         cat.controls.versionSelect.on('change', function() {
-            //checkVersion()
             cat.settings.set(cat);
         });
         cat.controls.rendererWrap.append('br');
@@ -982,6 +1016,7 @@
 
     function init$1(cat) {
         cat.current = cat.config.renderers[0];
+        cat.current.version = 'master';
         initSubmit(cat);
         initRendererSelect(cat);
         initDataSelect(cat);
@@ -1125,10 +1160,12 @@
 
     function set$1(cat) {
         // load the schema (if any) and see if it is validate
-        var version = cat.controls.versionSelect.node().value;
-        var schemaPath = [
+        console.log(cat.current.version);
+        cat.current.schemaPath = [
             cat.config.rootURL,
-            version !== 'master' ? cat.current.name + '@' + version : cat.current.name,
+            cat.current.version !== 'master'
+                ? cat.current.name + '@' + cat.current.version
+                : cat.current.name,
             cat.current.schema
         ].join('/');
 
@@ -1136,7 +1173,7 @@
         cat.controls.settingsInput.value = '{}';
         cat.current.config = {};
 
-        d3.json(schemaPath, function(error, schemaObj) {
+        d3.json(cat.current.schemaPath, function(error, schemaObj) {
             if (error) {
                 console.log('No schema loaded.');
                 cat.current.hasValidSchema = false;

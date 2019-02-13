@@ -1,3 +1,5 @@
+import updateRenderer from './initRendererSelect/updateRenderer';
+
 export function initRendererSelect(cat) {
     cat.controls.rendererWrap.append('h3').text('1. Choose a Charting Library');
     cat.controls.rendererWrap.append('span').text('Library: ');
@@ -8,36 +10,19 @@ export function initRendererSelect(cat) {
         .data(cat.config.renderers)
         .enter()
         .append('option')
-        .text(function(d) {
-            return d.name;
-        });
+        .text(d => d.name);
 
-    cat.controls.rendererSelect.on('change', function(d) {
-        cat.current = d3
-            .select(this)
-            .select('option:checked')
-            .data()[0];
-
-        //update the chart type configuration to the defaults for the selected renderer
-        cat.controls.mainFunction.node().value = cat.current.main;
-        cat.controls.versionSelect.node().value = 'master';
-        cat.controls.subFunction.node().value = cat.current.sub;
-        cat.controls.schema.node().value = cat.current.schema;
-
-        //update the selected data set to the default for the new rendererSection
-        cat.controls.dataFileSelect.selectAll('option').property('selected', function(e) {
-            return cat.current.defaultData == e.label ? true : null;
-        });
-
-        //Re-initialize the chart config section
-        cat.settings.set(cat);
+    cat.controls.rendererSelect.on('change', function() {
+        updateRenderer.call(cat, this);
     });
     cat.controls.rendererWrap.append('br');
     cat.controls.rendererWrap.append('span').text('Version: ');
     cat.controls.versionSelect = cat.controls.rendererWrap.append('input');
     cat.controls.versionSelect.node().value = 'master';
+    cat.controls.versionSelect.on('input', function() {
+        cat.current.version = this.value;
+    });
     cat.controls.versionSelect.on('change', function() {
-        //checkVersion()
         cat.settings.set(cat);
     });
     cat.controls.rendererWrap.append('br');
