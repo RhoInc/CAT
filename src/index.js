@@ -1,4 +1,4 @@
-import './polyfills/array-find.js';
+import './util/polyfills.js';
 import { createCat } from './createCat';
 
 export default {
