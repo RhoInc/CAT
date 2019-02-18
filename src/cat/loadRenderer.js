@@ -8,14 +8,11 @@ export function loadRenderer(cat) {
     const promisedPackage = loadPackageJson(cat);
     promisedPackage.then(function(response) {
         cat.current.package = JSON.parse(response);
-        console.log(cat.current.package);
         cat.current.js_url = `${cat.current.url}/${cat.current.package.main.replace(
             /^\.?\/?/,
             ''
         )}`;
         cat.current.css_url = cat.current.css ? `${cat.current.url}/${cat.current.css}` : null;
-        console.log(cat.current.js_url);
-        console.log(cat.current.css_url);
 
         if (cat.current.css) {
             var current_css = getCSS().filter(f => f.link == cat.current.css_url);
@@ -42,7 +39,6 @@ export function loadRenderer(cat) {
         var js_loaded = current_js.length > 0;
 
         if (!js_loaded) {
-            console.log('not loaded');
             var loader = new scriptLoader();
             loader.require(cat.current.js_url, {
                 async: true,
@@ -67,7 +63,6 @@ export function loadRenderer(cat) {
                 }
             });
         } else {
-            console.log('loaded');
             cat.status.loadStatus(
                 cat.statusDiv,
                 true,

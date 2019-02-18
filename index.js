@@ -101,7 +101,7 @@ var myCatConfig = {
             sub: null,
             css: null,
             schema: 'settings-schema.json',
-            defaultData: 'dataCleaning/queries/queries.csv'
+            defaultData: 'clinical-trials/data-cleaning/queries.csv'
         },
         {
             name: 'crf-heat-map',
@@ -109,7 +109,7 @@ var myCatConfig = {
             sub: null,
             css: null,
             schema: 'settings-schema.json',
-            defaultData: 'dataCleaning/forms/dmc_DataPage.csv'
+            defaultData: 'clinical-trials/data-cleaning/forms.csv'
         },
         {
             name: 'participant-visit-listing',
@@ -117,7 +117,7 @@ var myCatConfig = {
             sub: null,
             css: null,
             schema: 'settings-schema.json',
-            defaultData: 'dataCleaning/visits/dmv_Visits.csv'
+            defaultData: 'clinical-trials/data-cleaning/visits.csv'
         },
 
     /**-------------------------------------------------------------------------------------------\
@@ -130,7 +130,7 @@ var myCatConfig = {
             sub: null,
             css: null,
             schema: 'settings-schema.json',
-            defaultData: 'clinical-trials/renderer-specific/ADTIMELINES.csv'
+            defaultData: 'clinical-trials/renderer-specific/adtimelines.csv'
         }
     ]
 };

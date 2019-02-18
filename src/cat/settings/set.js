@@ -4,9 +4,8 @@ import { validateSchema } from './validateSchema';
 
 export function set(cat) {
     // load the schema (if any) and see if it is validate
-    console.log(cat.current.version);
     cat.current.schemaPath = [
-        cat.config.rootURL,
+        cat.current.rootURL || cat.config.rootURL,
         cat.current.version !== 'master'
             ? cat.current.name + '@' + cat.current.version
             : cat.current.name,

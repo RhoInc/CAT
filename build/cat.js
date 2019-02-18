@@ -452,8 +452,10 @@
             .classed('control-section environment-section', true);
     }
 
-    function toggleControls() {
+    function addControlsToggle() {
         var _this = this;
+
+        var cat = this;
 
         this.controls.minimize = this.controls.submitWrap
             .append('div')
@@ -463,6 +465,11 @@
             .on('click', function() {
                 _this.controls.wrap.classed('hidden', true);
                 _this.chartWrap.style('margin-left', 0);
+                _this.chartWrap.selectAll('.wc-chart').each(function(d) {
+                    try {
+                        d.draw();
+                    } catch (error) {}
+                });
                 _this.dataWrap.style('margin-left', 0);
                 _this.controls.maximize = _this.wrap
                     .insert('div', ':first-child')
@@ -470,9 +477,14 @@
                     .text('>>')
                     .attr('title', 'Show controls')
                     .on('click', function() {
-                        this.controls.wrap.classed('hidden', false);
-                        this.chartWrap.style('margin-left', '20%');
-                        this.dataWrap.style('margin-left', '20%');
+                        cat.controls.wrap.classed('hidden', false);
+                        cat.chartWrap.style('margin-left', '20%');
+                        cat.chartWrap.selectAll('.wc-chart').each(function(d) {
+                            try {
+                                d.draw();
+                            } catch (error) {}
+                        });
+                        cat.dataWrap.style('margin-left', '20%');
                         d3.select(this).remove();
                     });
             });
@@ -842,12 +854,9 @@
         var promisedPackage = loadPackageJson(cat);
         promisedPackage.then(function(response) {
             cat.current.package = JSON.parse(response);
-            console.log(cat.current.package);
             cat.current.js_url =
                 cat.current.url + '/' + cat.current.package.main.replace(/^\.?\/?/, '');
             cat.current.css_url = cat.current.css ? cat.current.url + '/' + cat.current.css : null;
-            console.log(cat.current.js_url);
-            console.log(cat.current.css_url);
 
             if (cat.current.css) {
                 var current_css = getCSS().filter(function(f) {
@@ -880,7 +889,6 @@
             var js_loaded = current_js.length > 0;
 
             if (!js_loaded) {
-                console.log('not loaded');
                 var loader = new scriptLoader();
                 loader.require(cat.current.js_url, {
                     async: true,
@@ -905,7 +913,6 @@
                     }
                 });
             } else {
-                console.log('loaded');
                 cat.status.loadStatus(
                     cat.statusDiv,
                     true,
@@ -1020,7 +1027,7 @@
     }
 
     function initSubmit(cat) {
-        toggleControls.call(cat);
+        addControlsToggle.call(cat);
         addSubmitButton.call(cat);
     }
 
@@ -1510,9 +1517,8 @@
 
     function set$1(cat) {
         // load the schema (if any) and see if it is validate
-        console.log(cat.current.version);
         cat.current.schemaPath = [
-            cat.config.rootURL,
+            cat.current.rootURL || cat.config.rootURL,
             cat.current.version !== 'master'
                 ? cat.current.name + '@' + cat.current.version
                 : cat.current.name,
