@@ -54,6 +54,7 @@ export function renderChart(cat) {
     } else {
         var dataFilePath = dataObject.path + dataFile;
         d3.csv(dataFilePath, function(error, data) {
+            console.log(window.webCharts);
             render(error, data);
         });
     }

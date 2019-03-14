@@ -6,6 +6,8 @@ import { getJS } from './env/getJS';
 export function loadLibrary(cat) {
     var version = cat.controls.libraryVersion.node().value;
     var library = 'webcharts'; //hardcode to webcharts for now - could generalize later
+    if (library === 'webcharts' && window)
+        delete window.webCharts;
 
     // --- load css --- //
     var cssPath =

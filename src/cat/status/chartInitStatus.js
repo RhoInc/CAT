@@ -66,5 +66,6 @@ export function chartInitStatus(statusDiv, success, err, htmlExport) {
                     '</i></small>'
             )
             .classed('error', true);
+        console.error(err);
     }
 }
