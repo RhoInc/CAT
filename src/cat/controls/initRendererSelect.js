@@ -1,4 +1,5 @@
 import updateRenderer from './initRendererSelect/updateRenderer';
+import getVersions from './initRendererSelect/getVersions';
 
 export function initRendererSelect(cat) {
     cat.controls.rendererWrap.append('h3').text('1. Choose a Charting Library');
@@ -17,9 +18,14 @@ export function initRendererSelect(cat) {
     });
     cat.controls.rendererWrap.append('br');
     cat.controls.rendererWrap.append('span').text('Version: ');
-    cat.controls.versionSelect = cat.controls.rendererWrap.append('input');
-    cat.controls.versionSelect.node().value = 'master';
+    cat.controls.versionSelect = cat.controls.rendererWrap.append('select');
+    getVersions(
+        cat.controls.versionSelect,
+        cat.current.url
+    );
+    //cat.controls.versionSelect.node().value = 'master';
     cat.controls.versionSelect.on('input', function() {
+        console.log(this.value);
         cat.current.version = this.value;
     });
     cat.controls.versionSelect.on('change', function() {
