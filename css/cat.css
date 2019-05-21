@@ -1,44 +1,51 @@
 /* general */
-.hidden{
-    display:none
+.hidden {
+    display: none
 }
 
-.cat-wrap .cat-controls{
-    position: relatvie;
-    width:20%;
+.cat-wrap {
+    position: relative;
+}
+
+.cat-wrap .cat-controls {
+    width: 25%;
     top: 0;
-    bottom:0;
-    position:fixed;
-    overflow-y:scroll;
-    overflow-x:scroll;
-    background:#99badd;
-    padding:0.5em;
-    margin:0;
-    border:1px solid #999;
+    bottom: 0;
+    position: fixed;
+    overflow-y: scroll;
+    overflow-x: scroll;
+    background: #99badd;
+    padding: 0.5em;
+    margin: 0;
+    border: 1px solid #999;
 }
 
-.cat-wrap .cat-chart, .cat-wrap .cat-data{
-    margin-left:20%;
+.cat-wrap .cat-chart, .cat-wrap .cat-data {
+    margin-left: 25%;
     padding: 0 3em;
 }
 
-.cat-wrap .cat-controls.hidden{
-    display:none;
+.cat-wrap .cat-controls.hidden {
+    display: none;
 }
 
-.cat-wrap .cat-controls h2{
-    margin-top:0.1em;
-    margin-bottom:0.2em;
-    font-size:1.3em;
+.cat-wrap .cat-controls .cat-controls-header {
+    text-align: center;
 }
 
-.cat-wrap .cat-controls h3{
-    margin-bottom:0;
-    margin-top:0.2em;
+.cat-wrap .cat-controls h2 {
+    margin-top: 0.1em;
+    margin-bottom: 0.2em;
+    font-size: 1.3em;
 }
 
-.cat-wrap .cat-controls div{
-    margin-bottom:.5em;
+.cat-wrap .cat-controls h3 {
+    margin-bottom: 0;
+    margin-top: 0.2em;
+}
+
+.cat-wrap .cat-controls div {
+    margin-bottom: .5em;
 }
 
 .cat-wrap .submit-section {
@@ -48,44 +55,48 @@
 }
 .cat-wrap .cat-button {
     position: absolute;
-    left: 0;
-    top: 5px;
+    top: 3px;
+    left: 5px;
     vertical-align: middle;
     background: white;
     cursor: pointer;
     padding: 0 5px;
-    font-size:1em;
-    border:2px solid #7BAFD4;
+    font-size: 1em;
+    border: 2px solid #7BAFD4;
     border-radius: 2px;
 }
-.cat-wrap .cat-button--maximize {
-    left: .75em;
-    top: 10px;
+.cat-wrap .cat-button:hover {
+    background: #7BAFD4;
+    border: 2px solid black;
 }
-.cat-wrap .cat-controls button.submit{
+.cat-wrap .cat-controls button.submit {
     cursor: pointer;
     margin: 0 auto;
-    display:block;
-    color:black;
-    border:none;
-    border-radius:3px;
+    display: block;
+    color: black;
+    border: none;
+    border-radius: 3px;
     padding: 5px 10px;
-    font-size:1em;
-    background-color:white;
-    border:2px solid #7BAFD4;
+    font-size: 1em;
+    background-color: white;
+    border: 2px solid #7BAFD4;
 }
 
-.cat-wrap .cat-controls button.submit:hover{
-    background-color:#7BAFD4;
-    color:white;
+.cat-wrap .cat-controls button.submit:hover {
+    background-color: #7BAFD4;
+    color: white;
 }
 
-.cat-wrap .cat-controls .file-load-input{
-    width:75%
+.cat-wrap .cat-controls .data-section select {
+    max-width: 100%;
 }
 
-.cat-wrap .cat-controls .file-load-button{
-    width:25%
+.cat-wrap .cat-controls .data-section .file-load-input {
+    width: 75%
+}
+
+.cat-wrap .cat-controls .data-section .file-load-button {
+    width: 25%
 }
 
 
@@ -96,16 +107,16 @@
     rows: 10;
     width: 100%;
 }
-.cat-wrap .cat-controls .settings-section .prop-value{
-    vertical-align:top;
-    padding-bottom:0.1em;
+.cat-wrap .cat-controls .settings-section .prop-value {
+    vertical-align: top;
+    padding-bottom: 0.1em;
 }
 
 
 
 
 /* status formatting */
-.cat-wrap .cat-chart .status div{
+.cat-wrap .cat-chart .status div {
     padding: 3px;
     margin-bottom: 4px;
     border: 1px solid transparent;
@@ -114,48 +125,48 @@
     background-color: #dff0d8;
     border-color: #d6e9c6;
 }
-.cat-wrap .cat-chart .status{
-    padding-bottom:.5em;
-    margin-bottom:.5em;
-    border-bottom:1px dotted #999;
+.cat-wrap .cat-chart .status {
+    padding-bottom: .5em;
+    margin-bottom: .5em;
+    border-bottom: 1px dotted #999;
 }
-.cat-wrap .cat-chart .status div.error{
+.cat-wrap .cat-chart .status div.error {
     color: #a94442;
     background-color: #f2dede;
     border-color: #ebccd1;
 }
 
-.cat-wrap .cat-chart .status div.info{
+.cat-wrap .cat-chart .status div.info {
     color: black;
     background-color: white;
     border-color: black;
 }
 
-.cat-wrap .cat-chart .status div.export{
-    font-size:0.6em;
+.cat-wrap .cat-chart .status div.export {
+    font-size: 0.6em;
     color: black;
     background-color: #ffffe5;
     border-color: black;
 }
 
-.cat-wrap .cat-chart .status div.export.minimized{
-    font-size:1.0em;
+.cat-wrap .cat-chart .status div.export.minimized {
+    font-size: 1.0em;
 }
 
-.cat-wrap .environment-section ul{
+.cat-wrap .environment-section ul {
     list-style: none;
     padding-left: 0.1em;
 }
 
-.cat-wrap .environment-section ul h5{
-    margin:0;
+.cat-wrap .environment-section ul h5 {
+    margin: 0;
 }
 /**********************************************************************
 ** Sliders from https://www.w3schools.com/howto/howto_css_switch.asp **
 **********************************************************************/
 /**/
 .switch {
-    margin-left:0.5em;
+    margin-left: 0.5em;
     position: relative;
     display: inline-block;
     width: 30px;
@@ -166,7 +177,7 @@
 }
 
 /* Hide default HTML checkbox */
-.switch input {display:none;}
+.switch input {display: none;}
 
 /* The slider */
 .slider {
