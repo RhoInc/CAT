@@ -6,6 +6,7 @@ export default function addSubmitButton() {
         .attr('class', 'submit')
         .text('Render Chart')
         .on('click', () => {
+            this.previous = this.current;
             this.controls.minimize.classed('hidden', false);
             this.dataWrap.classed('hidden', true);
             this.chartWrap.classed('hidden', false);
@@ -24,6 +25,10 @@ export default function addSubmitButton() {
                 .property('disabled', true)
                 .remove();
 
+            if (this.previous) {
+                console.log(this.previous);
+                this.previous.instance.destroy();
+            }
             this.chartWrap.selectAll('*').remove();
             this.printStatus = true;
             this.statusDiv = this.chartWrap.append('div').attr('class', 'status');
