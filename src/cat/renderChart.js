@@ -23,7 +23,10 @@ export function renderChart(cat) {
                 );
                 cat.status.chartCreateStatus(cat.statusDiv, cat.current.main, cat.current.sub);
             } else {
-                cat.current.instance = window[cat.current.main]('.cat-chart .chart', cat.current.config);
+                cat.current.instance = window[cat.current.main](
+                    '.cat-chart .chart',
+                    cat.current.config
+                );
                 cat.status.chartCreateStatus(cat.statusDiv, cat.current.main);
             }
 
@@ -45,19 +48,17 @@ export function renderChart(cat) {
                 //don't print any new statuses until a new chart is rendered
                 cat.printStatus = false;
             }
-            console.log(cat.current.instance);
         }
+        cat.current.rendered = true;
     }
 
     if (dataObject.user_loaded) {
         dataObject.json = d3.csv.parse(dataObject.csv_raw);
         render(false, dataObject.json);
-        console.log(cat.current.instance);
     } else {
         var dataFilePath = dataObject.path + dataFile;
         d3.csv(dataFilePath, function(error, data) {
             render(error, data);
-            console.log(cat.current.instance);
         });
     }
 }

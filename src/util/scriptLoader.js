@@ -100,6 +100,6 @@ scriptLoader.prototype = {
                 }
             }, 1);
         }, typeof args.delay == 'number' ? args.delay : 1);
-        return true;
+        return scriptTag;
     }
 };

@@ -6,7 +6,6 @@ export default function addSubmitButton() {
         .attr('class', 'submit')
         .text('Render Chart')
         .on('click', () => {
-            this.previous = this.current;
             this.controls.minimize.classed('hidden', false);
             this.dataWrap.classed('hidden', true);
             this.chartWrap.classed('hidden', false);
@@ -27,8 +26,26 @@ export default function addSubmitButton() {
 
             if (this.previous) {
                 console.log(this.previous);
-                this.previous.instance.destroy();
+                if (this.previous.instance && this.previous.instance.destroy)
+                    this.previous.instance.destroy();
+            } else {
+                this.chartWrap.selectAll('.wc-chart').each(function(chart) {
+                    if (chart.destroy) chart.destroy();
+                    else {
+                        //remove resize event listener
+                        select(window).on('resize.' + chart.element + chart.id, null);
+
+                        //destroy controls
+                        if (chart.controls) {
+                            chart.controls.destroy();
+                        }
+
+                        //unmount chart wrapper
+                        chart.wrap.remove();
+                    }
+                });
             }
+
             this.chartWrap.selectAll('*').remove();
             this.printStatus = true;
             this.statusDiv = this.chartWrap.append('div').attr('class', 'status');
@@ -39,5 +56,6 @@ export default function addSubmitButton() {
 
             this.chartWrap.append('div').attr('class', 'chart');
             loadLibrary(this);
+            console.log(this.current);
         });
 }

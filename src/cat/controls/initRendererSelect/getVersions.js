@@ -18,7 +18,7 @@ export default function getVersions(
                 .data(d3.merge(values))
                 .enter()
                 .append('option')
-                .text(d => d.name)
+                .text(d => d.tag_name || d.name)
                 .property('selected', d => d.name === 'master');
         })
         .catch(err => {
