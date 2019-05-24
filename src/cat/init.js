@@ -13,4 +13,6 @@ export function init() {
 
     //create the controls
     this.controls.init(this);
+
+    console.log(this);
 }
