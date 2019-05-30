@@ -24,6 +24,7 @@ export default function addSubmitButton() {
                 .property('disabled', true)
                 .remove();
 
+            console.log(this.previous);
             if (this.previous) {
                 if (this.previous.instance && this.previous.instance.destroy) {
                     console.log('destroy');

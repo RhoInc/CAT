@@ -24,11 +24,12 @@ export function initRendererSelect(cat) {
     cat.controls.versionSelect = cat.controls.rendererWrap.append('select');
     getVersions(cat.controls.versionSelect, cat.current.api_url);
     //cat.controls.versionSelect.node().value = 'master';
-    cat.controls.versionSelect.on('input', function() {
+    //cat.controls.versionSelect.on('input', function() {
+    //    console.log(this.value);
+    //});
+    cat.controls.versionSelect.on('change', function() {
         console.log(this.value);
         cat.current.version = this.value;
-    });
-    cat.controls.versionSelect.on('change', function() {
         cat.settings.set(cat);
     });
     cat.controls.rendererWrap.append('br');

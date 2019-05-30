@@ -52,13 +52,16 @@ export function renderChart(cat) {
         cat.current.rendered = true;
     }
 
-    if (dataObject.user_loaded) {
+    if (dataObject.json)
+        render(false, dataObject.json);
+    else if (dataObject.user_loaded) {
         dataObject.json = d3.csv.parse(dataObject.csv_raw);
         render(false, dataObject.json);
     } else {
         var dataFilePath = dataObject.path + dataFile;
         d3.csv(dataFilePath, function(error, data) {
-            render(error, data);
+            dataObject.json = data;
+            render(error, dataObject.json);
         });
     }
 }

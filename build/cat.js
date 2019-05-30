@@ -415,8 +415,6 @@
 
       //create the controls
       this.controls.init(this);
-
-      console.log(this);
   }
 
   function layout(cat) {
@@ -785,13 +783,14 @@
           cat.current.rendered = true;
       }
 
-      if (dataObject.user_loaded) {
+      if (dataObject.json) render(false, dataObject.json);else if (dataObject.user_loaded) {
           dataObject.json = d3.csv.parse(dataObject.csv_raw);
           render(false, dataObject.json);
       } else {
           var dataFilePath = dataObject.path + dataFile;
           d3.csv(dataFilePath, function (error, data) {
-              render(error, data);
+              dataObject.json = data;
+              render(error, dataObject.json);
           });
       }
   }
@@ -919,6 +918,7 @@
 
           d3.selectAll('style').property('disabled', true).remove();
 
+          console.log(_this.previous);
           if (_this.previous) {
               if (_this.previous.instance && _this.previous.instance.destroy) {
                   console.log('destroy');
@@ -1031,11 +1031,12 @@
       cat.controls.versionSelect = cat.controls.rendererWrap.append('select');
       getVersions(cat.controls.versionSelect, cat.current.api_url);
       //cat.controls.versionSelect.node().value = 'master';
-      cat.controls.versionSelect.on('input', function () {
+      //cat.controls.versionSelect.on('input', function() {
+      //    console.log(this.value);
+      //});
+      cat.controls.versionSelect.on('change', function () {
           console.log(this.value);
           cat.current.version = this.value;
-      });
-      cat.controls.versionSelect.on('change', function () {
           cat.settings.set(cat);
       });
       cat.controls.rendererWrap.append('br');
@@ -1094,19 +1095,59 @@
 
       cat.dataWrap.append('h3').text('Data Preview for ' + dataFile);
 
-      cat.dataWrap.append('div').attr('class', 'dataPreview').style('overflow-x', 'overlay');
-      cat.dataPreview = webCharts.createTable('.dataPreview');
+      cat.dataWrap.append('div').attr('class', 'dataPreview');
+      //    .style('overflow-x', 'overlay');
+      //cat.dataPreview = webCharts.createTable('.dataPreview');
       if (dataObject.user_loaded) {
-          cat.dataPreview.init(d3.csv.parse(dataObject.csv_raw));
+          dataObject.data = d3.csv.parse(dataObject.csv_raw);
+          handsOnTable(dataObject.data);
+          //cat.dataPreview.init(d3.csv.parse(dataObject.csv_raw));
       } else {
           d3.csv(path, function (raw) {
-              cat.dataPreview.init(raw);
+              dataObject.data = raw;
+              handsOnTable(dataObject.data);
+              //cat.dataPreview.init(raw);
+          });
+      }
+
+      function handsOnTable(data) {
+          var colHeaders = Object.keys(data[0]);
+          var table = new Handsontable(cat.dataWrap.select('.dataPreview').node(), {
+              data: data.map(function (d) {
+                  return Object.keys(d).map(function (key) {
+                      return d[key];
+                  });
+              }),
+              colHeaders: colHeaders,
+              columns: colHeaders.map(function (_) {
+                  return { type: 'text' };
+              }),
+              rowHeaders: true,
+              dropdownMenu: true,
+              filters: true,
+              afterChange: function afterChange(changes) {
+                  dataObject.json = this.getData().map(function (d) {
+                      return d.reduce(function (acc, cur, i) {
+                          acc[colHeaders[i]] = cur;
+                          return acc;
+                      }, {});
+                  });
+              },
+              afterFilter: function afterFilter(changes) {
+                  dataObject.json = this.getData().map(function (d) {
+                      return d.reduce(function (acc, cur, i) {
+                          acc[colHeaders[i]] = cur;
+                          return acc;
+                      }, {});
+                  });
+              },
+              licenseKey: 'non-commercial-and-evaluation'
           });
       }
   }
 
   function initDataSelect(cat) {
-      cat.controls.dataWrap.append('h3').text('2. Choose a data Set');
+      cat.controls.dataWrap.append('h3').text('2. Choose a Dataset');
       cat.controls.dataFileSelect = cat.controls.dataWrap.append('select');
 
       cat.controls.dataWrap.append('span').html('&#128269;').style('cursor', 'pointer').on('click', function () {
