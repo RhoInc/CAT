@@ -7,7 +7,7 @@ import { chartInitStatus } from './status/chartInitStatus';
 import { saveToServer } from './status/saveToServer';
 import { loadStatus } from './status/loadStatus';
 
-export const status = {
+export default {
     chartCreateStatus: chartCreateStatus,
     chartInitStatus: chartInitStatus,
     saveToServer: saveToServer,

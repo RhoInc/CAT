@@ -54,9 +54,9 @@
     position: relative;
 }
 .cat-wrap .cat-button {
-    position: absolute;
-    top: 3px;
-    left: 5px;
+    position: fixed;
+    top: 10px;
+    left: 12px;
     vertical-align: middle;
     background: white;
     cursor: pointer;

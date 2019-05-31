@@ -1,4 +1,4 @@
-export default function addControlsToggle() {
+export default function toggleDisplayOfControls() {
     const styleSheet = Array.from(document.styleSheets).find(
         styleSheet => styleSheet.href.indexOf('cat.css') > -1
     );
@@ -6,13 +6,8 @@ export default function addControlsToggle() {
         cssRule => cssRule.selectorText === '.cat-wrap .cat-controls'
     ).style.width;
 
-    //Minimize controls.
-    this.controls.minimize = this.wrap
-        .append('div')
-        .classed('cat-button cat-button--minimize hidden', true)
-        .attr('title', 'Hide controls')
-        .text('<<');
-    this.controls.minimize.on('click', () => {
+    //Hide controls.
+    this.hideControls.on('click', () => {
         this.controls.wrap.classed('hidden', true);
         this.chartWrap.style('margin-left', 0);
         this.chartWrap.selectAll('.wc-chart').each(function(d) {
@@ -21,17 +16,12 @@ export default function addControlsToggle() {
             } catch (error) {}
         });
         this.dataWrap.style('margin-left', 0);
-        this.controls.minimize.classed('hidden', true);
-        this.controls.maximize.classed('hidden', false);
+        this.hideControls.classed('hidden', true);
+        this.showControls.classed('hidden', false);
     });
 
-    //Maximize controls.
-    this.controls.maximize = this.wrap
-        .append('div')
-        .classed('cat-button cat-button--maximize hidden', true)
-        .attr('title', 'Show controls')
-        .text('>>');
-    this.controls.maximize.on('click', () => {
+    //Show controls.
+    this.showControls.on('click', () => {
         this.controls.wrap.classed('hidden', false);
         this.chartWrap.style('margin-left', controlsWidth);
         this.chartWrap.selectAll('.wc-chart').each(function(d) {
@@ -40,7 +30,7 @@ export default function addControlsToggle() {
             } catch (error) {}
         });
         this.dataWrap.style('margin-left', controlsWidth);
-        this.controls.minimize.classed('hidden', false);
-        this.controls.maximize.classed('hidden', true);
+        this.hideControls.classed('hidden', false);
+        this.showControls.classed('hidden', true);
     });
 }

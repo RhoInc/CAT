@@ -6,7 +6,7 @@ import { set } from './settings/set';
 import { sync } from './settings/sync';
 import { setStatus } from './settings/setStatus';
 
-export const settings = {
+export default {
     set: set,
     sync: sync,
     setStatus: setStatus

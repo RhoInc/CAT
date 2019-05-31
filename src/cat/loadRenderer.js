@@ -1,7 +1,7 @@
 import loadPackageJson from './loadRenderer/loadPackageJson';
 import { getCSS } from './env/getCSS';
 import { getJS } from './env/getJS';
-import { scriptLoader } from '../util/scriptLoader';
+import scriptLoader from '../util/scriptLoader';
 import { renderChart } from './renderChart';
 
 export function loadRenderer(cat) {

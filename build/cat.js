@@ -403,41 +403,7 @@
       });
   }
 
-  function init() {
-      //layout the cat
-      this.wrap = d3.select(this.element).append('div').attr('class', 'cat-wrap');
-      this.layout(this);
-
-      //initialize the settings
-      this.setDefaults(this);
-
-      //add others here!
-
-      //create the controls
-      this.controls.init(this);
-  }
-
-  function layout(cat) {
-      /* Layout primary sections */
-      cat.controls.wrap = cat.wrap.append('div').classed('cat-controls section', true);
-      cat.chartWrap = cat.wrap.append('div').classed('cat-chart section', true);
-      cat.dataWrap = cat.wrap.append('div').classed('cat-data section', true).classed('hidden', true);
-
-      /* Layout CAT Controls Divs */
-      cat.controls.wrap.append('h2').classed('cat-controls-header', true).text('Charting Application Tester 😼');
-
-      cat.controls.submitWrap = cat.controls.wrap.append('div').classed('control-section submit-section', true);
-
-      cat.controls.rendererWrap = cat.controls.wrap.append('div').classed('control-section renderer-section', true);
-
-      cat.controls.dataWrap = cat.controls.wrap.append('div').classed('control-section data-section', true);
-
-      cat.controls.settingsWrap = cat.controls.wrap.append('div').classed('control-section settings-section', true);
-
-      cat.controls.environmentWrap = cat.controls.wrap.append('div').classed('control-section environment-section', true);
-  }
-
-  function addControlsToggle() {
+  function toggleDisplayOfControls() {
       var _this = this;
 
       var styleSheet = Array.from(document.styleSheets).find(function (styleSheet) {
@@ -447,9 +413,8 @@
           return cssRule.selectorText === '.cat-wrap .cat-controls';
       }).style.width;
 
-      //Minimize controls.
-      this.controls.minimize = this.wrap.append('div').classed('cat-button cat-button--minimize hidden', true).attr('title', 'Hide controls').text('<<');
-      this.controls.minimize.on('click', function () {
+      //Hide controls.
+      this.hideControls.on('click', function () {
           _this.controls.wrap.classed('hidden', true);
           _this.chartWrap.style('margin-left', 0);
           _this.chartWrap.selectAll('.wc-chart').each(function (d) {
@@ -458,13 +423,12 @@
               } catch (error) {}
           });
           _this.dataWrap.style('margin-left', 0);
-          _this.controls.minimize.classed('hidden', true);
-          _this.controls.maximize.classed('hidden', false);
+          _this.hideControls.classed('hidden', true);
+          _this.showControls.classed('hidden', false);
       });
 
-      //Maximize controls.
-      this.controls.maximize = this.wrap.append('div').classed('cat-button cat-button--maximize hidden', true).attr('title', 'Show controls').text('>>');
-      this.controls.maximize.on('click', function () {
+      //Show controls.
+      this.showControls.on('click', function () {
           _this.controls.wrap.classed('hidden', false);
           _this.chartWrap.style('margin-left', controlsWidth);
           _this.chartWrap.selectAll('.wc-chart').each(function (d) {
@@ -473,8 +437,159 @@
               } catch (error) {}
           });
           _this.dataWrap.style('margin-left', controlsWidth);
-          _this.controls.minimize.classed('hidden', false);
-          _this.controls.maximize.classed('hidden', true);
+          _this.hideControls.classed('hidden', false);
+          _this.showControls.classed('hidden', true);
+      });
+  }
+
+  function renderChart() {
+      this.controls.submitWrap = this.controls.wrap.append('div').classed('control-section submit-section', true);
+      this.controls.submitButton = this.controls.submitWrap.append('button').attr('class', 'submit').text('Render Chart');
+  }
+
+  function library() {
+      this.controls.rendererWrap.append('span').text('Library: ');
+      this.controls.rendererSelect = this.controls.rendererWrap.append('select');
+      this.controls.rendererSelect.selectAll('option').data(this.config.renderers).enter().append('option').text(function (d) {
+          return d.name;
+      });
+      this.controls.rendererWrap.append('br');
+  }
+
+  function version() {
+      this.controls.rendererWrap.append('span').text('Version: ');
+      this.controls.versionSelect = this.controls.rendererWrap.append('select');
+      this.controls.rendererWrap.append('br');
+  }
+
+  function moreOptions() {
+      this.controls.moreOptions = this.controls.rendererWrap.append('a').text('More Options').style('text-decoration', 'underline').style('color', 'blue').style('cursor', 'pointer');
+  }
+
+  function init() {
+      this.controls.rendererWrap.append('span').text(' Init: ').classed('hidden', true);
+      this.controls.mainFunction = this.controls.rendererWrap.append('input').classed('hidden', true);
+      this.controls.rendererWrap.append('span').text('.').classed('hidden', true);
+      this.controls.subFunction = this.controls.rendererWrap.append('input').classed('hidden', true);
+      this.controls.rendererWrap.append('br').classed('hidden', true);
+  }
+
+  function webchartsVersion() {
+      this.controls.rendererWrap.append('span').text('Webcharts Version: ').classed('hidden', true);
+      this.controls.libraryVersion = this.controls.rendererWrap.append('select').classed('hidden', true);
+      this.controls.rendererWrap.append('br').classed('hidden', true);
+  }
+
+  function schema() {
+      this.controls.rendererWrap.append('span').text('Schema: ').classed('hidden', true);
+      this.controls.schema = this.controls.rendererWrap.append('input').classed('hidden', true);
+      this.controls.rendererWrap.append('br').classed('hidden', true);
+  }
+
+  function chooseAChartingLibrary() {
+      this.controls.rendererWrap = this.controls.wrap.append('div').classed('control-section renderer-section', true);
+      this.controls.rendererWrap.append('h3').text('1. Choose a Charting Library');
+      library.call(this);
+      version.call(this);
+      moreOptions.call(this);
+      init.call(this);
+      webchartsVersion.call(this);
+      schema.call(this);
+  }
+
+  function dataFile() {
+      this.controls.dataFileSelect = this.controls.dataWrap.append('select');
+      this.controls.dataFileSelect.selectAll('option').data(this.config.dataFiles).enter().append('option').text(function (d) {
+          return d;
+      });
+  }
+
+  function loadADataFile() {
+      var loadLabel = this.controls.dataWrap.append('p').style('margin', 0);
+      loadLabel.append('small').text('Use local .csv file:').append('sup').html('&#9432;').property('title', 'Render a chart using a local file. File is added to the data set list, and is only available for a single session and is not saved.').style('cursor', 'help');
+      this.controls.loadStatus = loadLabel.append('small').attr('class', 'loadStatus').style('float', 'right').text('Select a csv to load');
+      this.controls.dataFileLoad = this.controls.dataWrap.append('input').attr('type', 'file').attr('class', 'file-load-input');
+      this.controls.dataFileLoadButton = this.controls.dataWrap.append('button').text('Load').attr('class', 'file-load-button').attr('disabled', true);
+  }
+
+  function chooseADataset() {
+      this.controls.dataWrap = this.controls.wrap.append('div').classed('control-section data-section', true);
+      this.controls.dataWrap.append('h3').text('2. Choose a Dataset');
+      dataFile.call(this);
+      this.controls.viewData = this.controls.dataWrap.append('span').html('&#128269;').style('cursor', 'pointer');
+      loadADataFile.call(this);
+  }
+
+  function customizeTheChart() {
+      this.controls.settingsWrap = this.controls.wrap.append('div').classed('control-section settings-section', true);
+      this.controls.settingsWrap.append('h3').html('3. Customize the Chart ');
+      this.controls.settingsWrap.append('span').text('Settings: ');
+      this.controls.settingsTypeText = this.controls.settingsWrap.append('input').attr('class', 'radio').property('type', 'radio').property('name', 'settingsType').property('value', 'text');
+      this.controls.settingsWrap.append('span').text('text');
+      this.controls.settingsTypeForm = this.controls.settingsWrap.append('input').attr('class', 'radio').property('type', 'radio').property('name', 'settingsType').property('value', 'form');
+      this.controls.settingsWrap.append('span').text('form');
+      this.controls.settingsType = this.controls.settingsWrap.selectAll('input[type="radio"]');
+      this.controls.settingsWrap.append('br');
+      this.controls.settingsInput = this.controls.settingsWrap.append('textarea').attr('rows', 10).style('width', '90%').text('{}');
+      this.controls.settingsForm = this.controls.settingsWrap.append('div').attr('class', 'settingsForm').append('form');
+  }
+
+  function environment() {
+      this.controls.environmentWrap = this.controls.wrap.append('div').classed('control-section environment-section', true);
+      this.controls.environmentWrap.append('h3').html('4. Environment ');
+      this.controls.cssList = this.controls.environmentWrap.append('ul').attr('class', 'cssList');
+      this.controls.cssList.append('h5').text('Loaded Stylesheets');
+      this.controls.jsList = this.controls.environmentWrap.append('ul').attr('class', 'jsList');
+      this.controls.jsList.append('h5').text('Loaded javascript');
+  }
+
+  function controls() {
+      this.controls.wrap.append('h2').classed('cat-controls-header', true).text('Charting Application Tester 😼');
+      renderChart.call(this);
+      chooseAChartingLibrary.call(this);
+      chooseADataset.call(this);
+      customizeTheChart.call(this);
+      environment.call(this);
+  }
+
+  function layout() {
+      this.wrap = d3.select(this.element).append('div').attr('class', 'cat-wrap');
+
+      //Controls display toggle
+      this.hideControls = this.wrap.append('div').classed('cat-button cat-button--hide-controls', true).attr('title', 'Hide controls').text('<<');
+      this.showControls = this.wrap.append('div').classed('cat-button cat-button--show-controls hidden', true).attr('title', 'Show controls').text('>>');
+      toggleDisplayOfControls.call(this);
+
+      //Controls
+      this.controls.wrap = this.wrap.append('div').classed('cat-controls section', true);
+      controls.call(this);
+
+      //Chart
+      this.chartWrap = this.wrap.append('div').classed('cat-chart section', true);
+
+      //Table
+      this.dataWrap = this.wrap.append('div').classed('cat-data section', true).classed('hidden', true);
+  }
+
+  var defaultSettings = {
+      useServer: false,
+      rootURL: null,
+      dataURL: null,
+      dataFiles: [],
+      renderers: []
+  };
+
+  function setDefaults() {
+      var _this = this;
+
+      this.config.useServer = this.config.useServer || defaultSettings.useServer;
+      this.config.rootURL = this.config.rootURL || defaultSettings.rootURL;
+      this.config.dataURL = this.config.dataURL || defaultSettings.dataURL;
+      this.config.dataFiles = this.config.dataFiles || defaultSettings.dataFiles;
+      this.config.renderers = this.config.renderers || defaultSettings.renderers;
+
+      this.config.dataFiles = this.config.dataFiles.map(function (df) {
+          return typeof df === 'string' ? { label: df, path: _this.config.dataURL, user_loaded: false } : df;
       });
   }
 
@@ -614,11 +729,70 @@
       }
   };
 
-  function loadPackageJson(cat) {
+  function loadWebcharts(version) {
+      version = version || this.controls.libraryVersion.node().value;
+      var library = 'webcharts'; //hardcode to webcharts for now - could generalize later
+
+      // --- load css --- //
+      var cssPath = version !== 'master' ? this.config.rootURL + '/Webcharts@' + version + '/css/webcharts.css' : this.config.rootURL + '/Webcharts/css/webcharts.css';
+
+      var link = document.createElement('link');
+      link.href = cssPath;
+      link.type = 'text/css';
+      link.rel = 'stylesheet';
+      document.getElementsByTagName('head')[0].appendChild(link);
+
+      // --- load js --- //
+      var rendererPath = version !== 'master' ? this.config.rootURL + '/' + library + '@' + version + '/build/webcharts.js' : this.config.rootURL + '/Webcharts/build/webcharts.js';
+
+      var loader = new scriptLoader();
+      loader.require(rendererPath, {
+          async: true,
+          success: function success() {
+              //this.status.loadStatus(this.statusDiv, true, rendererPath, library, version);
+          },
+          failure: function failure() {
+              //this.status.loadStatus(this.statusDiv, false, rendererPath, library, version);
+          }
+      });
+  }
+
+  function getVersions(select) {
+      var repo = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'https://api.github.com/repos/RhoInc/Webcharts';
+
+      var branches = fetch(repo + '/branches').then(function (response) {
+          return response.json();
+      });
+      var releases = fetch(repo + '/releases').then(function (response) {
+          return response.json();
+      });
+
+      Promise.all([branches, releases]).then(function (values) {
+          var _values = slicedToArray(values, 2),
+              branches = _values[0],
+              releases = _values[1];
+
+          branches.sort(function (a, b) {
+              return a.name === 'master' ? -1 : b.name === 'master' ? 1 : a.name < b.name ? -1 : 1;
+          });
+          select.selectAll('option').remove();
+          select.selectAll('option').data(d3.merge(values)).enter().append('option').text(function (d) {
+              return d.tag_name || d.name;
+          }).property('selected', function (d) {
+              return d.name === 'master';
+          });
+      }).catch(function (err) {
+          console.log(err);
+      });
+  }
+
+  function loadPackageJson() {
+      var _this = this;
+
       return new Promise(function (resolve, reject) {
-          cat.current.url = cat.current.version === 'master' ? (cat.current.rootURL || cat.config.rootURL) + '/' + cat.current.name : (cat.current.rootURL || cat.config.rootURL) + '/' + cat.current.name + '@' + cat.current.version;
+          _this.current.url = _this.current.version === 'master' ? (_this.current.rootURL || _this.config.rootURL) + '/' + _this.current.name : (_this.current.rootURL || _this.config.rootURL) + '/' + _this.current.name + '@' + _this.current.version;
           var xhr = new XMLHttpRequest();
-          xhr.open('GET', cat.current.url + '/package.json');
+          xhr.open('GET', _this.current.url + '/package.json');
           xhr.onload = function () {
               if (this.status === 200) {
                   resolve(xhr.response);
@@ -636,6 +810,115 @@
               });
           };
           xhr.send();
+      });
+  }
+
+  function loadRenderer(version, response) {
+      this.current.package = JSON.parse(response);
+      this.current.js_url = this.current.url + '/' + this.current.package.main.replace(/^\.?\/?/, '');
+      this.current.css_url = this.current.css ? this.current.url + '/' + this.current.css : null;
+
+      if (this.current.css) {
+          this.current.link = document.createElement('link');
+          this.current.link.href = this.current.css_url;
+
+          this.current.link.type = 'text/css';
+          this.current.link.rel = 'stylesheet';
+          document.getElementsByTagName('head')[0].appendChild(this.current.link);
+      }
+
+      var loader = new scriptLoader();
+      this.current.script = loader.require(this.current.js_url, {
+          async: true,
+          success: function success() {
+              //this.status.loadStatus(
+              //    this.statusDiv,
+              //    true,
+              //    this.current.js_url,
+              //    this.current.name,
+              //    version || this.current.version
+              //);
+          },
+          failure: function failure() {
+              //this.status.loadStatus(
+              //    this.statusDiv,
+              //    false,
+              //    this.current.js_url,
+              //    this.current.name,
+              //    version || this.current.version
+              //);
+          }
+      });
+  }
+
+  function init$1() {
+      var _this = this;
+
+      //layout
+      layout.call(this);
+
+      //settings
+      setDefaults.call(this);
+
+      //initialize controls
+      this.controls.init.call(this);
+
+      //load charting library and charting application library
+      loadWebcharts.call(this, 'master');
+      getVersions.call(this, this.controls.libraryVersion);
+      this.current = this.config.renderers[0];
+      this.current.version = 'master';
+      loadPackageJson.call(this).then(function (response) {
+          loadRenderer.call(_this, 'master', response);
+          getVersions.call(_this, _this.controls.versionSelect, _this.current.api_url);
+      });
+  }
+
+  function destroyChart() {
+      if (this.previous) {
+          if (this.previous.instance && this.previous.instance.destroy) {
+              console.log('destroy');
+              console.log(this.previous);
+              if (this.previous.instance && this.previous.instance.destroy) this.previous.instance.destroy();
+          } else {
+              console.log('no destroy');
+              console.log(this.previous);
+              this.chartWrap.selectAll('.wc-chart').each(function (chart) {
+                  if (chart.destroy) chart.destroy();else {
+                      //remove resize event listener
+                      select(window).on('resize.' + chart.element + chart.id, null);
+
+                      //destroy controls
+                      if (chart.controls) {
+                          chart.controls.destroy();
+                      }
+
+                      //unmount chart wrapper
+                      chart.wrap.remove();
+                  }
+              });
+          }
+      }
+
+      this.chartWrap.selectAll('*').remove();
+  }
+
+  function updateStatus() {
+      this.printStatus = true;
+      this.statusDiv = this.chartWrap.append('div').attr('class', 'status');
+      this.statusDiv.append('div').text('Starting to render the chart ... ').classed('info', true);
+  }
+
+  function loadData() {
+      var dataFile = this.controls.dataFileSelect.node().value;
+      this.dataObject = this.config.dataFiles.find(function (f) {
+          return f.label == dataFile;
+      });
+      this.dataObject.dataFilePath = this.dataObject.path + dataFile;
+      return fetch(this.dataObject.dataFilePath).then(function (response) {
+          return response.text();
+      }).then(function (text) {
+          return d3.csv.parse(text);
       });
   }
 
@@ -664,26 +947,6 @@
           }
       });
       return current_js;
-  }
-
-  function createChartExport(cat) {
-      /* Get settings from current controls */
-      var webcharts_version = cat.controls.libraryVersion.node().value;
-      var renderer_version = cat.controls.versionSelect.node().value;
-      var data_file = cat.controls.dataFileSelect.node().value;
-      var data_file_path = cat.config.dataURL + data_file;
-      var init_string = cat.current.sub ? cat.current.main + '.' + cat.current.sub : cat.current.main;
-
-      var chart_config = JSON.stringify(cat.current.config, null, ' ');
-      var renderer_css = '';
-      if (cat.current.css) {
-          var css_path = cat.config.rootURL + '/' + cat.current.name + '/' + renderer_version + '/' + cat.current.css;
-          renderer_css = "<link type = 'text/css' rel = 'stylesheet' href = '" + css_path + "'>";
-      }
-
-      /* Return a html for a working chart */
-      var exampleTemplate = '\n<!DOCTYPE html>\n\n    <html>\n\n    <head>\n        <title>' + cat.current.name + '</title>\n\n        <meta http-equiv = \'Content-Type\' content = \'text/html; charset = utf-8\'>\n\n        <script type = \'text/javascript\' src = \'https://d3js.org/d3.v3.min.js\'></script>\n        <script type = \'text/javascript\' src = \'https://rawgit.com/RhoInc/Webcharts/' + webcharts_version + '/build/webcharts.js\'></script>\n        <script type = \'text/javascript\' src = \'https://rawgit.com/RhoInc/' + cat.current.name + '/' + renderer_version + '/build/' + cat.current.main + '.js\'></script>\n\n        <link type = \'text/css\' rel = \'stylesheet\' href = \'https://rawgit.com/RhoInc/Webcharts/' + webcharts_version + '/css/webcharts.min.css\'>\n        ' + renderer_css + '\n    </head>\n\n    <body>\n        <h1 id = \'title\'>' + cat.current.name + ' created for ' + cat.current.defaultData + '</h1>\n        <div id = \'container\'>\n        </div>\n    </body>\n\n    <script type = \'text/javascript\'>\n        let settings = ' + chart_config + '\n        let chart = ' + init_string + '(\'#container\', settings);\n        d3.csv(\'' + data_file_path + '\', function(data) {\n            chart.init(data);\n        });\n\n    </script>\n</html>\n';
-      return exampleTemplate;
   }
 
   function showEnv(cat) {
@@ -736,341 +999,107 @@
       jsItems.exit().remove();
   }
 
-  function renderChart(cat) {
-      var rendererObj = cat.controls.rendererSelect.selectAll('option:checked').data()[0];
-      cat.settings.sync(cat);
-      //render the new chart with the current settings
-      var dataFile = cat.controls.dataFileSelect.node().value;
-      var dataObject = cat.config.dataFiles.find(function (f) {
-          return f.label == dataFile;
-      });
-      var version = cat.controls.versionSelect.node().value;
-      cat.current.main = cat.controls.mainFunction.node().value;
-      cat.current.sub = cat.controls.subFunction.node().value;
+  function initializeChart(data) {
+      this.chartWrap.append('div').attr('class', 'chart');
 
-      function render(error, data) {
-          if (error) {
-              cat.status.loadStatus(cat.statusDiv, false, dataFilePath);
-          } else {
-              cat.status.loadStatus(cat.statusDiv, true, dataFilePath);
-              if (cat.current.sub) {
-                  cat.current.instance = window[cat.current.main][cat.current.sub]('.cat-chart', cat.current.config);
-                  cat.status.chartCreateStatus(cat.statusDiv, cat.current.main, cat.current.sub);
-              } else {
-                  cat.current.instance = window[cat.current.main]('.cat-chart .chart', cat.current.config);
-                  cat.status.chartCreateStatus(cat.statusDiv, cat.current.main);
-              }
+      this.status.loadStatus(this.statusDiv, true, this.dataObject.dataFilePath);
 
-              cat.current.htmlExport = createChartExport(cat); // save the source code before init
-
-              try {
-                  cat.current.instance.init(data);
-              } catch (err) {
-                  cat.status.chartInitStatus(cat.statusDiv, false, err);
-              } finally {
-                  cat.status.chartInitStatus(cat.statusDiv, true, null, cat.current.htmlExport);
-
-                  // save to server button
-                  if (cat.config.useServer) {
-                      cat.status.saveToServer(cat);
-                  }
-                  showEnv(cat);
-
-                  //don't print any new statuses until a new chart is rendered
-                  cat.printStatus = false;
-              }
-          }
-          cat.current.rendered = true;
-      }
-
-      if (dataObject.json) render(false, dataObject.json);else if (dataObject.user_loaded) {
-          dataObject.json = d3.csv.parse(dataObject.csv_raw);
-          render(false, dataObject.json);
+      if (this.current.sub) {
+          this.current.instance = window[this.current.main][this.current.sub]('.cat-chart', this.current.config);
+          this.status.chartCreateStatus(this.statusDiv, this.current.main, this.current.sub);
       } else {
-          var dataFilePath = dataObject.path + dataFile;
-          d3.csv(dataFilePath, function (error, data) {
-              dataObject.json = data;
-              render(error, dataObject.json);
-          });
+          this.current.instance = window[this.current.main]('.cat-chart .chart', this.current.config);
+          this.status.chartCreateStatus(this.statusDiv, this.current.main);
       }
-  }
 
-  function loadRenderer(cat) {
-      var promisedPackage = loadPackageJson(cat);
-      promisedPackage.then(function (response) {
-          cat.current.package = JSON.parse(response);
-          cat.current.js_url = cat.current.url + '/' + cat.current.package.main.replace(/^\.?\/?/, '');
-          cat.current.css_url = cat.current.css ? cat.current.url + '/' + cat.current.css : null;
+      //this.current.htmlExport = createChartExport(this); // save the source code before init
 
-          if (cat.current.css) {
-              //var current_css = getCSS().filter(f => f.link == cat.current.css_url);
-              //var css_loaded = current_css.length > 0;
-              //if (!css_loaded) {
-              cat.current.link = document.createElement('link');
-              cat.current.link.href = cat.current.css_url;
+      try {
+          this.current.instance.init(data);
+      } catch (err) {
+          this.status.chartInitStatus(this.statusDiv, false, err);
+      } finally {
+          this.status.chartInitStatus(this.statusDiv, true, null, this.current.htmlExport);
 
-              cat.current.link.type = 'text/css';
-              cat.current.link.rel = 'stylesheet';
-              document.getElementsByTagName('head')[0].appendChild(cat.current.link);
-              //} else if (current_css[0].disabled) {
-              //    //enable the css if it's disabled
-              //    d3.select(current_css[0].sel).property('disabled', false);
-              //    cat.controls.cssList
-              //        .selectAll('li')
-              //        .filter(d => d.link == cat.current.css_url)
-              //        .select('input')
-              //        .property('checked', true);
-              //}
+          // save to server button
+          if (this.config.useServer) {
+              this.status.saveToServer(this);
           }
+          //showEnv(this);
 
-          //var current_js = getJS().filter(f => f.link == cat.current.js_url);
-          //var js_loaded = current_js.length > 0;
-
-          //if (!js_loaded) {
-          var loader = new scriptLoader();
-          cat.current.script = loader.require(cat.current.js_url, {
-              async: true,
-              success: function success() {
-                  cat.status.loadStatus(cat.statusDiv, true, cat.current.js_url, cat.current.name, cat.current.version);
-                  renderChart(cat);
-              },
-              failure: function failure() {
-                  cat.status.loadStatus(cat.statusDiv, false, cat.current.js_url, cat.current.name, cat.current.version);
-              }
-          });
-          //} else {
-          //    cat.status.loadStatus(
-          //        cat.statusDiv,
-          //        true,
-          //        cat.current.js_url,
-          //        cat.current.name,
-          //        cat.current.version
-          //    );
-          //    renderChart(cat);
-          //}
-      });
-  }
-
-  function loadLibrary(cat) {
-      var version = cat.controls.libraryVersion.node().value;
-      var library = 'webcharts'; //hardcode to webcharts for now - could generalize later
-
-      // --- load css --- //
-      var cssPath = version !== 'master' ? cat.config.rootURL + '/Webcharts@' + version + '/css/webcharts.css' : cat.config.rootURL + '/Webcharts/css/webcharts.css';
-
-      var current_css = getCSS().filter(function (f) {
-          return f.link == cssPath;
-      });
-      var css_loaded = current_css.length > 0;
-      if (!css_loaded) {
-          //load the css if it isn't already loaded
-          var link = document.createElement('link');
-          link.href = cssPath;
-          link.type = 'text/css';
-          link.rel = 'stylesheet';
-          document.getElementsByTagName('head')[0].appendChild(link);
-      } else if (current_css[0].disabled) {
-          //enable the css if it's disabled
-          d3.select(current_css[0].sel).property('disabled', false);
-          cat.controls.cssList.selectAll('li').filter(function (d) {
-              return d.link == cssPath;
-          }).select('input').property('checked', true);
+          //don't print any new statuses until a new chart is rendered
+          this.printStatus = false;
       }
 
-      // --- load js --- //
-      var rendererPath = version !== 'master' ? cat.config.rootURL + '/' + library + '@' + version + '/build/webcharts.js' : cat.config.rootURL + '/Webcharts/build/webcharts.js';
-
-      var current_js = getJS().filter(function (f) {
-          return f.link == rendererPath;
-      });
-      var js_loaded = current_js.length > 0;
-
-      if (!js_loaded) {
-          var loader = new scriptLoader();
-          loader.require(rendererPath, {
-              async: true,
-              success: function success() {
-                  cat.status.loadStatus(cat.statusDiv, true, rendererPath, library, version);
-                  loadRenderer(cat);
-              },
-              failure: function failure() {
-                  cat.status.loadStatus(cat.statusDiv, false, rendererPath, library, version);
-              }
-          });
-      } else {
-          cat.status.loadStatus(cat.statusDiv, true, rendererPath, library, version);
-          loadRenderer(cat);
-      }
+      this.current.rendered = true;
   }
 
-  function addSubmitButton() {
+  /*
+      1. Destroys the currently displayed chart if one has been rendered.
+      2. Updates the status section.
+      3. Loads the selected data file.
+      4. Initializes the selected charting application library.
+  */
+
+  function initSubmit() {
       var _this = this;
 
-      this.controls.submitButton = this.controls.submitWrap.append('button').attr('class', 'submit').text('Render Chart').on('click', function () {
-          _this.controls.minimize.classed('hidden', false);
+      this.controls.submitButton.on('click', function () {
           _this.dataWrap.classed('hidden', true);
           _this.chartWrap.classed('hidden', false);
-
-          //Disable and/or remove previously loaded stylesheets.
-          d3.selectAll('link').filter(function () {
-              return !this.href.indexOf('css/cat.css');
-          }).property('disabled', true).remove();
-
-          d3.selectAll('style').property('disabled', true).remove();
-
-          console.log(_this.previous);
-          if (_this.previous) {
-              if (_this.previous.instance && _this.previous.instance.destroy) {
-                  console.log('destroy');
-                  console.log(_this.previous);
-                  if (_this.previous.instance && _this.previous.instance.destroy) _this.previous.instance.destroy();
-              } else {
-                  console.log('no destroy');
-                  console.log(_this.previous);
-                  _this.chartWrap.selectAll('.wc-chart').each(function (chart) {
-                      if (chart.destroy) chart.destroy();else {
-                          //remove resize event listener
-                          select(window).on('resize.' + chart.element + chart.id, null);
-
-                          //destroy controls
-                          if (chart.controls) {
-                              chart.controls.destroy();
-                          }
-
-                          //unmount chart wrapper
-                          chart.wrap.remove();
-                      }
-                  });
-              }
-          }
-
-          _this.chartWrap.selectAll('*').remove();
-          _this.printStatus = true;
-          _this.statusDiv = _this.chartWrap.append('div').attr('class', 'status');
-          _this.statusDiv.append('div').text('Starting to render the chart ... ').classed('info', true);
-
-          _this.chartWrap.append('div').attr('class', 'chart');
-          loadLibrary(_this);
-          console.log(_this.current);
-      });
-  }
-
-  function initSubmit(cat) {
-      addControlsToggle.call(cat);
-      addSubmitButton.call(cat);
-  }
-
-  function updateRenderer(select) {
-      var _this = this;
-
-      this.previous = _.clone(this.current);
-      this.current = d3.select(select).select('option:checked').data()[0];
-      this.current.version = 'master';
-
-      //update the chart type configuration to the defaults for the selected renderer
-      this.controls.mainFunction.node().value = this.current.main;
-      this.controls.versionSelect.node().value = 'master';
-      this.controls.subFunction.node().value = this.current.sub;
-      this.controls.schema.node().value = this.current.schema;
-
-      //update the selected data set to the default for the new rendererSection
-      this.controls.dataFileSelect.selectAll('option').property('selected', function (d) {
-          return _this.current.defaultData === d.label;
-      });
-
-      //Re-initialize the chart config section
-      this.settings.set(this);
-  }
-
-  function getVersions(select) {
-      var repo = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'https://api.github.com/repos/RhoInc/Webcharts';
-
-      var branches = fetch(repo + '/branches').then(function (response) {
-          return response.json();
-      });
-      var releases = fetch(repo + '/releases').then(function (response) {
-          return response.json();
-      });
-
-      Promise.all([branches, releases]).then(function (values) {
-          var _values = slicedToArray(values, 2),
-              branches = _values[0],
-              releases = _values[1];
-
-          branches.sort(function (a, b) {
-              return a.name === 'master' ? -1 : b.name === 'master' ? 1 : a.name < b.name ? -1 : 1;
+          destroyChart.call(_this);
+          updateStatus.call(_this);
+          loadData.call(_this).then(function (json) {
+              initializeChart.call(_this, json);
           });
-          select.selectAll('option').remove();
-          select.selectAll('option').data(d3.merge(values)).enter().append('option').text(function (d) {
-              return d.tag_name || d.name;
-          }).property('selected', function (d) {
-              return d.name === 'master';
-          });
-      }).catch(function (err) {
-          console.log(err);
       });
   }
 
-  function initRendererSelect(cat) {
-      cat.controls.rendererWrap.append('h3').text('1. Choose a Charting Library');
-      cat.controls.rendererWrap.append('span').text('Library: ');
+  function unloadDOM() {
+      d3.selectAll('link').filter(function () {
+          return !this.href.indexOf('css/cat.css');
+      }).property('disabled', true).remove();
 
-      //renderers
-      cat.controls.rendererSelect = cat.controls.rendererWrap.append('select');
-      cat.controls.rendererSelect.selectAll('option').data(cat.config.renderers).enter().append('option').text(function (d) {
+      d3.selectAll('style').property('disabled', true).remove();
+  }
+
+  /*
+      1. Removes the previous library's .js, .css, and/or stylesheet from the DOM.
+      2. Updates the status section.
+      3. Loads the master branch of the selected library.
+        1. Loads the library's package.json file to know where the main .js file lives.
+        2. Optionally loads the settings-schema.json file to populate the settings text/form if the library has a settings schema file.
+        3. Loads the main .js file.
+        4. Optionally loads the main .css file if the library has a .css file.
+      4. Loads the branches and releases of the library.
+      5. Updates the settings text/form.
+  */
+
+  function initRendererSelect() {
+      unloadDOM.call(this);
+      //updateStatus.call(this);
+
+      var cat = this;
+      this.controls.rendererSelect.selectAll('option').data(this.config.renderers).enter().append('option').text(function (d) {
           return d.name;
       });
-      cat.controls.rendererSelect.on('change', function () {
+      this.controls.rendererSelect.on('change', function () {
           updateRenderer.call(cat, this);
           getVersions(cat.controls.versionSelect, cat.current.api_url);
       });
-      cat.controls.rendererWrap.append('br');
-
-      //renderer version
-      cat.controls.rendererWrap.append('span').text('Version: ');
-      cat.controls.versionSelect = cat.controls.rendererWrap.append('select');
-      getVersions(cat.controls.versionSelect, cat.current.api_url);
-      //cat.controls.versionSelect.node().value = 'master';
-      //cat.controls.versionSelect.on('input', function() {
-      //    console.log(this.value);
-      //});
-      cat.controls.versionSelect.on('change', function () {
+      this.controls.versionSelect.on('change', function () {
           console.log(this.value);
           cat.current.version = this.value;
           cat.settings.set(cat);
       });
-      cat.controls.rendererWrap.append('br');
-      cat.controls.rendererWrap.append('a').text('More Options').style('text-decoration', 'underline').style('color', 'blue').style('cursor', 'pointer').on('click', function () {
+      this.controls.moreOptions.on('click', function () {
           d3.select(this).remove();
           cat.controls.rendererWrap.selectAll('*').classed('hidden', false);
       });
-
-      //name of method that creates the chart
-      cat.controls.rendererWrap.append('span').text(' Init: ').classed('hidden', true);
-      cat.controls.mainFunction = cat.controls.rendererWrap.append('input').classed('hidden', true);
-      cat.controls.mainFunction.node().value = cat.current.main;
-      cat.controls.rendererWrap.append('span').text('.').classed('hidden', true);
-
-      //name of method that initializes chart
-      cat.controls.subFunction = cat.controls.rendererWrap.append('input').classed('hidden', true);
-      cat.controls.subFunction.node().value = cat.current.sub;
-      cat.controls.rendererWrap.append('br').classed('hidden', true);
-
-      //Webcharts version
-      cat.controls.rendererWrap.append('span').text('Webcharts Version: ').classed('hidden', true);
-      cat.controls.libraryVersion = cat.controls.rendererWrap.append('select').classed('hidden', true);
-      getVersions(cat.controls.libraryVersion);
-      //cat.controls.libraryVersion.node().value = 'master';
-      cat.controls.rendererWrap.append('br').classed('hidden', true);
-
-      //schema
-      cat.controls.rendererWrap.append('span').text('Schema: ').classed('hidden', true);
-      cat.controls.schema = cat.controls.rendererWrap.append('input').classed('hidden', true);
-      cat.controls.schema.node().value = cat.current.schema;
-      cat.controls.rendererWrap.append('br').classed('hidden', true);
-
-      //add enter listener
-      cat.controls.addEnterEventListener(cat.controls.rendererWrap, cat);
+      this.controls.mainFunction.node().value = this.current.main;
+      this.controls.subFunction.node().value = this.current.sub;
+      this.controls.schema.node().value = this.current.schema;
+      this.controls.addEnterEventListener(this.controls.rendererWrap, cat);
   }
 
   function showDataPreview(cat) {
@@ -1146,31 +1175,22 @@
       }
   }
 
-  function initDataSelect(cat) {
-      cat.controls.dataWrap.append('h3').text('2. Choose a Dataset');
-      cat.controls.dataFileSelect = cat.controls.dataWrap.append('select');
+  function initDataSelect() {
+      var _this = this;
 
-      cat.controls.dataWrap.append('span').html('&#128269;').style('cursor', 'pointer').on('click', function () {
-          showDataPreview(cat);
+      this.controls.viewData.on('click', function () {
+          showDataPreview(this);
       });
 
-      cat.controls.dataFileSelect.selectAll('option').data(cat.config.dataFiles).enter().append('option').text(function (d) {
-          return d.label;
-      }).property('selected', function (d) {
-          return cat.current.defaultData == d.label ? true : null;
+      this.controls.dataFileSelect.selectAll('option').property('selected', function (d) {
+          return _this.current.defaultData === d;
       });
   }
 
   function initFileLoad() {
       var cat = this;
-      //draw the control
-      var loadLabel = cat.controls.dataWrap.append('p').style('margin', 0);
 
-      loadLabel.append('small').text('Use local .csv file:').append('sup').html('&#9432;').property('title', 'Render a chart using a local file. File is added to the data set list, and is only available for a single session and is not saved.').style('cursor', 'help');
-
-      var loadStatus = loadLabel.append('small').attr('class', 'loadStatus').style('float', 'right').text('Select a csv to load');
-
-      cat.controls.dataFileLoad = cat.controls.dataWrap.append('input').attr('type', 'file').attr('class', 'file-load-input').on('change', function () {
+      this.controls.dataFileLoad.on('change', function () {
           if (this.value.slice(-4).toLowerCase() == '.csv') {
               loadStatus.text(this.files[0].name + ' ready to load').style('color', 'green');
               cat.controls.dataFileLoadButton.attr('disabled', null);
@@ -1180,7 +1200,7 @@
           }
       });
 
-      cat.controls.dataFileLoadButton = cat.controls.dataWrap.append('button').text('Load').attr('class', 'file-load-button').attr('disabled', true).on('click', function (d) {
+      this.controls.dataFileLoadButton.on('click', function (d) {
           //credit to https://jsfiddle.net/Ln37kqc0/
           var files = cat.controls.dataFileLoad.node().files;
 
@@ -1220,33 +1240,10 @@
       });
   }
 
-  function initChartConfig(cat) {
-      var settingsHeading = cat.controls.settingsWrap.append('h3').html('3. Customize the Chart ');
+  function initChartConfig() {
+      var cat = this;
 
-      cat.controls.settingsWrap.append('span').text('Settings: ');
-
-      /*
-      //////////////////////////////////////
-      //initialize the config status icon
-      //////////////////////////////////////
-      cat.controls.settingsStatus = settingsSection
-      .append("div")
-      .style("font-size", "1.5em")
-      .style("float", "right")
-      .style("cursor", "pointer");
-      settingsSection.append("br");
-      */
-
-      //////////////////////////////////////////////////////////////////////
-      //radio buttons to toggle between "text" and "form" based settings
-      /////////////////////////////////////////////////////////////////////
-      cat.controls.settingsTypeText = cat.controls.settingsWrap.append('input').attr('class', 'radio').property('type', 'radio').property('name', 'settingsType').property('value', 'text');
-      cat.controls.settingsWrap.append('span').text('text');
-      cat.controls.settingsTypeForm = cat.controls.settingsWrap.append('input').attr('class', 'radio').property('type', 'radio').property('name', 'settingsType').property('value', 'form');
-      cat.controls.settingsWrap.append('span').text('form');
-      cat.controls.settingsType = cat.controls.settingsWrap.selectAll('input[type="radio"]');
-
-      cat.controls.settingsType.on('change', function (d) {
+      this.controls.settingsType.on('change', function (d) {
           cat.settings.sync(cat); //first sync the current settings to both views
 
           //then update to the new view, and update controls.
@@ -1259,43 +1256,23 @@
               cat.controls.settingsForm.classed('hidden', false);
           }
       });
-      cat.controls.settingsWrap.append('br');
 
-      //////////////////////////////////////////////////////////////////////
-      //text input section
-      /////////////////////////////////////////////////////////////////////
-      cat.controls.settingsInput = cat.controls.settingsWrap.append('textarea').attr('rows', 10).style('width', '90%').text('{}');
-
-      //////////////////////////////////////////////////////////////////////
-      //wrapper for the form
-      /////////////////////////////////////////////////////////////////////
-      cat.controls.settingsForm = cat.controls.settingsWrap.append('div').attr('class', 'settingsForm').append('form');
-
-      //set the text/form settings for the first renderer
-      cat.settings.set(cat);
+      this.settings.set(this);
   }
 
-  function initEnvConfig(cat) {
-      var settingsHeading = cat.controls.environmentWrap.append('h3').html('4. Environment ');
-
-      cat.controls.cssList = cat.controls.environmentWrap.append('ul').attr('class', 'cssList');
-      cat.controls.cssList.append('h5').text('Loaded Stylesheets');
-
-      cat.controls.jsList = cat.controls.environmentWrap.append('ul').attr('class', 'jsList');
-      cat.controls.jsList.append('h5').text('Loaded javascript');
-
-      showEnv(cat);
+  function initEnvConfig() {
+      showEnv(this);
   }
 
-  function init$1(cat) {
-      cat.current = cat.config.renderers[0];
-      cat.current.version = 'master';
-      initSubmit(cat);
-      initRendererSelect(cat);
-      initDataSelect(cat);
-      initFileLoad.call(cat);
-      initChartConfig(cat);
-      initEnvConfig(cat);
+  function init$2() {
+      this.current = this.config.renderers[0];
+      this.current.version = 'master';
+      initSubmit.call(this);
+      initRendererSelect.call(this);
+      initDataSelect.call(this);
+      initFileLoad.call(this);
+      initChartConfig.call(this);
+      initEnvConfig.call(this);
   }
 
   function addEnterEventListener(selection, cat) {
@@ -1314,30 +1291,10 @@
     Define controls object.
   \------------------------------------------------------------------------------------------------*/
 
-  var controls = {
-      init: init$1,
+  var controls$1 = {
+      init: init$2,
       addEnterEventListener: addEnterEventListener
   };
-
-  var defaultSettings = {
-      useServer: false,
-      rootURL: null,
-      dataURL: null,
-      dataFiles: [],
-      renderers: []
-  };
-
-  function setDefaults(cat) {
-      cat.config.useServer = cat.config.useServer || defaultSettings.useServer;
-      cat.config.rootURL = cat.config.rootURL || defaultSettings.rootURL;
-      cat.config.dataURL = cat.config.dataURL || defaultSettings.dataURL;
-      cat.config.dataFiles = cat.config.dataFiles || defaultSettings.dataFiles;
-      cat.config.renderers = cat.config.renderers || defaultSettings.renderers;
-
-      cat.config.dataFiles = cat.config.dataFiles.map(function (df) {
-          return typeof df == 'string' ? { label: df, path: cat.config.dataURL, user_loaded: false } : df;
-      });
-  }
 
   function makeForm(cat, obj) {
       d3.select('.settingsForm form').selectAll('*').remove();
@@ -1577,7 +1534,7 @@
       });
   }
 
-  function loadStatus(statusDiv, passed, path, library, version) {
+  function loadStatus$1(statusDiv, passed, path, library, version) {
       var message = passed ? 'Successfully loaded ' + path : 'Failed to load ' + path;
 
       if (library != undefined & version != undefined) message = message + ' (Library: ' + library + ', Version: ' + version + ')';
@@ -1593,7 +1550,7 @@
       chartCreateStatus: chartCreateStatus,
       chartInitStatus: chartInitStatus,
       saveToServer: saveToServer,
-      loadStatus: loadStatus
+      loadStatus: loadStatus$1
   };
 
   function createCat() {
@@ -1603,10 +1560,8 @@
       var cat = {
           element: element,
           config: config,
-          init: init,
-          layout: layout,
-          controls: controls,
-          setDefaults: setDefaults,
+          init: init$1,
+          controls: controls$1,
           settings: settings,
           status: status
       };
