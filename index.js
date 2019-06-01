@@ -1,8 +1,5 @@
 const myCatConfig = {
     useServer: false,
-    rootURL: 'https://cdn.jsdelivr.net/gh/RhoInc',
-    dataURL: 'https://raw.githubusercontent.com/RhoInc/data-library/master/data/',
-    repoURL: 'https://cdn.jsdelivr.net/gh/RhoInc/graphics/data',
     repoURL: '../graphics/data',
     renderers: [
         {
@@ -138,13 +135,13 @@ const myCatConfig = {
 };
 
 //Modify renderer objects.
-myCatConfig.renderers
-    .forEach(function(renderer) {
-        renderer.rootURL = renderer.rootURL || myCatConfig.rootURL;
-        renderer.api_url = renderer.rootURL.replace('cdn.jsdelivr.net/gh', 'api.github.com/repos') + '/' + renderer.name;
-        renderer.branches_api_url = renderer.api_url + '/branches';
-        renderer.releases_api_url = renderer.api_url + '/releases';
-    });
+//myCatConfig.renderers
+//    .forEach(function(renderer) {
+//        renderer.rootURL = renderer.rootURL || myCatConfig.rootURL;
+//        renderer.api_url = renderer.rootURL.replace('cdn.jsdelivr.net/gh', 'api.github.com/repos') + '/' + renderer.name;
+//        renderer.branches_api_url = renderer.api_url + '/branches';
+//        renderer.releases_api_url = renderer.api_url + '/releases';
+//    });
 
 //Map data file objects to a path relative to myCatConfig.dataURL.
 myCatConfig.dataFiles = dataFiles

@@ -12,8 +12,8 @@ export default function chooseAChartingLibrary() {
     this.controls.rendererWrap.append('h3').text('1. Choose a Charting Library');
     library.call(this);
     version.call(this);
-    moreOptions.call(this);
+    //moreOptions.call(this);
     init.call(this);
-    webchartsVersion.call(this);
     schema.call(this);
+    webchartsVersion.call(this);
 }

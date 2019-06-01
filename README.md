@@ -26,7 +26,8 @@ dropdown with a list of charting application libraries
   2. Optionally loads the settings-schema.json file to populate the settings text/form if the library has a settings schema file.
   3. Loads the main .js file.
   4. Optionally loads the main .css file if the library has a .css file.
-4. Updates the settings text/form.
+4. Loads the branches and releases of the library.
+5. Updates the settings text/form.
 
 ##### Version:
 dropdown with a list of branches and releases for the selected charting application library

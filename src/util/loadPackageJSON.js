@@ -1,13 +1,12 @@
-export default function loadPackageJson() {
+export default function loadPackageJSON(repo, version) {
+    const cdnURL = this.config.cdnURL + '/' + repo;
+    const pkgURL = version === 'master'
+        ? cdnURL + '/package.json'
+        : cdnURL + '@' + version + '/package.json';
+
     return new Promise((resolve, reject) => {
-        this.current.url =
-            this.current.version === 'master'
-                ? `${this.current.rootURL || this.config.rootURL}/${this.current.name}`
-                : `${this.current.rootURL || this.config.rootURL}/${this.current.name}@${
-                      this.current.version
-                  }`;
         const xhr = new XMLHttpRequest();
-        xhr.open('GET', `${this.current.url}/package.json`);
+        xhr.open('GET', pkgURL);
         xhr.onload = function() {
             if (this.status === 200) {
                 resolve(xhr.response);

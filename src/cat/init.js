@@ -1,28 +1,26 @@
-import layout from './layout';
-import setDefaults from './setDefaults';
-import loadWebcharts from './init/loadWebcharts';
-import getVersions from './init/getVersions';
-import loadPackageJSON from './init/loadPackageJSON';
-import loadRenderer from './init/loadRenderer';
+import setDefaults from './init/setDefaults';
+import layout from './init/layout';
+import loadData from './init/loadData';
+import loadChartingLibrary from './init/loadChartingLibrary';
+import loadChartingApplication from './init/loadChartingApplication';
+import initializeControls from './init/initializeControls';
 
 export default function init() {
-    //layout
-    layout.call(this);
-
     //settings
     setDefaults.call(this);
 
-    //initialize controls
-    this.controls.init.call(this);
+    //layout
+    layout.call(this);
 
-    //load charting library and charting application library
-    loadWebcharts.call(this, 'master');
-    getVersions.call(this, this.controls.libraryVersion);
-    this.current = this.config.renderers[0];
-    this.current.version = 'master';
-    loadPackageJSON.call(this)
-        .then(response => {
-            loadRenderer.call(this, 'master', response)
-            getVersions.call(this, this.controls.versionSelect, this.current.api_url);
-        });
+    //renderers and data files
+    loadData.call(this);
+
+    //load charting library
+    loadChartingLibrary.call(this);
+
+    //load charting application
+    loadChartingApplication.call(this);
+
+    //initialize controls
+    initializeControls.call(this);
 }
