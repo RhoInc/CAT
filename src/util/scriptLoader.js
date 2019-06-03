@@ -1,6 +1,6 @@
 // Nice script loader from here: https://stackoverflow.com/questions/538745/how-to-tell-if-a-script-tag-failed-to-load
 
-export function scriptLoader() {}
+export default function scriptLoader() {}
 
 scriptLoader.prototype = {
     timer: function(
@@ -100,6 +100,6 @@ scriptLoader.prototype = {
                 }
             }, 1);
         }, typeof args.delay == 'number' ? args.delay : 1);
-        return true;
+        return scriptTag;
     }
 };

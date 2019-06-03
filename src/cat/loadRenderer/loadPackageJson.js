@@ -1,13 +1,13 @@
-export default function loadPackageJson(cat) {
-    return new Promise(function(resolve, reject) {
-        cat.current.url =
-            cat.current.version === 'master'
-                ? `${cat.current.rootURL || cat.config.rootURL}/${cat.current.name}`
-                : `${cat.current.rootURL || cat.config.rootURL}/${cat.current.name}@${
-                      cat.current.version
+export default function loadPackageJson() {
+    return new Promise((resolve, reject) => {
+        this.current.url =
+            this.current.version === 'master'
+                ? `${this.current.rootURL || this.config.rootURL}/${this.current.name}`
+                : `${this.current.rootURL || this.config.rootURL}/${this.current.name}@${
+                      this.current.version
                   }`;
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', `${cat.current.url}/package.json`);
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', `${this.current.url}/package.json`);
         xhr.onload = function() {
             if (this.status === 200) {
                 resolve(xhr.response);

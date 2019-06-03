@@ -1,29 +1,7 @@
 export function initFileLoad() {
-    var cat = this;
-    //draw the control
-    var loadLabel = cat.controls.dataWrap.append('p').style('margin', 0);
+    const cat = this;
 
-    loadLabel
-        .append('small')
-        .text('Use local .csv file:')
-        .append('sup')
-        .html('&#9432;')
-        .property(
-            'title',
-            'Render a chart using a local file. File is added to the data set list, and is only available for a single session and is not saved.'
-        )
-        .style('cursor', 'help');
-
-    var loadStatus = loadLabel
-        .append('small')
-        .attr('class', 'loadStatus')
-        .style('float', 'right')
-        .text('Select a csv to load');
-
-    cat.controls.dataFileLoad = cat.controls.dataWrap
-        .append('input')
-        .attr('type', 'file')
-        .attr('class', 'file-load-input')
+    this.controls.dataFileLoad
         .on('change', function() {
             if (this.value.slice(-4).toLowerCase() == '.csv') {
                 loadStatus.text(this.files[0].name + ' ready to load').style('color', 'green');
@@ -34,11 +12,7 @@ export function initFileLoad() {
             }
         });
 
-    cat.controls.dataFileLoadButton = cat.controls.dataWrap
-        .append('button')
-        .text('Load')
-        .attr('class', 'file-load-button')
-        .attr('disabled', true)
+    this.controls.dataFileLoadButton
         .on('click', function(d) {
             //credit to https://jsfiddle.net/Ln37kqc0/
             var files = cat.controls.dataFileLoad.node().files;

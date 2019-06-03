@@ -1,4 +1,5 @@
 export default function updateRenderer(select) {
+    this.previous = _.clone(this.current);
     this.current = d3
         .select(select)
         .select('option:checked')

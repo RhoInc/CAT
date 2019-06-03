@@ -5,7 +5,7 @@
 import { init } from './controls/init';
 import addEnterEventListener from './addEnterEventListener';
 
-export const controls = {
+export default {
     init,
     addEnterEventListener
 };

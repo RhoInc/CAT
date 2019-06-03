@@ -1,16 +1,26 @@
-export function init() {
-    //layout the cat
-    this.wrap = d3
-        .select(this.element)
-        .append('div')
-        .attr('class', 'cat-wrap');
-    this.layout(this);
+import setDefaults from './init/setDefaults';
+import layout from './init/layout';
+import loadData from './init/loadData';
+import loadChartingLibrary from './init/loadChartingLibrary';
+import loadChartingApplication from './init/loadChartingApplication';
+import initializeControls from './init/initializeControls';
 
-    //initialize the settings
-    this.setDefaults(this);
+export default function init() {
+    //settings
+    setDefaults.call(this);
 
-    //add others here!
+    //layout
+    layout.call(this);
 
-    //create the controls
-    this.controls.init(this);
+    //renderers and data files
+    loadData.call(this);
+
+    //load charting library
+    loadChartingLibrary.call(this);
+
+    //load charting application
+    loadChartingApplication.call(this);
+
+    //initialize controls
+    initializeControls.call(this);
 }

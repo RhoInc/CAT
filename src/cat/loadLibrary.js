@@ -1,4 +1,4 @@
-import { scriptLoader } from '../util/scriptLoader';
+import scriptLoader from '../util/scriptLoader';
 import { loadRenderer } from './loadRenderer';
 import { getCSS } from './env/getCSS';
 import { getJS } from './env/getJS';

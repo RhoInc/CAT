@@ -17,20 +17,23 @@ export function renderChart(cat) {
         } else {
             cat.status.loadStatus(cat.statusDiv, true, dataFilePath);
             if (cat.current.sub) {
-                var myChart = window[cat.current.main][cat.current.sub](
+                cat.current.instance = window[cat.current.main][cat.current.sub](
                     '.cat-chart',
                     cat.current.config
                 );
                 cat.status.chartCreateStatus(cat.statusDiv, cat.current.main, cat.current.sub);
             } else {
-                var myChart = window[cat.current.main]('.cat-chart .chart', cat.current.config);
+                cat.current.instance = window[cat.current.main](
+                    '.cat-chart .chart',
+                    cat.current.config
+                );
                 cat.status.chartCreateStatus(cat.statusDiv, cat.current.main);
             }
 
             cat.current.htmlExport = createChartExport(cat); // save the source code before init
 
             try {
-                myChart.init(data);
+                cat.current.instance.init(data);
             } catch (err) {
                 cat.status.chartInitStatus(cat.statusDiv, false, err);
             } finally {
@@ -46,15 +49,19 @@ export function renderChart(cat) {
                 cat.printStatus = false;
             }
         }
+        cat.current.rendered = true;
     }
 
-    if (dataObject.user_loaded) {
+    if (dataObject.json)
+        render(false, dataObject.json);
+    else if (dataObject.user_loaded) {
         dataObject.json = d3.csv.parse(dataObject.csv_raw);
         render(false, dataObject.json);
     } else {
         var dataFilePath = dataObject.path + dataFile;
         d3.csv(dataFilePath, function(error, data) {
-            render(error, data);
+            dataObject.json = data;
+            render(error, dataObject.json);
         });
     }
 }
