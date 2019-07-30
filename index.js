@@ -82,13 +82,13 @@ var myCatConfig = {
                 defaultData: 'clinical-trials/renderer-specific/adbds.csv'
             },
             {
-                name: 'safety-eDISH',
-                main: 'safetyedish',
+                name: 'hep-explorer',
+                main: 'hepexplorer',
                 sub: null,
                 css: null,
                 schema: 'settings-schema.json',
                 defaultData: 'clinical-trials/renderer-specific/adbds.csv',
-                rootURL: 'https://cdn.jsdelivr.net/gh/ASA-DIA-InteractiveSafetyGraphics',
+                rootURL: 'https://cdn.jsdelivr.net/gh/SafetyGraphics',
             },
 
     /**-------------------------------------------------------------------------------------------\
