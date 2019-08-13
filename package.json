@@ -1,6 +1,6 @@
 {
     "name": "cat",
-    "version": "0.9.5",
+    "version": "0.9.4",
     "description": "The Charting Application Tester (CAT) lets users make and adjust web graphics on the fly.",
     "module": "./src/index.js",
     "main": "./build/cat.js",

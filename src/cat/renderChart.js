@@ -9,21 +9,23 @@ export function renderChart(cat) {
     var dataObject = cat.config.dataFiles.find(f => f.label == dataFile);
     var version = cat.controls.versionSelect.node().value;
     cat.current.main = cat.controls.mainFunction.node().value;
-    cat.current.sub = cat.controls.subFunction.node().value;
+    cat.current.sub = cat.controls.subFunction.node().value.split('.');
 
     function render(error, data) {
+        let myChart;
         if (error) {
             cat.status.loadStatus(cat.statusDiv, false, dataFilePath);
         } else {
             cat.status.loadStatus(cat.statusDiv, true, dataFilePath);
-            if (cat.current.sub) {
-                var myChart = window[cat.current.main][cat.current.sub](
-                    '.cat-chart',
-                    cat.current.config
-                );
-                cat.status.chartCreateStatus(cat.statusDiv, cat.current.main, cat.current.sub);
+            if (cat.current.sub.join('') !== '') {
+                myChart = window[cat.current.main];
+                cat.current.sub.forEach(subsub => {
+                    myChart = myChart[subsub];
+                });
+                myChart = myChart('.cat-chart', cat.current.config);
+                cat.status.chartCreateStatus(cat.statusDiv, cat.current.main, cat.current.sub[0]);
             } else {
-                var myChart = window[cat.current.main]('.cat-chart .chart', cat.current.config);
+                myChart = window[cat.current.main]('.cat-chart .chart', cat.current.config);
                 cat.status.chartCreateStatus(cat.statusDiv, cat.current.main);
             }
 

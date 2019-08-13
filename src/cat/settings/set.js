@@ -8,7 +8,7 @@ export function set(cat) {
         cat.current.rootURL || cat.config.rootURL,
         cat.current.version !== 'master'
             ? cat.current.name + '@' + cat.current.version
-            : cat.current.name,
+            : cat.current.name + '@latest',
         cat.current.schema
     ].join('/');
 

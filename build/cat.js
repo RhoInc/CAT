@@ -614,7 +614,10 @@
         return new Promise(function(resolve, reject) {
             cat.current.url =
                 cat.current.version === 'master'
-                    ? (cat.current.rootURL || cat.config.rootURL) + '/' + cat.current.name
+                    ? (cat.current.rootURL || cat.config.rootURL) +
+                      '/' +
+                      cat.current.name +
+                      '@latest'
                     : (cat.current.rootURL || cat.config.rootURL) +
                       '/' +
                       cat.current.name +
@@ -800,21 +803,27 @@
         });
         var version = cat.controls.versionSelect.node().value;
         cat.current.main = cat.controls.mainFunction.node().value;
-        cat.current.sub = cat.controls.subFunction.node().value;
+        cat.current.sub = cat.controls.subFunction.node().value.split('.');
 
         function render(error, data) {
+            var myChart = void 0;
             if (error) {
                 cat.status.loadStatus(cat.statusDiv, false, dataFilePath);
             } else {
                 cat.status.loadStatus(cat.statusDiv, true, dataFilePath);
-                if (cat.current.sub) {
-                    var myChart = window[cat.current.main][cat.current.sub](
-                        '.cat-chart',
-                        cat.current.config
+                if (cat.current.sub.join('') !== '') {
+                    myChart = window[cat.current.main];
+                    cat.current.sub.forEach(function(subsub) {
+                        myChart = myChart[subsub];
+                    });
+                    myChart = myChart('.cat-chart', cat.current.config);
+                    cat.status.chartCreateStatus(
+                        cat.statusDiv,
+                        cat.current.main,
+                        cat.current.sub[0]
                     );
-                    cat.status.chartCreateStatus(cat.statusDiv, cat.current.main, cat.current.sub);
                 } else {
-                    var myChart = window[cat.current.main]('.cat-chart .chart', cat.current.config);
+                    myChart = window[cat.current.main]('.cat-chart .chart', cat.current.config);
                     cat.status.chartCreateStatus(cat.statusDiv, cat.current.main);
                 }
 
@@ -933,7 +942,7 @@
         var cssPath =
             version !== 'master'
                 ? cat.config.rootURL + '/Webcharts@' + version + '/css/webcharts.css'
-                : cat.config.rootURL + '/Webcharts/css/webcharts.css';
+                : cat.config.rootURL + '/Webcharts@latest/css/webcharts.css';
 
         var current_css = getCSS().filter(function(f) {
             return f.link == cssPath;
@@ -961,8 +970,8 @@
         // --- load js --- //
         var rendererPath =
             version !== 'master'
-                ? cat.config.rootURL + '/' + library + '@' + version + '/build/webcharts.js'
-                : cat.config.rootURL + '/Webcharts/build/webcharts.js';
+                ? cat.config.rootURL + '/Webcharts@' + version + '/build/webcharts.js'
+                : cat.config.rootURL + '/Webcharts@latest/build/webcharts.js';
 
         var current_js = getJS().filter(function(f) {
             return f.link == rendererPath;
@@ -1065,6 +1074,9 @@
             .data(cat.config.renderers)
             .enter()
             .append('option')
+            .attr('label', function(d) {
+                return d.sub ? d.name + ' (' + d.sub.split('.').pop() + ')' : d.name;
+            })
             .text(function(d) {
                 return d.name;
             });
@@ -1521,7 +1533,7 @@
             cat.current.rootURL || cat.config.rootURL,
             cat.current.version !== 'master'
                 ? cat.current.name + '@' + cat.current.version
-                : cat.current.name,
+                : cat.current.name + '@latest',
             cat.current.schema
         ].join('/');
 

@@ -3,6 +3,7 @@ var myCatConfig = {
     rootURL: 'https://cdn.jsdelivr.net/gh/RhoInc',
     dataURL: 'https://raw.githubusercontent.com/RhoInc/data-library/master/data/',
     renderers: [
+
         {
             name: 'web-codebook',
             main: 'webcodebook',
@@ -118,6 +119,59 @@ var myCatConfig = {
             css: null,
             schema: 'settings-schema.json',
             defaultData: 'clinical-trials/data-cleaning/visits.csv'
+        },
+
+    /**-------------------------------------------------------------------------------------------\
+      Dashboard charts
+    \-------------------------------------------------------------------------------------------**/
+
+        {
+            name: 'dashboard-charts',
+            main: 'dashboardCharts',
+            sub: 'renderers.accrual',
+            css: null,
+            schema: 'src/accrual/settings-schema.json',
+            defaultData: 'clinical-trials/data-cleaning/dashboard-accrual.csv'
+        },
+        {
+            name: 'dashboard-charts',
+            main: 'dashboardCharts',
+            sub: 'renderers.accrualOverTimeDerived',
+            css: null,
+            schema: 'src/accrual-over-time/settings-schema.json',
+            defaultData: 'clinical-trials/data-cleaning/dashboard-accrual.csv'
+        },
+        {
+            name: 'dashboard-charts',
+            main: 'dashboardCharts',
+            sub: 'renderers.accrualOverTime',
+            css: null,
+            schema: 'src/accrual-over-time/settings-schema.json',
+            defaultData: 'clinical-trials/data-cleaning/dashboard-accrual-over-time.csv'
+        },
+        {
+            name: 'dashboard-charts',
+            main: 'dashboardCharts',
+            sub: 'renderers.forms',
+            css: null,
+            schema: 'src/accrual/settings-schema.json',
+            defaultData: 'clinical-trials/data-cleaning/dashboard-forms.csv'
+        },
+        {
+            name: 'dashboard-charts',
+            main: 'dashboardCharts',
+            sub: 'renderers.queries',
+            css: null,
+            schema: 'src/accrual/settings-schema.json',
+            defaultData: 'clinical-trials/data-cleaning/dashboard-queries.csv'
+        },
+        {
+            name: 'dashboard-charts',
+            main: 'dashboardCharts',
+            sub: 'renderers.visitCompletion',
+            css: null,
+            schema: 'src/accrual/settings-schema.json',
+            defaultData: 'clinical-trials/data-cleaning/dashboard-visit-completion.csv'
         },
 
     /**-------------------------------------------------------------------------------------------\
