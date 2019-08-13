@@ -10,7 +10,6 @@ export function renderChart(cat) {
     var version = cat.controls.versionSelect.node().value;
     cat.current.main = cat.controls.mainFunction.node().value;
     cat.current.sub = cat.controls.subFunction.node().value.split('.');
-    console.log(cat.current.sub);
 
     function render(error, data) {
         let myChart;
@@ -18,19 +17,12 @@ export function renderChart(cat) {
             cat.status.loadStatus(cat.statusDiv, false, dataFilePath);
         } else {
             cat.status.loadStatus(cat.statusDiv, true, dataFilePath);
-            if (cat.current.sub) {
+            if (cat.current.sub.join('') !== '') {
                 myChart = window[cat.current.main];
-                console.log(myChart);
                 cat.current.sub.forEach(subsub => {
-                    console.log(subsub);
-                    myChart = myChart[subsub]
-                    console.log(myChart);
+                    myChart = myChart[subsub];
                 });
-                myChart = myChart(
-                    '.cat-chart',
-                    cat.current.config
-                );
-                console.log(myChart);
+                myChart = myChart('.cat-chart', cat.current.config);
                 cat.status.chartCreateStatus(cat.statusDiv, cat.current.main, cat.current.sub[0]);
             } else {
                 myChart = window[cat.current.main]('.cat-chart .chart', cat.current.config);

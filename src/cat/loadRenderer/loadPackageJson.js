@@ -2,7 +2,7 @@ export default function loadPackageJson(cat) {
     return new Promise(function(resolve, reject) {
         cat.current.url =
             cat.current.version === 'master'
-                ? `${cat.current.rootURL || cat.config.rootURL}/${cat.current.name}`
+                ? `${cat.current.rootURL || cat.config.rootURL}/${cat.current.name}@latest`
                 : `${cat.current.rootURL || cat.config.rootURL}/${cat.current.name}@${
                       cat.current.version
                   }`;

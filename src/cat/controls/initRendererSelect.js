@@ -10,6 +10,7 @@ export function initRendererSelect(cat) {
         .data(cat.config.renderers)
         .enter()
         .append('option')
+        .attr('label', d => (d.sub ? d.name + ' (' + d.sub.split('.').pop() + ')' : d.name))
         .text(d => d.name);
 
     cat.controls.rendererSelect.on('change', function() {
