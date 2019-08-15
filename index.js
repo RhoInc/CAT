@@ -138,7 +138,7 @@ var myCatConfig = {
             main: 'dashboardCharts',
             sub: 'renderers.accrualOverTimeDerived',
             css: null,
-            schema: 'src/accrual-over-time/settings-schema.json',
+            schema: 'src/accrual-over-time-derived/settings-schema.json',
             defaultData: 'clinical-trials/data-cleaning/dashboard-accrual.csv'
         },
         {
@@ -154,7 +154,7 @@ var myCatConfig = {
             main: 'dashboardCharts',
             sub: 'renderers.forms',
             css: null,
-            schema: 'src/accrual/settings-schema.json',
+            schema: 'src/forms/settings-schema.json',
             defaultData: 'clinical-trials/data-cleaning/dashboard-forms.csv'
         },
         {
@@ -162,7 +162,7 @@ var myCatConfig = {
             main: 'dashboardCharts',
             sub: 'renderers.queries',
             css: null,
-            schema: 'src/accrual/settings-schema.json',
+            schema: 'src/queries/settings-schema.json',
             defaultData: 'clinical-trials/data-cleaning/dashboard-queries.csv'
         },
         {
@@ -170,7 +170,7 @@ var myCatConfig = {
             main: 'dashboardCharts',
             sub: 'renderers.visitCompletion',
             css: null,
-            schema: 'src/accrual/settings-schema.json',
+            schema: 'src/visit-completion/settings-schema.json',
             defaultData: 'clinical-trials/data-cleaning/dashboard-visit-completion.csv'
         },
 
