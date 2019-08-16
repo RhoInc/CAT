@@ -1,38 +1,38 @@
 {
-    "name": "cat",
-    "version": "0.9.5",
-    "description": "The Charting Application Tester (CAT) lets users make and adjust web graphics on the fly.",
-    "module": "./src/index.js",
-    "main": "./build/cat.js",
-    "scripts": {
-        "build": "npm audit fix && npm run bundle && npm run format",
-        "bundle": "rollup -c",
-        "format": "npm run format-src && npm run format-bundle",
-        "format-src": "prettier --print-width=100 --tab-width=4 --single-quote --write \"./src/**/*.js\"",
-        "format-bundle": "prettier --print-width=100 --tab-width=4 --single-quote --write ./build/cat.js",
-        "watch": "rollup -c -w",
-        "start": "node server/app.js",
-        "initServer": "node server/initServer.js"
-    },
-    "author": "Rho, Inc.",
-    "license": "MIT",
-    "dependencies": {
-        "d3": "^3.5.14",
-        "webcharts": "~1",
-        "jquery": "~3",
-        "json5": "^0.5.1",
-        "express": "~4",
-        "body-parser": "~1"
-    },
-    "devDependencies": {
-        "babel-plugin-external-helpers": "^6.22.0",
-        "babel-preset-env": "^1.7.0",
-        "jimp": "^0.2.27",
-        "jsdom": "~7",
-        "prettier": "^1.7.4",
-        "promise-polyfill": "8.1.0",
-        "rollup": "^0.66.6",
-        "rollup-plugin-babel": "^2.7.1",
-        "showdown": "~1"
-    }
+  "name": "cat",
+  "version": "0.9.6",
+  "description": "The Charting Application Tester (CAT) lets users make and adjust web graphics on the fly.",
+  "module": "./src/index.js",
+  "main": "./build/cat.js",
+  "scripts": {
+    "build": "npm audit fix && npm run bundle && npm run format",
+    "bundle": "rollup -c",
+    "format": "npm run format-src && npm run format-bundle",
+    "format-src": "prettier --print-width=100 --tab-width=4 --single-quote --write \"./src/**/*.js\"",
+    "format-bundle": "prettier --print-width=100 --tab-width=4 --single-quote --write ./build/cat.js",
+    "watch": "rollup -c -w",
+    "start": "node server/app.js",
+    "initServer": "node server/initServer.js"
+  },
+  "author": "Rho, Inc.",
+  "license": "MIT",
+  "dependencies": {
+    "d3": "^3.5.14",
+    "webcharts": "~1",
+    "jquery": "~3",
+    "json5": "^0.5.1",
+    "express": "~4",
+    "body-parser": "~1"
+  },
+  "devDependencies": {
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-preset-env": "^1.7.0",
+    "jimp": "^0.2.27",
+    "jsdom": "~7",
+    "prettier": "^1.7.4",
+    "promise-polyfill": "8.1.0",
+    "rollup": "^0.66.6",
+    "rollup-plugin-babel": "^2.7.1",
+    "showdown": "~1"
+  }
 }

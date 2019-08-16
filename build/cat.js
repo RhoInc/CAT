@@ -1,7 +1,9 @@
 (function(global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined'
         ? (module.exports = factory())
-        : typeof define === 'function' && define.amd ? define(factory) : (global.cat = factory());
+        : typeof define === 'function' && define.amd
+        ? define(factory)
+        : (global.cat = factory());
 })(this, function() {
     'use strict';
 
@@ -519,17 +521,20 @@
         ) {
             var me = this;
             if (times == -1 || times > 0) {
-                setTimeout(function() {
-                    result = test() ? 1 : 0;
-                    me.timer(
-                        result ? 0 : times > 0 ? --times : times,
-                        delay + (delayMore ? delayMore : 0),
-                        delayMore,
-                        test,
-                        failure,
-                        result
-                    );
-                }, result || delay < 0 ? 0.1 : delay);
+                setTimeout(
+                    function() {
+                        result = test() ? 1 : 0;
+                        me.timer(
+                            result ? 0 : times > 0 ? --times : times,
+                            delay + (delayMore ? delayMore : 0),
+                            delayMore,
+                            test,
+                            failure,
+                            result
+                        );
+                    },
+                    result || delay < 0 ? 0.1 : delay
+                );
             } else if (typeof failure == 'function') {
                 setTimeout(failure, 1);
             }
@@ -564,48 +569,51 @@
                 return false;
             }
 
-            setTimeout(function() {
-                var f = typeof args.success == 'function' ? args.success : function() {};
-                args.failure = typeof args.failure == 'function' ? args.failure : function() {};
-                var fail = function fail() {
-                    if (!scriptTag.__es) {
-                        scriptTag.__es = true;
-                        scriptTag.id = 'failed';
-                        args.failure(scriptTag);
-                    }
-                };
-                scriptTag.onload = function() {
-                    scriptTag.id = 'loaded';
-                    f(scriptTag);
-                };
-                scriptTag.type = 'text/javascript';
-                scriptTag.async = typeof args.async == 'boolean' ? args.async : false;
-                scriptTag.charset = 'utf-8';
-                me.__es = false;
-                me.addEvent(scriptTag, 'error', fail); // when supported
-                // when error event is not supported fall back to timer
-                me.timer(
-                    15,
-                    1000,
-                    0,
-                    function() {
-                        return scriptTag.id == 'loaded';
-                    },
-                    function() {
-                        if (scriptTag.id != 'loaded') {
+            setTimeout(
+                function() {
+                    var f = typeof args.success == 'function' ? args.success : function() {};
+                    args.failure = typeof args.failure == 'function' ? args.failure : function() {};
+                    var fail = function fail() {
+                        if (!scriptTag.__es) {
+                            scriptTag.__es = true;
+                            scriptTag.id = 'failed';
+                            args.failure(scriptTag);
+                        }
+                    };
+                    scriptTag.onload = function() {
+                        scriptTag.id = 'loaded';
+                        f(scriptTag);
+                    };
+                    scriptTag.type = 'text/javascript';
+                    scriptTag.async = typeof args.async == 'boolean' ? args.async : false;
+                    scriptTag.charset = 'utf-8';
+                    me.__es = false;
+                    me.addEvent(scriptTag, 'error', fail); // when supported
+                    // when error event is not supported fall back to timer
+                    me.timer(
+                        15,
+                        1000,
+                        0,
+                        function() {
+                            return scriptTag.id == 'loaded';
+                        },
+                        function() {
+                            if (scriptTag.id != 'loaded') {
+                                fail();
+                            }
+                        }
+                    );
+                    scriptTag.src = url;
+                    setTimeout(function() {
+                        try {
+                            headTag.appendChild(scriptTag);
+                        } catch (e) {
                             fail();
                         }
-                    }
-                );
-                scriptTag.src = url;
-                setTimeout(function() {
-                    try {
-                        headTag.appendChild(scriptTag);
-                    } catch (e) {
-                        fail();
-                    }
-                }, 1);
-            }, typeof args.delay == 'number' ? args.delay : 1);
+                    }, 1);
+                },
+                typeof args.delay == 'number' ? args.delay : 1
+            );
             return true;
         }
     };
@@ -1009,16 +1017,14 @@
                 _this.chartWrap.classed('hidden', false);
 
                 //Disable and/or remove previously loaded stylesheets.
-                d3
-                    .selectAll('link')
+                d3.selectAll('link')
                     .filter(function() {
                         return !this.href.indexOf('css/cat.css');
                     })
                     .property('disabled', true)
                     .remove();
 
-                d3
-                    .selectAll('style')
+                d3.selectAll('style')
                     .property('disabled', true)
                     .remove();
 
@@ -1438,8 +1444,7 @@
     }
 
     function makeForm(cat, obj) {
-        d3
-            .select('.settingsForm form')
+        d3.select('.settingsForm form')
             .selectAll('*')
             .remove();
 
@@ -1458,12 +1463,11 @@
             var json = JSON.stringify(cat.current.config, null, 4);
             cat.controls.settingsInput.attr('rows', json.split('\n').length);
             cat.controls.settingsInput.html(json);
-        } else
-            //Render form with updated text settings.
-            cat.current.form.render(d3.select('.settingsForm form').node(), cat.current.config);
+        }
+        //Render form with updated text settings.
+        else cat.current.form.render(d3.select('.settingsForm form').node(), cat.current.config);
 
-        d3
-            .select('.settingsForm form')
+        d3.select('.settingsForm form')
             .selectAll('.glyphicon-remove')
             .text('X');
 
@@ -1696,8 +1700,7 @@
             statusDiv.select('div.export.minimized').on('click', function() {
                 d3.select(this).classed('minimized', false);
                 d3.select(this).html('<strong>Source code for chart:</strong>');
-                d3
-                    .select(this)
+                d3.select(this)
                     .append('code')
                     .html(
                         htmlExport
