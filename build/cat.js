@@ -401,6 +401,81 @@
         });
     }
 
+    function parseQuery(queryString) {
+        var query = {};
+        var pairs = (queryString[0] === '?' ? queryString.substr(1) : queryString).split('&');
+        for (var i = 0; i < pairs.length; i++) {
+            var pair = pairs[i].split('=');
+            query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+        }
+        return query;
+    }
+
+    function updateRenderer(select) {
+        var _this = this;
+
+        this.current = d3
+            .select(select)
+            .select('option:checked')
+            .data()[0];
+        this.current.version = 'master';
+
+        //update the chart type configuration to the defaults for the selected renderer
+        this.controls.mainFunction.node().value = this.current.main;
+        this.controls.versionSelect.node().value = 'master';
+        this.controls.subFunction.node().value = this.current.sub;
+        this.controls.schema.node().value = this.current.schema;
+
+        //update the selected data set to the default for the new rendererSection
+        this.controls.dataFileSelect.selectAll('option').property('selected', function(d) {
+            return _this.current.defaultData === d.label;
+        });
+
+        //Re-initialize the chart config section
+        this.settings.set(this);
+    }
+
+    function parseURL() {
+        var cat = this;
+
+        var queries = parseQuery(window.location.search.substring(1));
+        var renderNow = false;
+
+        // Check to see if a renderer is provided
+        var r = queries.renderer || queries.r;
+        if (r != undefined) {
+            //if the renderer is available, set the control
+            var renderer = cat.config.renderers.filter(function(d, i) {
+                return isNaN(+r) ? d.name == r : i == r;
+            });
+
+            if (renderer.length > 0) {
+                var rendererOptions = cat.controls.rendererSelect.selectAll('option');
+                var newOption = rendererOptions.filter(function(f) {
+                    return f == renderer[0];
+                });
+                rendererOptions.attr('selected', null);
+                newOption.attr('selected', 'selected');
+                updateRenderer.call(cat, cat.controls.rendererSelect.node());
+                renderNow = true;
+            }
+        }
+
+        // Check to see if version is provided
+        var v = queries.version || queries.v;
+        if (v != undefined) {
+            cat.controls.versionSelect.node().value = v;
+            cat.current.version = v;
+        }
+
+        // if the user set a renderer draw the chart and minimize the controls immediately
+        if (renderNow) {
+            cat.controls.submitButton.node().click(); //click the submit button
+            cat.controls.minimize.node().click(); //minimze the controls
+            cat.statusDiv.style('display', 'none');
+        }
+    }
+
     function init() {
         //layout the cat
         this.wrap = d3
@@ -412,10 +487,11 @@
         //initialize the settings
         this.setDefaults(this);
 
-        //add others here!
-
         //create the controls
         this.controls.init(this);
+
+        // parse queries
+        parseURL.call(this);
     }
 
     function layout(cat) {
@@ -1044,30 +1120,6 @@
     function initSubmit(cat) {
         addControlsToggle.call(cat);
         addSubmitButton.call(cat);
-    }
-
-    function updateRenderer(select) {
-        var _this = this;
-
-        this.current = d3
-            .select(select)
-            .select('option:checked')
-            .data()[0];
-        this.current.version = 'master';
-
-        //update the chart type configuration to the defaults for the selected renderer
-        this.controls.mainFunction.node().value = this.current.main;
-        this.controls.versionSelect.node().value = 'master';
-        this.controls.subFunction.node().value = this.current.sub;
-        this.controls.schema.node().value = this.current.schema;
-
-        //update the selected data set to the default for the new rendererSection
-        this.controls.dataFileSelect.selectAll('option').property('selected', function(d) {
-            return _this.current.defaultData === d.label;
-        });
-
-        //Re-initialize the chart config section
-        this.settings.set(this);
     }
 
     function initRendererSelect(cat) {

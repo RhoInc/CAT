@@ -1,3 +1,4 @@
+import parseURL from './parseURL';
 export function init() {
     //layout the cat
     this.wrap = d3
@@ -9,8 +10,9 @@ export function init() {
     //initialize the settings
     this.setDefaults(this);
 
-    //add others here!
-
     //create the controls
     this.controls.init(this);
+
+    // parse queries
+    parseURL.call(this);
 }
