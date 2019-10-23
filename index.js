@@ -83,6 +83,14 @@ var myCatConfig = {
                 defaultData: 'clinical-trials/renderer-specific/adbds.csv'
             },
             {
+                name: 'safety-delta-delta',
+                main: 'safetyDeltaDelta',
+                sub: null,
+                css: null,
+                schema: 'settings-schema.json',
+                defaultData: 'clinical-trials/renderer-specific/adbds.csv'
+            },
+            {
                 name: 'hep-explorer',
                 main: 'hepexplorer',
                 sub: null,
