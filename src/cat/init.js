@@ -1,3 +1,7 @@
+import layout from './layout';
+import setDefaults from './setDefaults';
+import { init as initControls } from './controls/init';
+
 export function init() {
     //layout the cat
     this.wrap = d3
@@ -5,7 +9,7 @@ export function init() {
         .append('div')
         .attr('class', 'cat-wrap');
 
-    this.layout.call(this); // layout the UI
-    this.setDefaults.call(this); // initialize the settings
-    this.controls.init.call(this); // create the controls
+    layout.call(this); // layout the UI
+    setDefaults.call(this); // initialize the settings
+    initControls.call(this); // create the controls
 }

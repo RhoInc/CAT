@@ -401,18 +401,6 @@
         });
     }
 
-    function init() {
-        //layout the cat
-        this.wrap = d3
-            .select(this.element)
-            .append('div')
-            .attr('class', 'cat-wrap');
-
-        this.layout.call(this); // layout the UI
-        this.setDefaults.call(this); // initialize the settings
-        this.controls.init.call(this); // create the controls
-    }
-
     function layout() {
         var cat = this;
         /* Layout primary sections */
@@ -448,6 +436,54 @@
         cat.controls.environmentWrap = cat.controls.wrap
             .append('div')
             .classed('control-section environment-section', true);
+    }
+
+    var defaultSettings = {
+        useServer: false,
+        rootURL: null,
+        dataURL: null,
+        dataFiles: [],
+        renderers: []
+    };
+
+    function parseQuery(queryString) {
+        var query = {};
+        var pairs = (queryString[0] === '?' ? queryString.substr(1) : queryString).split('&');
+        for (var i = 0; i < pairs.length; i++) {
+            var pair = pairs[i].split('=');
+            query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+        }
+        return query;
+    }
+
+    function parseURL() {
+        var queries = parseQuery(window.location.search.substring(1));
+
+        // Check to see if a renderer is provided
+        var r = queries.renderer || queries.r;
+        var v = queries.version || queries.v;
+        var d = queries.data || queries.d;
+        var s_raw = queries.settings || queries.s;
+        var s = s_raw ? atob(s_raw) : null;
+        return { renderer: r, version: v, settings: s, data: d };
+    }
+
+    function setDefaults() {
+        var cat = this;
+        cat.config.useServer = cat.config.useServer || defaultSettings.useServer;
+        cat.config.rootURL = cat.config.rootURL || defaultSettings.rootURL;
+        cat.config.dataURL = cat.config.dataURL || defaultSettings.dataURL;
+        cat.config.dataFiles = cat.config.dataFiles || defaultSettings.dataFiles;
+        cat.config.renderers = cat.config.renderers || defaultSettings.renderers;
+
+        cat.config.dataFiles = cat.config.dataFiles.map(function(df) {
+            return typeof df == 'string'
+                ? { label: df, path: cat.config.dataURL, user_loaded: false }
+                : df;
+        });
+
+        //get inputs from URL if any
+        cat.config.defaults = parseURL();
     }
 
     function addControlsToggle() {
@@ -1389,7 +1425,7 @@
         showEnv.call(this);
     }
 
-    function init$1() {
+    function init() {
         this.current = this.config.renderers[0];
         this.current.version = 'master';
         initSubmit.call(this);
@@ -1398,6 +1434,18 @@
         initFileLoad.call(this);
         initChartConfig.call(this);
         initEnvConfig.call(this);
+    }
+
+    function init$1() {
+        //layout the cat
+        this.wrap = d3
+            .select(this.element)
+            .append('div')
+            .attr('class', 'cat-wrap');
+
+        layout.call(this); // layout the UI
+        setDefaults.call(this); // initialize the settings
+        init.call(this); // create the controls
     }
 
     function addEnterEventListener(selection, cat) {
@@ -1410,63 +1458,6 @@
                 if (key === 13) cat.controls.submitButton.node().click();
             });
         });
-    }
-
-    /*------------------------------------------------------------------------------------------------\
-    Define controls object.
-  \------------------------------------------------------------------------------------------------*/
-
-    var controls = {
-        init: init$1,
-        addEnterEventListener: addEnterEventListener
-    };
-
-    var defaultSettings = {
-        useServer: false,
-        rootURL: null,
-        dataURL: null,
-        dataFiles: [],
-        renderers: []
-    };
-
-    function parseQuery(queryString) {
-        var query = {};
-        var pairs = (queryString[0] === '?' ? queryString.substr(1) : queryString).split('&');
-        for (var i = 0; i < pairs.length; i++) {
-            var pair = pairs[i].split('=');
-            query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
-        }
-        return query;
-    }
-
-    function parseURL() {
-        var queries = parseQuery(window.location.search.substring(1));
-
-        // Check to see if a renderer is provided
-        var r = queries.renderer || queries.r;
-        var v = queries.version || queries.v;
-        var d = queries.data || queries.d;
-        var s_raw = queries.settings || queries.s;
-        var s = s_raw ? atob(s_raw) : null;
-        return { renderer: r, version: v, settings: s, data: d };
-    }
-
-    function setDefaults() {
-        var cat = this;
-        cat.config.useServer = cat.config.useServer || defaultSettings.useServer;
-        cat.config.rootURL = cat.config.rootURL || defaultSettings.rootURL;
-        cat.config.dataURL = cat.config.dataURL || defaultSettings.dataURL;
-        cat.config.dataFiles = cat.config.dataFiles || defaultSettings.dataFiles;
-        cat.config.renderers = cat.config.renderers || defaultSettings.renderers;
-
-        cat.config.dataFiles = cat.config.dataFiles.map(function(df) {
-            return typeof df == 'string'
-                ? { label: df, path: cat.config.dataURL, user_loaded: false }
-                : df;
-        });
-
-        //get inputs from URL if any
-        cat.config.defaults = parseURL();
     }
 
     function makeForm(cat, obj) {
@@ -1814,6 +1805,15 @@
         loadStatus: loadStatus
     };
 
+    /*------------------------------------------------------------------------------------------------\
+    Define controls object.
+  \------------------------------------------------------------------------------------------------*/
+
+    var controls = {
+        init: init,
+        addEnterEventListener: addEnterEventListener
+    };
+
     function createCat() {
         var element = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'body';
         var config = arguments[1];
@@ -1821,10 +1821,8 @@
         var cat = {
             element: element,
             config: config,
-            init: init,
-            layout: layout,
+            init: init$1,
             controls: controls,
-            setDefaults: setDefaults,
             settings: settings,
             status: status
         };

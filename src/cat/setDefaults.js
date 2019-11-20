@@ -1,7 +1,7 @@
 import defaultSettings from './defaultSettings';
 import parseURL from './parseURL';
 
-export function setDefaults() {
+export default function setDefaults() {
     var cat = this;
     cat.config.useServer = cat.config.useServer || defaultSettings.useServer;
     cat.config.rootURL = cat.config.rootURL || defaultSettings.rootURL;
