@@ -13,8 +13,7 @@ export function set(cat) {
     ].join('/');
 
     cat.current.settingsView = 'text';
-    cat.controls.settingsInput.value = '{}';
-    cat.current.config = {};
+    cat.controls.settingsInput.value = JSON.stringify(cat.current.config);
 
     d3.json(cat.current.schemaPath, function(error, schemaObj) {
         if (error) {

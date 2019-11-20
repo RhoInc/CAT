@@ -6,10 +6,15 @@ import { initChartConfig } from './initChartConfig';
 import { initEnvConfig } from './initEnvConfig';
 
 export function init() {
-    console.log(this.config.defaults);
-    this.current = this.config.defaults.renderer || this.config.renderers[0];
+    //set values for initial renderer
+    console.log(this.config.fromURL);
+    this.current = this.config.fromURL.renderer || this.config.renderers[0];
+    this.current.version = this.config.fromURL.version || 'master';
+    this.current.defaultData = this.config.fromURL.data || this.current.defaultData;
+    this.current.config = this.config.fromURL.settings || {};
     console.log(this.current);
-    this.current.version = this.config.defaults.version || 'master';
+
+    //initialize UI elements
     initSubmit.call(this);
     initRendererSelect.call(this);
     initDataSelect.call(this);

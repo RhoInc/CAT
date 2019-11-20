@@ -456,6 +456,24 @@
         return query;
     }
 
+    function isJsonString(str) {
+        try {
+            JSON5.parse(str);
+        } catch (e) {
+            return false;
+        }
+        return true;
+    }
+
+    function isBase64(str) {
+        try {
+            atob(str);
+        } catch (e) {
+            return false;
+        }
+        return true;
+    }
+
     function parseURL() {
         var queries = parseQuery(window.location.search.substring(1));
         console.log(queries);
@@ -467,10 +485,30 @@
 
         //parse settings from base64
         var s_raw = queries.settings || queries.s;
-        var s = s_raw ? atob(s_raw) : null;
-        var d = this.config.dataFiles.filter(function(d, i) {
-            return isNaN(+r) ? d == r : i == r;
+        var base64_encoded = isBase64(s_raw);
+        var s_text = base64_encoded ? atob(s_raw) : '{}';
+        if (!base64_encoded) {
+            console.warn(
+                "Couldn't load settings from the URL. Settings must be base64 encoded. Using default settings instead."
+            );
+        }
+
+        //check for valid json
+        if (!isJsonString(s_text)) {
+            console.warn("Couldn't load settings from the URL.  Using default settings instead.");
+            s_text = '{}';
+        }
+
+        //parse the settings to an object
+        var s = JSON5.parse(s_text);
+
+        //find the matching data file (if a number is provided, use the index)
+        var d_raw = queries.data || queries.d;
+        var d_obj = this.config.dataFiles.find(function(d, i) {
+            return isNaN(+d_raw) ? d_raw == d : i == d_raw;
         });
+        var d = d_obj.label;
+
         //get version
         var v = queries.version || queries.v;
 
@@ -492,7 +530,7 @@
         });
 
         //get inputs from URL if any
-        config.defaults = parseURL.call(this);
+        config.fromURL = parseURL.call(this);
     }
 
     function addControlsToggle() {
@@ -1438,10 +1476,15 @@
     }
 
     function init() {
-        console.log(this.config.defaults);
-        this.current = this.config.defaults.renderer || this.config.renderers[0];
+        //set values for initial renderer
+        console.log(this.config.fromURL);
+        this.current = this.config.fromURL.renderer || this.config.renderers[0];
+        this.current.version = this.config.fromURL.version || 'master';
+        this.current.defaultData = this.config.fromURL.data || this.current.defaultData;
+        this.current.config = this.config.fromURL.settings || {};
         console.log(this.current);
-        this.current.version = this.config.defaults.version || 'master';
+
+        //initialize UI elements
         initSubmit.call(this);
         initRendererSelect.call(this);
         initDataSelect.call(this);
@@ -1573,8 +1616,7 @@
         ].join('/');
 
         cat.current.settingsView = 'text';
-        cat.controls.settingsInput.value = '{}';
-        cat.current.config = {};
+        cat.controls.settingsInput.value = JSON.stringify(cat.current.config);
 
         d3.json(cat.current.schemaPath, function(error, schemaObj) {
             if (error) {
@@ -1610,20 +1652,11 @@
     }
 
     function sync(cat, printStatus) {
-        function IsJsonString(str) {
-            try {
-                JSON5.parse(str);
-            } catch (e) {
-                return false;
-            }
-            return true;
-        }
-
         // set current config
         if (cat.current.settingsView == 'text') {
             var text = cat.controls.settingsInput.node().value;
 
-            if (IsJsonString(text)) {
+            if (isJsonString(text)) {
                 var settings = JSON5.parse(text);
                 var json = JSON.stringify(settings, null, 4);
 

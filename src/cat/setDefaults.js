@@ -14,5 +14,5 @@ export default function setDefaults() {
     });
 
     //get inputs from URL if any
-    config.defaults = parseURL.call(this);
+    config.fromURL = parseURL.call(this);
 }
