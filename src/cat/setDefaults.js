@@ -1,6 +1,8 @@
 import defaultSettings from './defaultSettings';
+import parseURL from './parseURL';
 
-export function setDefaults(cat) {
+export function setDefaults() {
+    var cat = this;
     cat.config.useServer = cat.config.useServer || defaultSettings.useServer;
     cat.config.rootURL = cat.config.rootURL || defaultSettings.rootURL;
     cat.config.dataURL = cat.config.dataURL || defaultSettings.dataURL;
@@ -12,4 +14,7 @@ export function setDefaults(cat) {
             ? { label: df, path: cat.config.dataURL, user_loaded: false }
             : df;
     });
+
+    //get inputs from URL if any
+    cat.config.defaults = parseURL();
 }

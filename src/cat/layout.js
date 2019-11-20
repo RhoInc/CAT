@@ -1,4 +1,5 @@
-export function layout(cat) {
+export function layout() {
+    var cat = this;
     /* Layout primary sections */
     cat.controls.wrap = cat.wrap.append('div').classed('cat-controls section', true);
     cat.chartWrap = cat.wrap.append('div').classed('cat-chart section', true);
