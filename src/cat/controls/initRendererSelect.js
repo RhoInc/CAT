@@ -12,6 +12,7 @@ export function initRendererSelect() {
         .enter()
         .append('option')
         .attr('label', d => (d.sub ? d.name + ' (' + d.sub.split('.').pop() + ')' : d.name))
+        .attr('selected', d => (d == cat.current ? 'selected' : null))
         .text(d => d.name);
 
     cat.controls.rendererSelect.on('change', function() {
@@ -20,7 +21,7 @@ export function initRendererSelect() {
     cat.controls.rendererWrap.append('br');
     cat.controls.rendererWrap.append('span').text('Version: ');
     cat.controls.versionSelect = cat.controls.rendererWrap.append('input');
-    cat.controls.versionSelect.node().value = 'master';
+    cat.controls.versionSelect.node().value = cat.current.version;
     cat.controls.versionSelect.on('input', function() {
         cat.current.version = this.value;
     });

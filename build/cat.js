@@ -458,32 +458,41 @@
 
     function parseURL() {
         var queries = parseQuery(window.location.search.substring(1));
+        console.log(queries);
+        //find the matching renderer (if a number is provided, use the index)
+        var r_raw = queries.renderer || queries.r;
+        var r = this.config.renderers.find(function(d, i) {
+            return isNaN(+r_raw) ? d.name == r_raw : i == r_raw;
+        });
 
-        // Check to see if a renderer is provided
-        var r = queries.renderer || queries.r;
-        var v = queries.version || queries.v;
-        var d = queries.data || queries.d;
+        //parse settings from base64
         var s_raw = queries.settings || queries.s;
         var s = s_raw ? atob(s_raw) : null;
+        var d = this.config.dataFiles.filter(function(d, i) {
+            return isNaN(+r) ? d == r : i == r;
+        });
+        //get version
+        var v = queries.version || queries.v;
+
         return { renderer: r, version: v, settings: s, data: d };
     }
 
     function setDefaults() {
-        var cat = this;
-        cat.config.useServer = cat.config.useServer || defaultSettings.useServer;
-        cat.config.rootURL = cat.config.rootURL || defaultSettings.rootURL;
-        cat.config.dataURL = cat.config.dataURL || defaultSettings.dataURL;
-        cat.config.dataFiles = cat.config.dataFiles || defaultSettings.dataFiles;
-        cat.config.renderers = cat.config.renderers || defaultSettings.renderers;
+        var config = this.config;
+        config.useServer = config.useServer || defaultSettings.useServer;
+        config.rootURL = config.rootURL || defaultSettings.rootURL;
+        config.dataURL = config.dataURL || defaultSettings.dataURL;
+        config.dataFiles = config.dataFiles || defaultSettings.dataFiles;
+        config.renderers = config.renderers || defaultSettings.renderers;
 
-        cat.config.dataFiles = cat.config.dataFiles.map(function(df) {
+        config.dataFiles = config.dataFiles.map(function(df) {
             return typeof df == 'string'
-                ? { label: df, path: cat.config.dataURL, user_loaded: false }
+                ? { label: df, path: config.dataURL, user_loaded: false }
                 : df;
         });
 
         //get inputs from URL if any
-        cat.config.defaults = parseURL();
+        config.defaults = parseURL.call(this);
     }
 
     function addControlsToggle() {
@@ -881,7 +890,7 @@
                     if (cat.config.useServer) {
                         cat.status.saveToServer(cat);
                     }
-                    showEnv(cat);
+                    showEnv.call(cat);
 
                     //don't print any new statuses until a new chart is rendered
                     cat.printStatus = false;
@@ -1117,6 +1126,9 @@
             .attr('label', function(d) {
                 return d.sub ? d.name + ' (' + d.sub.split('.').pop() + ')' : d.name;
             })
+            .attr('selected', function(d) {
+                return d == cat.current ? 'selected' : null;
+            })
             .text(function(d) {
                 return d.name;
             });
@@ -1127,7 +1139,7 @@
         cat.controls.rendererWrap.append('br');
         cat.controls.rendererWrap.append('span').text('Version: ');
         cat.controls.versionSelect = cat.controls.rendererWrap.append('input');
-        cat.controls.versionSelect.node().value = 'master';
+        cat.controls.versionSelect.node().value = cat.current.version;
         cat.controls.versionSelect.on('input', function() {
             cat.current.version = this.value;
         });
@@ -1426,8 +1438,10 @@
     }
 
     function init() {
-        this.current = this.config.renderers[0];
-        this.current.version = 'master';
+        console.log(this.config.defaults);
+        this.current = this.config.defaults.renderer || this.config.renderers[0];
+        console.log(this.current);
+        this.current.version = this.config.defaults.version || 'master';
         initSubmit.call(this);
         initRendererSelect.call(this);
         initDataSelect.call(this);

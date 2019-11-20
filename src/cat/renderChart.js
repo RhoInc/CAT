@@ -42,7 +42,7 @@ export function renderChart(cat) {
                 if (cat.config.useServer) {
                     cat.status.saveToServer(cat);
                 }
-                showEnv(cat);
+                showEnv.call(cat);
 
                 //don't print any new statuses until a new chart is rendered
                 cat.printStatus = false;
