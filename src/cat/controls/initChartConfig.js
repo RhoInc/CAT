@@ -1,4 +1,5 @@
-export function initChartConfig(cat) {
+export function initChartConfig() {
+    var cat = this;
     var settingsHeading = cat.controls.settingsWrap.append('h3').html('3. Customize the Chart ');
 
     cat.controls.settingsWrap.append('span').text('Settings: ');

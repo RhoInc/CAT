@@ -410,7 +410,7 @@
 
         this.layout.call(this); // layout the UI
         this.setDefaults.call(this); // initialize the settings
-        this.controls.init(this); // create the controls
+        this.controls.init.call(this); // create the controls
     }
 
     function layout() {
@@ -730,7 +730,8 @@
         return exampleTemplate;
     }
 
-    function showEnv(cat) {
+    function showEnv() {
+        var cat = this;
         /*build list of loaded CSS */
         var current_css = getCSS();
         var cssItems = cat.controls.cssList.selectAll('li').data(current_css);
@@ -1037,9 +1038,9 @@
             });
     }
 
-    function initSubmit(cat) {
-        addControlsToggle.call(cat);
-        addSubmitButton.call(cat);
+    function initSubmit() {
+        addControlsToggle.call(this);
+        addSubmitButton.call(this);
     }
 
     function updateRenderer(select) {
@@ -1066,7 +1067,8 @@
         this.settings.set(this);
     }
 
-    function initRendererSelect(cat) {
+    function initRendererSelect() {
+        var cat = this;
         cat.controls.rendererWrap.append('h3').text('1. Choose a Charting Library');
         cat.controls.rendererWrap.append('span').text('Library: ');
 
@@ -1189,7 +1191,8 @@
         }
     }
 
-    function initDataSelect(cat) {
+    function initDataSelect() {
+        var cat = this;
         cat.controls.dataWrap.append('h3').text('2. Choose a data Set');
         cat.controls.dataFileSelect = cat.controls.dataWrap.append('select');
 
@@ -1299,7 +1302,8 @@
             });
     }
 
-    function initChartConfig(cat) {
+    function initChartConfig() {
+        var cat = this;
         var settingsHeading = cat.controls.settingsWrap
             .append('h3')
             .html('3. Customize the Chart ');
@@ -1373,27 +1377,27 @@
         cat.settings.set(cat);
     }
 
-    function initEnvConfig(cat) {
-        var settingsHeading = cat.controls.environmentWrap.append('h3').html('4. Environment ');
+    function initEnvConfig() {
+        var settingsHeading = this.controls.environmentWrap.append('h3').html('4. Environment ');
 
-        cat.controls.cssList = cat.controls.environmentWrap.append('ul').attr('class', 'cssList');
-        cat.controls.cssList.append('h5').text('Loaded Stylesheets');
+        this.controls.cssList = this.controls.environmentWrap.append('ul').attr('class', 'cssList');
+        this.controls.cssList.append('h5').text('Loaded Stylesheets');
 
-        cat.controls.jsList = cat.controls.environmentWrap.append('ul').attr('class', 'jsList');
-        cat.controls.jsList.append('h5').text('Loaded javascript');
+        this.controls.jsList = this.controls.environmentWrap.append('ul').attr('class', 'jsList');
+        this.controls.jsList.append('h5').text('Loaded javascript');
 
-        showEnv(cat);
+        showEnv.call(this);
     }
 
-    function init$1(cat) {
-        cat.current = cat.config.renderers[0];
-        cat.current.version = 'master';
-        initSubmit(cat);
-        initRendererSelect(cat);
-        initDataSelect(cat);
-        initFileLoad.call(cat);
-        initChartConfig(cat);
-        initEnvConfig(cat);
+    function init$1() {
+        this.current = this.config.renderers[0];
+        this.current.version = 'master';
+        initSubmit.call(this);
+        initRendererSelect.call(this);
+        initDataSelect.call(this);
+        initFileLoad.call(this);
+        initChartConfig.call(this);
+        initEnvConfig.call(this);
     }
 
     function addEnterEventListener(selection, cat) {

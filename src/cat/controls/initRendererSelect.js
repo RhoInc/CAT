@@ -1,6 +1,7 @@
 import updateRenderer from './initRendererSelect/updateRenderer';
 
-export function initRendererSelect(cat) {
+export function initRendererSelect() {
+    var cat = this;
     cat.controls.rendererWrap.append('h3').text('1. Choose a Charting Library');
     cat.controls.rendererWrap.append('span').text('Library: ');
 

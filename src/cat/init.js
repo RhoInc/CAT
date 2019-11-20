@@ -7,5 +7,5 @@ export function init() {
 
     this.layout.call(this); // layout the UI
     this.setDefaults.call(this); // initialize the settings
-    this.controls.init(this); // create the controls
+    this.controls.init.call(this); // create the controls
 }
