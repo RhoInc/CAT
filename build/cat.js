@@ -475,44 +475,109 @@
     }
 
     function parseURL() {
+        //Function to parse data, renderer name, version and settings from the URL
+        //Parameters can be specified by number (for renderer and data file), base64 encoded text or raw text (in that order of precedence).
+
         var queries = parseQuery(window.location.search.substring(1));
         console.log(queries);
-        //find the matching renderer (if a number is provided, use the index)
-        var r_raw = queries.renderer || queries.r;
-        var r = this.config.renderers.find(function(d, i) {
-            return isNaN(+r_raw) ? d.name == r_raw : i == r_raw;
+
+        //ignore option if encoded variable can't be parsed
+        var encodedOptions = ['re', 'se', 've', 'de'];
+        encodedOptions.forEach(function(v) {
+            if (queries[v]) {
+                if (!isBase64(queries[v])) {
+                    console.warn("The '" + v + "' parameter isn't properly encoded. Ignoring");
+                    queries[v] = null;
+                }
+            }
+        });
+        //ignore option if a numeric value isn't numeric
+        var numericOptions = ['rn', 'dn'];
+        numericOptions.forEach(function(v) {
+            if (queries[v]) {
+                if (isNAN(+queries[v])) {
+                    console.warn("The '" + v + "' parameter isn't numeric. Ignoring");
+                    queries[v] = null;
+                }
+            }
         });
 
-        //parse settings from base64
-        var s_raw = queries.settings || queries.s;
-        var base64_encoded = isBase64(s_raw);
-        var s_text = base64_encoded ? atob(s_raw) : '{}';
-        if (!base64_encoded) {
-            console.warn(
-                "Couldn't load settings from the URL. Settings must be base64 encoded. Using default settings instead."
-            );
+        //initialize object to store parsed values
+        var fromURL = { renderer: null, version: null, settings: null, data: null };
+
+        //get renderer name
+        if (queries.rn) {
+            fromURL.renderer = this.config.renderers.find(function(d, i) {
+                return i == queries.rn;
+            })[name];
+        } else if (queries.re) {
+            fromURL.renderer = atob(queries.re);
+        } else {
+            fromURL.renderer = queries.renderer || queries.r;
         }
 
-        //check for valid json
+        //get settings
+        var s_text = null;
+        if (queries.se) {
+            s_text = atob(queries.se);
+        } else {
+            s_text = queries.settings || queries.s;
+        }
+
         if (!isJsonString(s_text)) {
-            console.warn("Couldn't load settings from the URL.  Using default settings instead.");
+            console.warn("Settings aren't valid JSON.  Using default settings instead.");
             s_text = '{}';
         }
+        fromURL.settings = JSON5.parse(s_text);
 
-        //parse the settings to an object
-        var s = JSON5.parse(s_text);
-
-        //find the matching data file (if a number is provided, use the index)
-        var d_raw = queries.data || queries.d;
-        var d_obj = this.config.dataFiles.find(function(d, i) {
-            return isNaN(+d_raw) ? d_raw == d : i == d_raw;
-        });
-        var d = d_obj ? d_obj.label : null;
+        //get data file name
+        if (queries.dn) {
+            fromURL.data = this.config.dataFiles.find(function(d, i) {
+                return i == queries.dn;
+            })[label];
+        } else if (queries.de) {
+            fromURL.data = atob(queries.de);
+        } else {
+            fromURL.data = queries.data || queries.d;
+        }
 
         //get version
-        var v = queries.version || queries.v;
+        if (queries.ve) {
+            fromURL.version = atob(queries.ve);
+        } else {
+            fromURL.version = queries.version || queries.v;
+        }
 
-        return { renderer: r, version: v, settings: s, data: d };
+        // Check that the data file and renderer are present
+        var data_found =
+            this.config.dataFiles.filter(function(f) {
+                return fromURL.data == f.label;
+            }).length > 0;
+        if (!data_found) {
+            console.warn('Data file not found. Will try to render with default data instead.');
+            fromURL.data = null;
+            fromURL.data_obj = null;
+        } else {
+            fromURL.data_obj = this.config.dataFiles.find(function(f) {
+                return fromURL.data == f.label;
+            });
+        }
+
+        var renderer_found =
+            this.config.renderers.filter(function(f) {
+                return fromURL.renderer == f.name;
+            }).length > 0;
+        if (!renderer_found) {
+            console.warn('Renderer not found. Will try to render with default renderer instead.');
+            fromURL.renderer = null;
+            fromURL.renderer_obj = null;
+        } else {
+            fromURL.renderer_obj = this.config.renderers.find(function(f) {
+                return fromURL.renderer == f.name;
+            });
+        }
+
+        return fromURL;
     }
 
     function setDefaults() {
@@ -763,7 +828,7 @@
         /* Get settings from current controls */
         var webcharts_version = cat.controls.libraryVersion.node().value;
         var renderer_version = cat.controls.versionSelect.node().value;
-        var data_file = cat.controls.dataFileSelect.node().value;
+        var data_file = cat.current.data;
         var data_file_path = cat.config.dataURL + data_file;
         var init_string = cat.current.sub
             ? cat.current.main + '.' + cat.current.sub
@@ -802,7 +867,7 @@
             "\n    </head>\n\n    <body>\n        <h1 id = 'title'>" +
             cat.current.name +
             ' created for ' +
-            cat.current.defaultData +
+            cat.current.data +
             "</h1>\n        <div id = 'container'>\n        </div>\n    </body>\n\n    <script type = 'text/javascript'>\n        let settings = " +
             chart_config +
             '\n        let chart = ' +
@@ -886,6 +951,7 @@
         cat.settings.sync(cat);
         //render the new chart with the current settings
         var dataFile = cat.controls.dataFileSelect.node().value;
+        cat.current.data = dataFile;
         var dataObject = cat.config.dataFiles.find(function(f) {
             return f.label == dataFile;
         });
@@ -1084,6 +1150,18 @@
         }
     }
 
+    function createChartURL() {
+        console.log(this.current);
+        // const root_url = 'https://rhoinc.github.io/CAT/';
+        var root_url = 'http://localhost:8000/';
+        var se = btoa(JSON.stringify(this.current.config, null, ' '));
+        var re = btoa(this.current.name);
+        var de = btoa(this.current.data);
+        var ve = btoa(this.current.version);
+        var url = root_url + '?re=' + re + '&ve=' + ve + '&de=' + de + '&se=' + se;
+        return url;
+    }
+
     function addSubmitButton() {
         var _this = this;
 
@@ -1119,6 +1197,30 @@
                 _this.chartWrap.append('div').attr('class', 'chart');
                 loadLibrary(_this);
             });
+
+        //add permalink
+        var permawrap = this.controls.submitWrap.append('div').attr('class', 'permalink-wrap');
+        permawrap
+            .append('span')
+            .text('Link:')
+            .style('cursor', 'help')
+            .attr(
+                'title',
+                'Click here to visit or copy the URL for a standalone page for the current chart.\nNote that this only captures the renderer, settings, version and requires a saved data set. Other options (e.g. webcharts version) and uploaded data sets are not supported at this time.'
+            );
+
+        this.controls.chartLink = permawrap
+            .append('a')
+            .attr('href', createChartURL.call(this))
+            .html('&#128279;')
+            .attr('target', '_blank')
+            .attr('title', 'Open in new tab');
+
+        this.controls.chartCopy = permawrap
+            .append('a')
+            .html('&#128203')
+            .style('cursor', 'pointer')
+            .attr('title', 'Copy link');
     }
 
     function initSubmit() {
@@ -1247,7 +1349,7 @@
             cat.dataPreview.destroy();
         }
 
-        var dataFile = cat.controls.dataFileSelect.node().value;
+        var dataFile = cat.current.data;
         var dataObject = cat.config.dataFiles.find(function(f) {
             return f.label == dataFile;
         });
@@ -1299,7 +1401,7 @@
                 return d.label;
             })
             .property('selected', function(d) {
-                return cat.current.defaultData == d.label ? true : null;
+                return cat.current.data == d.label ? true : null;
             });
     }
 
@@ -1477,10 +1579,10 @@
 
     function init() {
         //set values for initial renderer
-        console.log(this.config.fromURL);
-        this.current = this.config.fromURL.renderer || this.config.renderers[0];
+        this.current = this.config.fromURL.renderer_obj || this.config.renderers[0];
         this.current.version = this.config.fromURL.version || 'master';
         this.current.defaultData = this.config.fromURL.data || this.current.defaultData;
+        this.current.data = this.current.defaultData;
         this.current.config = this.config.fromURL.settings || {};
         console.log(this.current);
 

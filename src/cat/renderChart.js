@@ -6,6 +6,7 @@ export function renderChart(cat) {
     cat.settings.sync(cat);
     //render the new chart with the current settings
     var dataFile = cat.controls.dataFileSelect.node().value;
+    cat.current.data = dataFile;
     var dataObject = cat.config.dataFiles.find(f => f.label == dataFile);
     var version = cat.controls.versionSelect.node().value;
     cat.current.main = cat.controls.mainFunction.node().value;

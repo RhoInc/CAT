@@ -20,6 +20,6 @@ export function initDataSelect() {
         .append('option')
         .text(d => d.label)
         .property('selected', function(d) {
-            return cat.current.defaultData == d.label ? true : null;
+            return cat.current.data == d.label ? true : null;
         });
 }
