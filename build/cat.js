@@ -507,7 +507,7 @@
         var d_obj = this.config.dataFiles.find(function(d, i) {
             return isNaN(+d_raw) ? d_raw == d : i == d_raw;
         });
-        var d = d_obj.label;
+        var d = d_obj ? d_obj.label : null;
 
         //get version
         var v = queries.version || queries.v;

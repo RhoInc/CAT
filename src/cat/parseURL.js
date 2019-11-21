@@ -35,7 +35,7 @@ export default function parseURL() {
     const d_obj = this.config.dataFiles.find(function(d, i) {
         return isNaN(+d_raw) ? d_raw == d : i == d_raw;
     });
-    const d = d_obj.label;
+    const d = d_obj ? d_obj.label : null;
 
     //get version
     const v = queries.version || queries.v;
