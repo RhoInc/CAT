@@ -35,9 +35,15 @@ export function renderChart(cat) {
             try {
                 myChart.init(data);
             } catch (err) {
-                cat.status.chartInitStatus(cat.statusDiv, false, err);
+                cat.status.chartInitStatus.call(cat, cat.statusDiv, false, err);
             } finally {
-                cat.status.chartInitStatus(cat.statusDiv, true, null, cat.current.htmlExport);
+                cat.status.chartInitStatus.call(
+                    cat,
+                    cat.statusDiv,
+                    true,
+                    null,
+                    cat.current.htmlExport
+                );
 
                 // save to server button
                 if (cat.config.useServer) {

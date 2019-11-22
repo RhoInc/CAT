@@ -6,6 +6,7 @@ export default function createChartURL() {
     const re = btoa(this.current.name);
     const de = btoa(this.current.data);
     const ve = btoa(this.current.version);
-    const url = root_url + '?re=' + re + '&ve=' + ve + '&de=' + de + '&se=' + se;
+    const url =
+        root_url + '?re=' + re + '&ve=' + ve + '&de=' + de + '&se=' + se + '&draw&controls=min';
     return url;
 }

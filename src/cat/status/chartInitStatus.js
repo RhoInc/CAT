@@ -1,4 +1,7 @@
+import createChartURL from '../export/createChartURL';
+
 export function chartInitStatus(statusDiv, success, err, htmlExport) {
+    var cat = this;
     if (success) {
         //hide all non-error statuses
         statusDiv.selectAll('div:not(.error)').classed('hidden', true);
@@ -8,7 +11,9 @@ export function chartInitStatus(statusDiv, success, err, htmlExport) {
             .append('div')
             .attr('class', 'initSuccess')
             .html(
-                "All Done. Your chart should be below. <span class='showLog'>Show full log</span>"
+                "All Done. Your chart should be below. You can also visit this <a href='" +
+                    createChartURL.call(cat) +
+                    "'>permanent link</a>. <span class='showLog'>Show full log</span>"
             )
             .classed('info', true);
 

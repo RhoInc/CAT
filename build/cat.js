@@ -989,9 +989,15 @@
                 try {
                     myChart.init(data);
                 } catch (err) {
-                    cat.status.chartInitStatus(cat.statusDiv, false, err);
+                    cat.status.chartInitStatus.call(cat, cat.statusDiv, false, err);
                 } finally {
-                    cat.status.chartInitStatus(cat.statusDiv, true, null, cat.current.htmlExport);
+                    cat.status.chartInitStatus.call(
+                        cat,
+                        cat.statusDiv,
+                        true,
+                        null,
+                        cat.current.htmlExport
+                    );
 
                     // save to server button
                     if (cat.config.useServer) {
@@ -1197,18 +1203,6 @@
         }
     }
 
-    function createChartURL() {
-        console.log(this.current);
-        // const root_url = 'https://rhoinc.github.io/CAT/';
-        var root_url = 'http://localhost:8000/';
-        var se = btoa(JSON.stringify(this.current.config, null, ' '));
-        var re = btoa(this.current.name);
-        var de = btoa(this.current.data);
-        var ve = btoa(this.current.version);
-        var url = root_url + '?re=' + re + '&ve=' + ve + '&de=' + de + '&se=' + se;
-        return url;
-    }
-
     function addSubmitButton() {
         var _this = this;
 
@@ -1244,30 +1238,6 @@
                 _this.chartWrap.append('div').attr('class', 'chart');
                 loadLibrary.call(_this);
             });
-
-        //add permalink
-        var permawrap = this.controls.submitWrap.append('div').attr('class', 'permalink-wrap');
-        permawrap
-            .append('span')
-            .text('Link:')
-            .style('cursor', 'help')
-            .attr(
-                'title',
-                'Click here to visit or copy the URL for a standalone page for the current chart.\nNote that this only captures the renderer, settings, version and requires a saved data set. Other options (e.g. webcharts version) and uploaded data sets are not supported at this time.'
-            );
-
-        this.controls.chartLink = permawrap
-            .append('a')
-            .attr('href', createChartURL.call(this))
-            .html('&#128279;')
-            .attr('target', '_blank')
-            .attr('title', 'Open in new tab');
-
-        this.controls.chartCopy = permawrap
-            .append('a')
-            .html('&#128203')
-            .style('cursor', 'pointer')
-            .attr('title', 'Copy link');
     }
 
     function initSubmit() {
@@ -1881,7 +1851,21 @@
             .classed('info', true);
     }
 
+    function createChartURL() {
+        console.log(this.current);
+        // const root_url = 'https://rhoinc.github.io/CAT/';
+        var root_url = 'http://localhost:8000/';
+        var se = btoa(JSON.stringify(this.current.config, null, ' '));
+        var re = btoa(this.current.name);
+        var de = btoa(this.current.data);
+        var ve = btoa(this.current.version);
+        var url =
+            root_url + '?re=' + re + '&ve=' + ve + '&de=' + de + '&se=' + se + '&draw&controls=min';
+        return url;
+    }
+
     function chartInitStatus(statusDiv, success, err, htmlExport) {
+        var cat = this;
         if (success) {
             //hide all non-error statuses
             statusDiv.selectAll('div:not(.error)').classed('hidden', true);
@@ -1891,7 +1875,9 @@
                 .append('div')
                 .attr('class', 'initSuccess')
                 .html(
-                    "All Done. Your chart should be below. <span class='showLog'>Show full log</span>"
+                    "All Done. Your chart should be below. You can also visit this <a href='" +
+                        createChartURL.call(cat) +
+                        "'>permanent link</a>. <span class='showLog'>Show full log</span>"
                 )
                 .classed('info', true);
 
