@@ -1,7 +1,12 @@
 export default function layout() {
     var cat = this;
     /* Layout primary sections */
-    cat.controls.wrap = cat.wrap.append('div').classed('cat-controls section', true);
+    console.log(cat.config);
+    cat.controls.wrap = cat.wrap
+        .append('div')
+        .classed('cat-controls section', true)
+        .classed('hidden', !cat.config.showControls);
+
     cat.chartWrap = cat.wrap.append('div').classed('cat-chart section', true);
     cat.dataWrap = cat.wrap
         .append('div')

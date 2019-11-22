@@ -6,14 +6,6 @@ import { initChartConfig } from './initChartConfig';
 import { initEnvConfig } from './initEnvConfig';
 
 export function init() {
-    //set values for initial renderer
-    this.current = this.config.fromURL.renderer_obj || this.config.renderers[0];
-    this.current.version = this.config.fromURL.version || 'master';
-    this.current.defaultData = this.config.fromURL.data || this.current.defaultData;
-    this.current.data = this.current.defaultData;
-    this.current.config = this.config.fromURL.settings || {};
-    console.log(this.current);
-
     //initialize UI elements
     initSubmit.call(this);
     initRendererSelect.call(this);
@@ -21,4 +13,13 @@ export function init() {
     initFileLoad.call(this);
     initChartConfig.call(this);
     initEnvConfig.call(this);
+
+    //hide controls/toggle if requested
+    if (!this.config.showControls) {
+        this.controls.minimize.node().click();
+
+        if (!this.config.showControlsToggle) {
+            this.controls.maximize.classed('hidden', true);
+        }
+    }
 }

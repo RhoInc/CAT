@@ -404,7 +404,12 @@
     function layout() {
         var cat = this;
         /* Layout primary sections */
-        cat.controls.wrap = cat.wrap.append('div').classed('cat-controls section', true);
+        console.log(cat.config);
+        cat.controls.wrap = cat.wrap
+            .append('div')
+            .classed('cat-controls section', true)
+            .classed('hidden', !cat.config.showControls);
+
         cat.chartWrap = cat.wrap.append('div').classed('cat-chart section', true);
         cat.dataWrap = cat.wrap
             .append('div')
@@ -480,6 +485,31 @@
 
         var queries = parseQuery(window.location.search.substring(1));
         console.log(queries);
+
+        //draw the chart?
+        if (queries.hasOwnProperty('draw')) {
+            this.config.drawOnLoad = true;
+        }
+
+        //hide the controls?
+        if (queries.hasOwnProperty('controls')) {
+            //minimize controls, but show toggle
+            if (
+                queries.controls.toLowerCase() == 'min' ||
+                queries.controls.toLowerCase() == 'minimized'
+            ) {
+                this.config.showControls = false;
+            }
+
+            // minimize controls, and hide toggle
+            if (
+                queries.controls.toLowerCase() == 'hide' ||
+                queries.controls.toLowerCase() == 'hidden'
+            ) {
+                this.config.showControls = false;
+                this.config.showControlsToggle = false;
+            }
+        }
 
         //ignore option if encoded variable can't be parsed
         var encodedOptions = ['re', 'se', 've', 'de'];
@@ -587,53 +617,26 @@
         config.dataURL = config.dataURL || defaultSettings.dataURL;
         config.dataFiles = config.dataFiles || defaultSettings.dataFiles;
         config.renderers = config.renderers || defaultSettings.renderers;
-
         config.dataFiles = config.dataFiles.map(function(df) {
             return typeof df == 'string'
                 ? { label: df, path: config.dataURL, user_loaded: false }
                 : df;
         });
 
+        //display options
+        config.drawOnLoad = false; // can be changed in URL with /?draw
+        config.showControls = true; // can be changed in URL with /?controls=hide
+        config.showControlsToggle = true; // can be changed in URL with /?controls=min
+
         //get inputs from URL if any
         config.fromURL = parseURL.call(this);
-    }
 
-    function addControlsToggle() {
-        var _this = this;
-
-        var cat = this;
-
-        this.controls.minimize = this.controls.submitWrap
-            .append('div')
-            .classed('cat-button cat-button--minimize hidden', true)
-            .attr('title', 'Hide controls')
-            .text('<<')
-            .on('click', function() {
-                _this.controls.wrap.classed('hidden', true);
-                _this.chartWrap.style('margin-left', 0);
-                _this.chartWrap.selectAll('.wc-chart').each(function(d) {
-                    try {
-                        d.draw();
-                    } catch (error) {}
-                });
-                _this.dataWrap.style('margin-left', 0);
-                _this.controls.maximize = _this.wrap
-                    .insert('div', ':first-child')
-                    .classed('cat-button cat-button--maximize', true)
-                    .text('>>')
-                    .attr('title', 'Show controls')
-                    .on('click', function() {
-                        cat.controls.wrap.classed('hidden', false);
-                        cat.chartWrap.style('margin-left', '20%');
-                        cat.chartWrap.selectAll('.wc-chart').each(function(d) {
-                            try {
-                                d.draw();
-                            } catch (error) {}
-                        });
-                        cat.dataWrap.style('margin-left', '20%');
-                        d3.select(this).remove();
-                    });
-            });
+        // set values for initial renderer
+        this.current = this.config.fromURL.renderer_obj || this.config.renderers[0];
+        this.current.version = this.config.fromURL.version || 'master';
+        this.current.defaultData = this.config.fromURL.data || this.current.defaultData;
+        this.current.data = this.current.defaultData;
+        this.current.config = this.config.fromURL.settings || {};
     }
 
     var _typeof =
@@ -1088,7 +1091,8 @@
         });
     }
 
-    function loadLibrary(cat) {
+    function loadLibrary() {
+        var cat = this;
         var version = cat.controls.libraryVersion.node().value;
         var library = 'webcharts'; //hardcode to webcharts for now - could generalize later
 
@@ -1150,6 +1154,49 @@
         }
     }
 
+    function addControlsToggle() {
+        var _this = this;
+
+        var cat = this;
+
+        this.controls.minimize = this.controls.submitWrap
+            .append('div')
+            .classed('cat-button cat-button--minimize hidden', true)
+            .attr('title', 'Hide controls')
+            .text('<<')
+            .on('click', function() {
+                _this.controls.wrap.classed('hidden', true);
+                _this.chartWrap.style('margin-left', 0);
+                _this.chartWrap.selectAll('.wc-chart').each(function(d) {
+                    try {
+                        d.draw();
+                    } catch (error) {}
+                });
+                _this.dataWrap.style('margin-left', 0);
+                _this.controls.maximize = _this.wrap
+                    .insert('div', ':first-child')
+                    .classed('cat-button cat-button--maximize', true)
+                    .text('>>')
+                    .attr('title', 'Show controls')
+                    .on('click', function() {
+                        cat.controls.wrap.classed('hidden', false);
+                        cat.chartWrap.style('margin-left', '20%');
+                        cat.chartWrap.selectAll('.wc-chart').each(function(d) {
+                            try {
+                                d.draw();
+                            } catch (error) {}
+                        });
+                        cat.dataWrap.style('margin-left', '20%');
+                        d3.select(this).remove();
+                    });
+            });
+
+        // Show the maximize button if controls are hidden, but toggle is visible
+        if (this.controls.showControlsToggle & !this.controls.showControls) {
+            this.controls.minimize.node().click();
+        }
+    }
+
     function createChartURL() {
         console.log(this.current);
         // const root_url = 'https://rhoinc.github.io/CAT/';
@@ -1195,7 +1242,7 @@
                     .classed('info', true);
 
                 _this.chartWrap.append('div').attr('class', 'chart');
-                loadLibrary(_this);
+                loadLibrary.call(_this);
             });
 
         //add permalink
@@ -1578,14 +1625,6 @@
     }
 
     function init() {
-        //set values for initial renderer
-        this.current = this.config.fromURL.renderer_obj || this.config.renderers[0];
-        this.current.version = this.config.fromURL.version || 'master';
-        this.current.defaultData = this.config.fromURL.data || this.current.defaultData;
-        this.current.data = this.current.defaultData;
-        this.current.config = this.config.fromURL.settings || {};
-        console.log(this.current);
-
         //initialize UI elements
         initSubmit.call(this);
         initRendererSelect.call(this);
@@ -1593,6 +1632,15 @@
         initFileLoad.call(this);
         initChartConfig.call(this);
         initEnvConfig.call(this);
+
+        //hide controls/toggle if requested
+        if (!this.config.showControls) {
+            this.controls.minimize.node().click();
+
+            if (!this.config.showControlsToggle) {
+                this.controls.maximize.classed('hidden', true);
+            }
+        }
     }
 
     function init$1() {
@@ -1602,9 +1650,22 @@
             .append('div')
             .attr('class', 'cat-wrap');
 
-        layout.call(this); // layout the UI
         setDefaults.call(this); // initialize the settings
+        layout.call(this); // layout the UI
         init.call(this); // create the controls
+
+        //draw the first chart
+        if (this.config.drawOnLoad) {
+            this.printStatus = true;
+            this.statusDiv = this.chartWrap.append('div').attr('class', 'status');
+            this.statusDiv
+                .append('div')
+                .text('Starting to render the chart ... ')
+                .classed('info', true);
+
+            this.chartWrap.append('div').attr('class', 'chart');
+            loadLibrary.call(this);
+        }
     }
 
     function addEnterEventListener(selection, cat) {

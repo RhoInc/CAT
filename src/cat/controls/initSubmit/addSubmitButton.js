@@ -1,4 +1,4 @@
-import { loadLibrary } from '../../loadLibrary';
+import loadLibrary from '../../loadLibrary';
 import createChartURL from '../../export/createChartURL';
 
 export default function addSubmitButton() {
@@ -32,7 +32,7 @@ export default function addSubmitButton() {
                 .classed('info', true);
 
             this.chartWrap.append('div').attr('class', 'chart');
-            loadLibrary(this);
+            loadLibrary.call(this);
         });
 
     //add permalink

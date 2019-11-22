@@ -9,6 +9,31 @@ export default function parseURL() {
     var queries = parseQuery(window.location.search.substring(1));
     console.log(queries);
 
+    //draw the chart?
+    if (queries.hasOwnProperty('draw')) {
+        this.config.drawOnLoad = true;
+    }
+
+    //hide the controls?
+    if (queries.hasOwnProperty('controls')) {
+        //minimize controls, but show toggle
+        if (
+            queries.controls.toLowerCase() == 'min' ||
+            queries.controls.toLowerCase() == 'minimized'
+        ) {
+            this.config.showControls = false;
+        }
+
+        // minimize controls, and hide toggle
+        if (
+            queries.controls.toLowerCase() == 'hide' ||
+            queries.controls.toLowerCase() == 'hidden'
+        ) {
+            this.config.showControls = false;
+            this.config.showControlsToggle = false;
+        }
+    }
+
     //ignore option if encoded variable can't be parsed
     const encodedOptions = ['re', 'se', 've', 'de'];
     encodedOptions.forEach(function(v) {
