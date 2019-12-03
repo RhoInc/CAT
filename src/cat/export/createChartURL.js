@@ -1,7 +1,5 @@
 export default function createChartURL() {
-    console.log(this.current);
-    // const root_url = 'https://rhoinc.github.io/CAT/';
-    const root_url = 'http://localhost:8000/';
+    const root_url = `${window.location.origin}${window.location.pathname}`;
     const se = btoa(JSON.stringify(this.current.config, null, ' '));
     const re = btoa(this.current.name);
     const de = btoa(this.current.data);

@@ -7,7 +7,6 @@ export default function parseURL() {
     //Parameters can be specified by number (for renderer and data file), base64 encoded text or raw text (in that order of precedence).
 
     var queries = parseQuery(window.location.search.substring(1));
-    console.log(queries);
 
     //draw the chart?
     if (queries.hasOwnProperty('draw')) {
@@ -48,7 +47,7 @@ export default function parseURL() {
     const numericOptions = ['rn', 'dn'];
     numericOptions.forEach(function(v) {
         if (queries[v]) {
-            if (isNAN(+queries[v])) {
+            if (isNaN(+queries[v])) {
                 console.warn("The '" + v + "' parameter isn't numeric. Ignoring");
                 queries[v] = null;
             }
@@ -60,7 +59,7 @@ export default function parseURL() {
 
     //get renderer name
     if (queries.rn) {
-        fromURL.renderer = this.config.renderers.find((d, i) => i == queries.rn)[name];
+        fromURL.renderer = this.config.renderers.find((d, i) => i == queries.rn).name;
     } else if (queries.re) {
         fromURL.renderer = atob(queries.re);
     } else {
@@ -83,7 +82,7 @@ export default function parseURL() {
 
     //get data file name
     if (queries.dn) {
-        fromURL.data = this.config.dataFiles.find((d, i) => i == queries.dn)[label];
+        fromURL.data = this.config.dataFiles.find((d, i) => i == queries.dn).label;
     } else if (queries.de) {
         fromURL.data = atob(queries.de);
     } else {

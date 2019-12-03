@@ -11,7 +11,7 @@ export function chartInitStatus(statusDiv, success, err, htmlExport) {
             .append('div')
             .attr('class', 'initSuccess')
             .html(
-                "All Done. Your chart should be below. You can also visit this <a href='" +
+                "All Done. Your chart should be below. You can also visit this <a target = '_blank' href='" +
                     createChartURL.call(cat) +
                     "'>permanent link</a>. <span class='showLog'>Show full log</span>"
             )

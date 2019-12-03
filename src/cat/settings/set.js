@@ -42,8 +42,12 @@ export function set(cat) {
         cat.controls.settingsInput.node().value = JSON5.stringify(cat.current.config, null, 4);
 
         if (cat.current.hasValidSchema) {
-            console.log('... and it is valid. Making a nice form.');
-            makeForm(cat);
+            makeForm(
+                cat,
+                cat.config.fromURL.renderer !== null && JSON.stringify(cat.config.settings) !== '{}'
+                    ? cat.current.config
+                    : undefined
+            );
         }
     });
 }

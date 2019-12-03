@@ -404,7 +404,6 @@
     function layout() {
         var cat = this;
         /* Layout primary sections */
-        console.log(cat.config);
         cat.controls.wrap = cat.wrap
             .append('div')
             .classed('cat-controls section', true)
@@ -484,7 +483,6 @@
         //Parameters can be specified by number (for renderer and data file), base64 encoded text or raw text (in that order of precedence).
 
         var queries = parseQuery(window.location.search.substring(1));
-        console.log(queries);
 
         //draw the chart?
         if (queries.hasOwnProperty('draw')) {
@@ -525,7 +523,7 @@
         var numericOptions = ['rn', 'dn'];
         numericOptions.forEach(function(v) {
             if (queries[v]) {
-                if (isNAN(+queries[v])) {
+                if (isNaN(+queries[v])) {
                     console.warn("The '" + v + "' parameter isn't numeric. Ignoring");
                     queries[v] = null;
                 }
@@ -539,7 +537,7 @@
         if (queries.rn) {
             fromURL.renderer = this.config.renderers.find(function(d, i) {
                 return i == queries.rn;
-            })[name];
+            }).name;
         } else if (queries.re) {
             fromURL.renderer = atob(queries.re);
         } else {
@@ -564,7 +562,7 @@
         if (queries.dn) {
             fromURL.data = this.config.dataFiles.find(function(d, i) {
                 return i == queries.dn;
-            })[label];
+            }).label;
         } else if (queries.de) {
             fromURL.data = atob(queries.de);
         } else {
@@ -1778,8 +1776,13 @@
             cat.controls.settingsInput.node().value = JSON5.stringify(cat.current.config, null, 4);
 
             if (cat.current.hasValidSchema) {
-                console.log('... and it is valid. Making a nice form.');
-                makeForm(cat);
+                makeForm(
+                    cat,
+                    cat.config.fromURL.renderer !== null &&
+                        JSON.stringify(cat.config.settings) !== '{}'
+                        ? cat.current.config
+                        : undefined
+                );
             }
         });
     }
@@ -1852,9 +1855,7 @@
     }
 
     function createChartURL() {
-        console.log(this.current);
-        // const root_url = 'https://rhoinc.github.io/CAT/';
-        var root_url = 'http://localhost:8000/';
+        var root_url = '' + window.location.origin + window.location.pathname;
         var se = btoa(JSON.stringify(this.current.config, null, ' '));
         var re = btoa(this.current.name);
         var de = btoa(this.current.data);
@@ -1875,7 +1876,7 @@
                 .append('div')
                 .attr('class', 'initSuccess')
                 .html(
-                    "All Done. Your chart should be below. You can also visit this <a href='" +
+                    "All Done. Your chart should be below. You can also visit this <a target = '_blank' href='" +
                         createChartURL.call(cat) +
                         "'>permanent link</a>. <span class='showLog'>Show full log</span>"
                 )
