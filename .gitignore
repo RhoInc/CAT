@@ -6,7 +6,9 @@
 .svn
 node_modules
 local
+.vscode
 
 # Don't put charts from server in version control
 server/pages/charts/fromCAT
 server/pages/charts/chartList.json
+

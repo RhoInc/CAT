@@ -1,6 +1,7 @@
 import { showDataPreview } from '../datapreview/showDataPreview';
 
-export function initDataSelect(cat) {
+export function initDataSelect() {
+    var cat = this;
     cat.controls.dataWrap.append('h3').text('2. Choose a data Set');
     cat.controls.dataFileSelect = cat.controls.dataWrap.append('select');
 
@@ -19,6 +20,6 @@ export function initDataSelect(cat) {
         .append('option')
         .text(d => d.label)
         .property('selected', function(d) {
-            return cat.current.defaultData == d.label ? true : null;
+            return cat.current.data == d.label ? true : null;
         });
 }

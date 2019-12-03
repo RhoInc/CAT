@@ -32,4 +32,9 @@ export default function addControlsToggle() {
                     d3.select(this).remove();
                 });
         });
+
+    // Show the maximize button if controls are hidden, but toggle is visible
+    if (this.controls.showControlsToggle & !this.controls.showControls) {
+        this.controls.minimize.node().click();
+    }
 }

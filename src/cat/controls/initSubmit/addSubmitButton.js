@@ -1,4 +1,4 @@
-import { loadLibrary } from '../../loadLibrary';
+import loadLibrary from '../../loadLibrary';
 
 export default function addSubmitButton() {
     this.controls.submitButton = this.controls.submitWrap
@@ -31,6 +31,6 @@ export default function addSubmitButton() {
                 .classed('info', true);
 
             this.chartWrap.append('div').attr('class', 'chart');
-            loadLibrary(this);
+            loadLibrary.call(this);
         });
 }

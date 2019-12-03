@@ -1,4 +1,3 @@
-import { loadLibrary } from '../loadLibrary';
 import addEnterEventListener from '../addEnterEventListener';
 
 export function makeForm(cat, obj) {
