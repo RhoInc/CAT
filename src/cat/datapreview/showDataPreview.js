@@ -7,7 +7,7 @@ export function showDataPreview(cat) {
         cat.dataPreview.destroy();
     }
 
-    var dataFile = cat.controls.dataFileSelect.node().value;
+    var dataFile = cat.current.data;
     var dataObject = cat.config.dataFiles.find(f => f.label == dataFile);
     var path = dataObject.path + dataObject.label;
 

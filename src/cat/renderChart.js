@@ -6,6 +6,7 @@ export function renderChart(cat) {
     cat.settings.sync(cat);
     //render the new chart with the current settings
     var dataFile = cat.controls.dataFileSelect.node().value;
+    cat.current.data = dataFile;
     var dataObject = cat.config.dataFiles.find(f => f.label == dataFile);
     var version = cat.controls.versionSelect.node().value;
     cat.current.main = cat.controls.mainFunction.node().value;
@@ -34,15 +35,21 @@ export function renderChart(cat) {
             try {
                 myChart.init(data);
             } catch (err) {
-                cat.status.chartInitStatus(cat.statusDiv, false, err);
+                cat.status.chartInitStatus.call(cat, cat.statusDiv, false, err);
             } finally {
-                cat.status.chartInitStatus(cat.statusDiv, true, null, cat.current.htmlExport);
+                cat.status.chartInitStatus.call(
+                    cat,
+                    cat.statusDiv,
+                    true,
+                    null,
+                    cat.current.htmlExport
+                );
 
                 // save to server button
                 if (cat.config.useServer) {
                     cat.status.saveToServer(cat);
                 }
-                showEnv(cat);
+                showEnv.call(cat);
 
                 //don't print any new statuses until a new chart is rendered
                 cat.printStatus = false;

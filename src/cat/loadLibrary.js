@@ -3,7 +3,8 @@ import { loadRenderer } from './loadRenderer';
 import { getCSS } from './env/getCSS';
 import { getJS } from './env/getJS';
 
-export function loadLibrary(cat) {
+export default function loadLibrary() {
+    var cat = this;
     var version = cat.controls.libraryVersion.node().value;
     var library = 'webcharts'; //hardcode to webcharts for now - could generalize later
 

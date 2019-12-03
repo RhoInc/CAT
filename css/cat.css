@@ -80,6 +80,17 @@
     color:white;
 }
 
+.cat-wrap .cat-controls .submit-section div.permalink-wrap{
+    font-size:0.7em;
+    width:100%;
+    text-align:center;
+}
+
+.cat-wrap .cat-controls .submit-section div.permalink-wrap *{
+    padding-right:0.5em;
+    text-decoration: none;
+}
+
 .cat-wrap .cat-controls .file-load-input{
     width:75%
 }

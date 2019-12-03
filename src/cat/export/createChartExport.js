@@ -2,7 +2,7 @@ export function createChartExport(cat) {
     /* Get settings from current controls */
     var webcharts_version = cat.controls.libraryVersion.node().value;
     var renderer_version = cat.controls.versionSelect.node().value;
-    var data_file = cat.controls.dataFileSelect.node().value;
+    var data_file = cat.current.data;
     var data_file_path = cat.config.dataURL + data_file;
     var init_string = cat.current.sub ? cat.current.main + '.' + cat.current.sub : cat.current.main;
 
@@ -38,7 +38,7 @@ export function createChartExport(cat) {
     </head>
 
     <body>
-        <h1 id = 'title'>${cat.current.name} created for ${cat.current.defaultData}</h1>
+        <h1 id = 'title'>${cat.current.name} created for ${cat.current.data}</h1>
         <div id = 'container'>
         </div>
     </body>

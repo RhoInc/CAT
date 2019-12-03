@@ -1,20 +1,12 @@
 import { makeForm } from './makeForm';
+import isJsonString from '../../util/isJsonString';
 
 export function sync(cat, printStatus) {
-    function IsJsonString(str) {
-        try {
-            JSON5.parse(str);
-        } catch (e) {
-            return false;
-        }
-        return true;
-    }
-
     // set current config
     if (cat.current.settingsView == 'text') {
         var text = cat.controls.settingsInput.node().value;
 
-        if (IsJsonString(text)) {
+        if (isJsonString(text)) {
             var settings = JSON5.parse(text);
             var json = JSON.stringify(settings, null, 4);
 
