@@ -1,6 +1,6 @@
 {
   "name": "cat",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "The Charting Application Tester (CAT) lets users make and adjust web graphics on the fly.",
   "module": "./src/index.js",
   "main": "./build/cat.js",
@@ -17,17 +17,17 @@
   "author": "Rho, Inc.",
   "license": "MIT",
   "dependencies": {
+    "body-parser": "~1",
     "d3": "^3.5.14",
-    "webcharts": "~1",
-    "jquery": "~3",
-    "json5": "^0.5.1",
     "express": "~4",
-    "body-parser": "~1"
+    "jquery": "^3.6.0",
+    "json5": "^0.5.1",
+    "webcharts": "~1"
   },
   "devDependencies": {
     "babel-plugin-external-helpers": "^6.22.0",
     "babel-preset-env": "^1.7.0",
-    "jimp": "^0.2.27",
+    "jimp": "^0.16.1",
     "jsdom": "~7",
     "prettier": "^1.19.1",
     "promise-polyfill": "8.1.0",
